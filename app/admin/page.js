@@ -77,7 +77,7 @@ export default function AdminDashboard() {
   // Redirect to login if not logged in
   useEffect(() => {
     if (!adminUser) {
-      router.push("/admin/login");
+      router.push("/account/login");
     } else {
       // Pre-fill CMS inputs
       if (cmsTexts.homeHeader) {
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
         <button
           onClick={() => {
             logoutAdmin();
-            router.push("/admin/login");
+            router.push("/account/login");
           }}
           className="px-5 py-2 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-xs font-bold rounded-lg text-slate-600 transition flex items-center space-x-1.5"
         >
@@ -274,7 +274,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Sidebar Nav */}
-        <div className="glass-panel rounded-xl p-3 flex flex-col space-y-1.5 text-xs font-bold text-slate-500">
+        <div className="lg:col-span-3 glass-panel rounded-xl p-3 flex flex-col space-y-1.5 text-xs font-bold text-slate-500">
           <button
             onClick={() => setActiveTab("bookings")}
             className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${

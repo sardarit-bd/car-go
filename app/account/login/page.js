@@ -8,7 +8,7 @@ import { User, Lock, AlertTriangle } from "lucide-react";
 
 export default function CustomerLogin() {
   const router = useRouter();
-  const { loginUser, t } = useApp();
+  const { loginUser, loginAdmin, t } = useApp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,11 +17,41 @@ export default function CustomerLogin() {
     e.preventDefault();
     setError("");
 
+    const userLower = email.toLowerCase().trim();
+
+    // Auto-detect role: Admin (Owner)
+    if ((userLower === "admin" || userLower === "admin@car-go.pl") && password === "admin123") {
+      loginAdmin("admin", "admin123");
+      router.push("/admin");
+      return;
+    }
+
+    // Auto-detect role: Admin (Employee)
+    if ((userLower === "employee" || userLower === "employee@car-go.pl") && password === "employee123") {
+      loginAdmin("employee", "employee123");
+      router.push("/admin");
+      return;
+    }
+
+    // Default Customer login
     const success = loginUser(email, password);
     if (success) {
       router.push("/account");
     } else {
-      setError("Nieprawidłowy e-mail lub hasło / Invalid credentials");
+      setError("Nieprawidłowe dane logowania / Invalid credentials");
+    }
+  };
+
+  const handleAutoLogin = (usernameVal, passwordVal, role) => {
+    setEmail(usernameVal);
+    setPassword(passwordVal);
+    
+    if (role === "admin" || role === "employee") {
+      loginAdmin(usernameVal, passwordVal);
+      router.push("/admin");
+    } else {
+      loginUser(usernameVal, passwordVal);
+      router.push("/account");
     }
   };
 
@@ -47,12 +77,12 @@ export default function CustomerLogin() {
           <div>
             <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
               <User className="w-3.5 h-3.5 text-slate-400" />
-              <span>{t("email")}</span>
+              <span>Login / E-mail</span>
             </label>
             <input
-              type="email"
+              type="text"
               required
-              placeholder="np. jan.kowalski@example.com"
+              placeholder="E-mail lub login testowy"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none placeholder-slate-400"
@@ -82,11 +112,42 @@ export default function CustomerLogin() {
           </button>
         </form>
 
-        {/* Info Box */}
-        <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-lg text-[10px] text-slate-500 leading-normal">
-          💡 <strong>Pierwsze logowanie?</strong> Konta klientów tworzone są automatycznie podczas składania rezerwacji. Po zatwierdzeniu rezerwacji przez administratora otrzymasz e-mail z linkiem do aktywacji konta.
-          <br />
-          <span className="text-slate-700 font-bold">Dla celów testowych wpisz dowolny e-mail oraz hasło (min. 4 znaki).</span>
+        {/* Demo Credentials Panel */}
+        <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-500 space-y-3">
+          <p className="font-extrabold text-slate-800 uppercase tracking-wider text-[10px]">Autouzupełnianie kont testowych / Demo Auto Logins:</p>
+          
+          <div className="grid grid-cols-1 gap-2.5">
+            <button
+              type="button"
+              onClick={() => handleAutoLogin("test@car-go.pl", "password123", "client")}
+              className="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-extrabold rounded shadow-sm text-xs transition duration-200 text-left flex justify-between items-center"
+            >
+              <span>🔑 Klient / Client</span>
+              <span className="text-[9px] text-slate-400 font-mono">test@car-go.pl</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAutoLogin("admin", "admin123", "admin")}
+              className="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-extrabold rounded shadow-sm text-xs transition duration-200 text-left flex justify-between items-center"
+            >
+              <span>👑 Właściciel / Owner</span>
+              <span className="text-[9px] text-slate-400 font-mono">admin</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAutoLogin("employee", "employee123", "employee")}
+              className="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-extrabold rounded shadow-sm text-xs transition duration-200 text-left flex justify-between items-center"
+            >
+              <span>💼 Pracownik / Employee</span>
+              <span className="text-[9px] text-slate-400 font-mono">employee</span>
+            </button>
+          </div>
+          
+          <div className="text-[10px] text-slate-400 leading-relaxed border-t border-slate-200/60 pt-2">
+            💡 System automatycznie zidentyfikuje Twoją rolę i przekieruje Cię do odpowiedniego panelu (/admin lub /account).
+          </div>
         </div>
 
       </div>
