@@ -6,7 +6,7 @@ import { useApp } from "@/app/context/AppContext";
 import { CreditCard, ShieldCheck, ArrowLeft, Info, HelpCircle } from "lucide-react";
 import Link from "next/link";
 
-export default function OnlinePaymentSimulator() {
+function OnlinePaymentSimulatorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { bookings, updateBookingStatus, t, logEmail } = useApp();
@@ -188,5 +188,13 @@ Zespół CAR-GO.PL
 
       </div>
     </div>
+  );
+}
+
+export default function OnlinePaymentSimulator() {
+  return (
+    <React.Suspense fallback={<div className="text-center py-12 text-slate-500 font-bold">Ładowanie / Loading...</div>}>
+      <OnlinePaymentSimulatorContent />
+    </React.Suspense>
   );
 }

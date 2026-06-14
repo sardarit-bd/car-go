@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import { Search, Calendar, MapPin, ShieldAlert, Sparkles, UserCheck } from "lucide-react";
 
-export default function ReservationLookup() {
+function ReservationLookupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lang, bookings, t } = useApp();
@@ -214,5 +214,13 @@ export default function ReservationLookup() {
       )}
 
     </div>
+  );
+}
+
+export default function ReservationLookup() {
+  return (
+    <React.Suspense fallback={<div className="text-center py-12 text-slate-500 font-bold">Ładowanie / Loading...</div>}>
+      <ReservationLookupContent />
+    </React.Suspense>
   );
 }

@@ -6,7 +6,7 @@ import { useApp } from "@/app/context/AppContext";
 import SearchForm from "@/app/components/SearchForm";
 import { Calendar, User, CreditCard, ShieldCheck, CheckCircle2, ChevronRight, Info, Plus, Check } from "lucide-react";
 
-export default function CheckoutFlow() {
+function CheckoutFlowContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -856,5 +856,13 @@ Zespół CAR-GO.PL
       </div>
 
     </div>
+  );
+}
+
+export default function CheckoutFlow() {
+  return (
+    <React.Suspense fallback={<div className="text-center py-12 text-slate-500 font-bold">Ładowanie / Loading...</div>}>
+      <CheckoutFlowContent />
+    </React.Suspense>
   );
 }

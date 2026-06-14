@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import { Lock, UserCheck, ShieldCheck } from "lucide-react";
 
-export default function AccountActivation() {
+function AccountActivationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lang, registerUser, t } = useApp();
@@ -122,5 +122,13 @@ export default function AccountActivation() {
 
       </div>
     </div>
+  );
+}
+
+export default function AccountActivation() {
+  return (
+    <React.Suspense fallback={<div className="text-center py-12 text-slate-500 font-bold">Ładowanie / Loading...</div>}>
+      <AccountActivationContent />
+    </React.Suspense>
   );
 }
