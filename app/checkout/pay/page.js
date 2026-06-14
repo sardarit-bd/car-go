@@ -188,10 +188,5 @@ Zespół CAR-GO.PL
 
       </div>
     </div>
-  );>
-        )}
-
-      </div>
-    </div>
   );
 }
