@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { useApp } from "@/app/context/AppContext";
-import { Mail, Phone, MapPin, Facebook, Instagram, Send, Check } from "lucide-react";
+import { Check, Facebook, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
   const { lang, t, logEmail } = useApp();
@@ -44,7 +44,7 @@ ${formMsg}
   return (
     <footer className="bg-brand-dark/90 border-t border-brand-accent mt-auto pt-12 pb-6 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-        
+
         {/* Company & Info Column */}
         <div className="space-y-4">
           <Link href="/" className="flex items-center group">
@@ -179,7 +179,7 @@ ${formMsg}
                 placeholder={t("contactName")}
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-brand-accent focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
+                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ ${formMsg}
                 placeholder={t("contactEmail")}
                 value={formEmail}
                 onChange={(e) => setFormEmail(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-brand-accent focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
+                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
               />
             </div>
             <div>
@@ -199,15 +199,14 @@ ${formMsg}
                 placeholder={t("contactMessage")}
                 value={formMsg}
                 onChange={(e) => setFormMsg(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-brand-accent focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500 resize-none"
+                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500 resize-none"
               />
             </div>
             <button
               type="submit"
               disabled={sent}
-              className={`w-full py-2 flex items-center justify-center space-x-1.5 text-xs font-bold rounded transition text-white ${
-                sent ? "bg-green-600 cursor-default" : "bg-brand-red hover:bg-brand-red-hover"
-              }`}
+              className={`w-full py-2 flex items-center justify-center space-x-1.5 text-xs font-bold rounded transition text-white ${sent ? "bg-green-600 cursor-default" : "bg-brand-red hover:bg-brand-red-hover"
+                }`}
             >
               {sent ? (
                 <>
