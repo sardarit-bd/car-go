@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
-import SearchForm from "@/app/components/SearchForm";
-import { Calendar, User, CreditCard, ShieldCheck, CheckCircle2, ChevronRight, Info, Plus, Check } from "lucide-react";
+import { Calendar, Check, CheckCircle2, ChevronRight, CreditCard, Info, ShieldCheck, User } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 function CheckoutFlowContent() {
   const router = useRouter();
@@ -30,7 +30,7 @@ function CheckoutFlowContent() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedAddons, setSelectedAddons] = useState([]);
-  
+
   // Client forms
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -41,16 +41,16 @@ function CheckoutFlowContent() {
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [nip, setNip] = useState("");
-  
+
   // Payment methods
   const [paymentMethod, setPaymentMethod] = useState("online"); // online or pickup
-  
+
   // Consents
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
   const [consentData, setConsentData] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
-  
+
   // Final states
   const [createdBooking, setCreatedBooking] = useState(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
@@ -184,7 +184,7 @@ function CheckoutFlowContent() {
   const handleSimulatePayment = () => {
     if (createdBooking) {
       updateBookingStatus(createdBooking.id, "awaiting_confirmation"); // keep status, change payment state
-      
+
       // Update local copy
       const localUsers = JSON.parse(localStorage.getItem("cargo_bookings") || "[]");
       const match = localUsers.find((b) => b.id === createdBooking.id);
@@ -192,9 +192,9 @@ function CheckoutFlowContent() {
         match.paymentStatus = "paid_online";
         localStorage.setItem("cargo_bookings", JSON.stringify(localUsers));
       }
-      
+
       setPaymentCompleted(true);
-      
+
       // Log payment confirmation mail
       const emailText = `
 Witaj/Hello ${createdBooking.customer.firstName} ${createdBooking.customer.lastName},
@@ -211,7 +211,7 @@ Please await final confirmation of your booking by the administrator.
 Pozdrawiamy / Best regards,
 Zespół CAR-GO.PL
       `;
-      
+
       // trigger logEmail
       const cargoEmails = JSON.parse(localStorage.getItem("cargo_emails") || "[]");
       cargoEmails.unshift({
@@ -228,7 +228,7 @@ Zespół CAR-GO.PL
   // Render SVG diagrams for vehicles
   const renderCarSvg = () => (
     <svg className="w-24 h-12" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z" fill="#64748b" stroke="#cbd5e1" strokeWidth="2.5"/>
+      <path d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z" fill="#64748b" stroke="#cbd5e1" strokeWidth="2.5" />
       <path d="M120 125 C 170 120, 260 120, 280 105 L 340 105 C 375 120, 390 125, 430 125" stroke="#FF0000" strokeWidth="3" />
       <circle cx="112" cy="175" r="26" fill="#1e293b" stroke="#cbd5e1" strokeWidth="4" />
       <circle cx="382" cy="175" r="26" fill="#1e293b" stroke="#cbd5e1" strokeWidth="4" />
@@ -237,7 +237,7 @@ Zespół CAR-GO.PL
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-8 animate-fade-in text-slate-800">
-      
+
       {/* Checkout Steps Indicator */}
       <div className="flex justify-between items-center max-w-2xl mx-auto border-b border-slate-100 pb-5 text-xs sm:text-sm font-bold text-slate-400">
         <div className={`flex items-center space-x-1 ${step >= 1 ? "text-slate-800" : ""}`}>
@@ -263,10 +263,10 @@ Zespół CAR-GO.PL
 
       {/* Main Layout containing Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left/Center Panel: Step content */}
         <div className="lg:col-span-8">
-          
+
           {/* STEP 1: Vehicles Selection */}
           {step === 1 && (
             <div className="space-y-6">
@@ -279,18 +279,18 @@ Zespół CAR-GO.PL
                 const availableVehicles = vehicles.filter((car) => {
                   if (!activeSearch || !activeSearch.pickupDate || !activeSearch.returnDate) return true;
                   const { pickupDate, returnDate } = activeSearch;
-                  
+
                   const hasOverlap = bookings.some((booking) => {
                     if (booking.car.id !== car.id) return false;
                     if (booking.status === "cancelled") return false;
-                    
+
                     const bStart = booking.dates?.pickupDate;
                     const bEnd = booking.dates?.returnDate;
-                    
+
                     if (!bStart || !bEnd) return false;
                     return bStart <= returnDate && bEnd >= pickupDate;
                   });
-                  
+
                   return !hasOverlap;
                 });
 
@@ -307,8 +307,8 @@ Zespół CAR-GO.PL
                             {lang === "pl" ? "Brak dostępnych pojazdów" : "No vehicles available"}
                           </p>
                           <p className="text-slate-500 text-sm font-semibold">
-                            {lang === "pl" 
-                              ? "Wszystkie nasze samochody są zarezerwowane w wybranym terminie. Spróbuj zmienić daty wynajmu." 
+                            {lang === "pl"
+                              ? "Wszystkie nasze samochody są zarezerwowane w wybranym terminie. Spróbuj zmienić daty wynajmu."
                               : "All our vehicles are booked during the selected period. Please try changing your rental dates."}
                           </p>
                         </div>
@@ -360,7 +360,7 @@ Zespół CAR-GO.PL
           {/* STEP 2: Protection Packages & Add-ons */}
           {step === 2 && selectedCar && (
             <div className="space-y-8">
-              
+
               {/* Packages */}
               <div className="space-y-4">
                 <h2 className="text-xl font-black text-slate-800 border-b border-slate-100 pb-3 uppercase">
@@ -373,11 +373,10 @@ Zespół CAR-GO.PL
                       <div
                         key={pkg.id}
                         onClick={() => setSelectedPackage(pkg)}
-                        className={`p-5 rounded-xl border cursor-pointer transition flex flex-col justify-between shadow-sm ${
-                          isSelected
+                        className={`p-5 rounded-xl border cursor-pointer transition flex flex-col justify-between shadow-sm ${isSelected
                             ? "bg-brand-red/5 border-brand-red text-slate-800 glow-red"
                             : "bg-white border-slate-200 text-slate-700 hover:border-slate-400"
-                        }`}
+                          }`}
                       >
                         <div className="space-y-3">
                           <div className="flex justify-between items-center">
@@ -415,11 +414,10 @@ Zespół CAR-GO.PL
                       <div
                         key={add.id}
                         onClick={() => handleToggleAddon(add.id)}
-                        className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between shadow-sm ${
-                          isChecked
+                        className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between shadow-sm ${isChecked
                             ? "bg-brand-red/5 border-brand-red"
                             : "bg-white border-slate-200 hover:border-slate-400"
-                        }`}
+                          }`}
                       >
                         <div className="space-y-0.5 text-left">
                           <p className="text-xs font-black text-slate-800">
@@ -435,9 +433,8 @@ Zespół CAR-GO.PL
                             </span>
                           </p>
                         </div>
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${
-                          isChecked ? "bg-brand-red border-brand-red text-white" : "border-slate-300 bg-slate-50"
-                        }`}>
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${isChecked ? "bg-brand-red border-brand-red text-white" : "border-slate-300 bg-slate-50"
+                          }`}>
                           {isChecked && <Check className="w-3.5 h-3.5" />}
                         </div>
                       </div>
@@ -576,9 +573,8 @@ Zespół CAR-GO.PL
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div
                     onClick={() => setPaymentMethod("online")}
-                    className={`p-4 rounded-xl border cursor-pointer transition shadow-sm ${
-                      paymentMethod === "online" ? "border-brand-red bg-brand-red/5" : "border-slate-200 bg-slate-50 hover:border-slate-400"
-                    }`}
+                    className={`p-4 rounded-xl border cursor-pointer transition shadow-sm ${paymentMethod === "online" ? "border-brand-red bg-brand-red/5" : "border-slate-200 bg-slate-50 hover:border-slate-400"
+                      }`}
                   >
                     <div className="flex items-center space-x-2.5">
                       <CreditCard className="w-5 h-5 text-brand-red" />
@@ -590,9 +586,8 @@ Zespół CAR-GO.PL
                   </div>
                   <div
                     onClick={() => setPaymentMethod("pickup")}
-                    className={`p-4 rounded-xl border cursor-pointer transition shadow-sm ${
-                      paymentMethod === "pickup" ? "border-brand-red bg-brand-red/5" : "border-slate-200 bg-slate-50 hover:border-slate-400"
-                    }`}
+                    className={`p-4 rounded-xl border cursor-pointer transition shadow-sm ${paymentMethod === "pickup" ? "border-brand-red bg-brand-red/5" : "border-slate-200 bg-slate-50 hover:border-slate-400"
+                      }`}
                   >
                     <div className="flex items-center space-x-2.5">
                       <User className="w-5 h-5 text-slate-450" />
@@ -663,7 +658,7 @@ Zespół CAR-GO.PL
           {step === 4 && createdBooking && (
             <div className="space-y-6 animate-fade-in text-center lg:text-left">
               <div className="bg-white border border-slate-100 p-6 rounded-2xl space-y-6 shadow-sm">
-                
+
                 {/* Visual Check banner */}
                 <div className="flex flex-col items-center py-4 space-y-3">
                   <CheckCircle2 className="w-16 h-16 text-green-500" />

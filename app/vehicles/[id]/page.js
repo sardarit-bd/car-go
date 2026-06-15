@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
+import { useApp } from "@/app/context/AppContext";
+import { AlertTriangle, ArrowLeft, Briefcase, Compass, Fuel, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useApp } from "@/app/context/AppContext";
-import { ArrowLeft, Users, Briefcase, Fuel, Compass, AlertTriangle, ShieldCheck } from "lucide-react";
-import SearchForm from "@/app/components/SearchForm";
 
 export default function VehicleDetails() {
   const router = useRouter();
@@ -32,7 +30,7 @@ export default function VehicleDetails() {
 
   const renderCarSvgDetails = () => (
     <svg className="w-full max-w-md mx-auto text-white drop-shadow-[0_12px_24px_rgba(255,0,0,0.1)]" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z" fill="#64748b" stroke="#cbd5e1" strokeWidth="2.5"/>
+      <path d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z" fill="#64748b" stroke="#cbd5e1" strokeWidth="2.5" />
       <path d="M120 125 C 170 120, 260 120, 280 105 L 340 105 C 375 120, 390 125, 430 125" stroke="#FF0000" strokeWidth="4.5" strokeLinecap="round" />
       <circle cx="112" cy="175" r="26" fill="#1e293b" stroke="#cbd5e1" strokeWidth="4" />
       <circle cx="112" cy="175" r="10" fill="#ff0000" />
@@ -43,7 +41,7 @@ export default function VehicleDetails() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 animate-fade-in">
-      
+
       {/* Back button */}
       <Link href="/vehicles" className="inline-flex items-center space-x-2 text-xs font-bold text-slate-505 hover:text-slate-800 transition">
         <ArrowLeft className="w-4 h-4" />
@@ -52,16 +50,13 @@ export default function VehicleDetails() {
 
       {/* 2-Column Sidebar Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Sidebar: Sticky Reservation Widget */}
-        <div className="lg:col-span-4 sticky top-24 hidden lg:block">
-          <SearchForm vertical={true} />
-        </div>
 
         {/* Right Area: Vehicle Details Content */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-12 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column: Image Block */}
             <div className="space-y-6">
+
               <div className="bg-white border border-slate-100 p-8 rounded-2xl flex justify-center items-center h-64 relative shadow-sm">
                 <span className="absolute top-4 left-4 px-2.5 py-0.5 bg-slate-100 border border-slate-200 text-[10px] text-slate-700 rounded font-bold uppercase">
                   Class {car.class}
