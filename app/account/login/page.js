@@ -110,6 +110,9 @@ export default function CustomerLogin() {
           >
             {t("navLogin")}
           </button>
+          <div className="text-center text-xs text-slate-400 mt-3 font-semibold">
+            📞 +48 789 200 100 | {t("phoneHours")}
+          </div>
         </form>
 
         {/* Demo Credentials Panel */}

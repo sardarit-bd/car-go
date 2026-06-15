@@ -98,19 +98,22 @@ ${formMsg}
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">{t("navTerms")} & Info</h4>
           <ul className="space-y-2 text-xs text-gray-400">
             <li>
-              <Link href="/faq" className="hover:text-brand-red transition">FAQ - Najczęściej Zadawane Pytania</Link>
+              <Link href="/faq" className="hover:text-brand-red transition">FAQ - {lang === "pl" ? "Najczęściej Zadawane Pytania" : "Frequently Asked Questions"}</Link>
             </li>
             <li>
               <Link href="/terms" className="hover:text-brand-red transition">{t("navTerms")}</Link>
             </li>
             <li>
-              <Link href="/privacy" className="hover:text-brand-red transition">Polityka Prywatności</Link>
+              <Link href="/privacy" className="hover:text-brand-red transition">{lang === "pl" ? "Polityka Prywatności" : "Privacy Policy"}</Link>
             </li>
             <li>
-              <Link href="/privacy" className="hover:text-brand-red transition">Polityka Cookies (Ciasteczka)</Link>
+              <Link href="/my-reservations" className="hover:text-brand-red transition">{t("navMyReservations")}</Link>
+            </li>
+            <li>
+              <Link href="/blog" className="hover:text-brand-red transition">{t("navBlog")}</Link>
             </li>
           </ul>
-          <h4 className="text-xs font-bold text-white uppercase tracking-wider pt-2">Lokalizacje / Locations</h4>
+          <h4 className="text-xs font-bold text-white uppercase tracking-wider pt-2">{t("locationsTitle")}</h4>
           <p className="text-[11px] text-gray-400 leading-relaxed">
             Skarbimierz-Osiedle, Brzeg, Oława, Grodków, Dostawa pod wskazany adres (Custom Address).
           </p>
@@ -118,21 +121,41 @@ ${formMsg}
 
         {/* Payment & Social Media Column */}
         <div className="space-y-4">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider">Płatności / Payments</h4>
-          <div className="grid grid-cols-3 gap-2 max-w-[180px]">
-            <div className="bg-brand-accent/40 border border-brand-accent rounded p-1 flex items-center justify-center text-[10px] text-gray-400 font-bold" title="BLIK">
-              BLIK
+          <h4 className="text-sm font-bold text-white uppercase tracking-wider">{t("payments")}</h4>
+          <div className="flex flex-wrap gap-2 items-center max-w-[200px]">
+            {/* BLIK Logo */}
+            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="BLIK">
+              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
+                <text x="50" y="24" dominantBaseline="middle" textAnchor="middle" fontWeight="900" fontSize="22" fontFamily="sans-serif" fill="#1e293b" fontStyle="italic">blik</text>
+              </svg>
             </div>
-            <div className="bg-brand-accent/40 border border-brand-accent rounded p-1 flex items-center justify-center text-[10px] text-gray-400 font-bold" title="Przelewy24">
-              P24
+            {/* Przelewy24 Logo */}
+            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Przelewy24">
+              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
+                <circle cx="38" cy="20" r="9" fill="#cc1d24" />
+                <circle cx="58" cy="20" r="9" fill="#0c4a9f" />
+                <text x="48" y="24" dominantBaseline="middle" textAnchor="middle" fontWeight="950" fontSize="11" fontFamily="sans-serif" fill="#fff">P24</text>
+              </svg>
             </div>
-            <div className="bg-brand-accent/40 border border-brand-accent rounded p-1 flex items-center justify-center text-[10px] text-gray-400 font-bold" title="Autopay">
-              Autopay
+            {/* Autopay Logo */}
+            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10 text-center" title="Autopay">
+              <span className="text-[8px] font-black text-blue-600 tracking-tighter uppercase font-sans">autopay</span>
             </div>
-            <div className="bg-brand-accent/40 border border-brand-accent rounded p-1 flex items-center justify-center text-[10px] text-gray-400 font-bold col-span-3" title="Cash / Card at Pickup">
-              Cash / Card at Pickup
+            {/* Visa Logo */}
+            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Visa">
+              <svg viewBox="0 0 100 40" className="h-4 w-auto">
+                <text x="50" y="23" dominantBaseline="middle" textAnchor="middle" fontWeight="900" fontSize="22" fontFamily="sans-serif" fill="#1a1f71" fontStyle="italic">VISA</text>
+              </svg>
+            </div>
+            {/* Mastercard Logo */}
+            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Mastercard">
+              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
+                <circle cx="42" cy="20" r="10" fill="#eb001b" opacity="0.9" />
+                <circle cx="58" cy="20" r="10" fill="#ff5f00" opacity="0.9" />
+              </svg>
             </div>
           </div>
+          <p className="text-[10px] text-gray-400 font-bold">{t("payPickupInfo")}</p>
 
           <h4 className="text-sm font-bold text-white uppercase tracking-wider pt-2">Social Media</h4>
           <div className="flex space-x-3">
@@ -189,7 +212,7 @@ ${formMsg}
               {sent ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>Wysłano / Sent!</span>
+                  <span>{t("sentSuccess")}</span>
                 </>
               ) : (
                 <>
@@ -206,11 +229,11 @@ ${formMsg}
       {/* Copyright Bar */}
       <div className="border-t border-brand-accent/40 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 max-w-7xl mx-auto space-y-2.5 sm:space-y-0">
         <div>
-          © {new Date().getFullYear()} CAR-GO.PL. All rights reserved.
+          © {new Date().getFullYear()} CAR-GO.PL. {lang === "pl" ? "Wszelkie prawa zastrzeżone." : "All rights reserved."}
         </div>
         <div className="flex space-x-4">
-          <span>Obsługa techniczna: Hostinger</span>
-          <span>Domena ważna do: 12.08.2026</span>
+          <span>{t("technicalSupport")}: Hostinger</span>
+          <span>{t("domainValidity")}: 12.08.2026</span>
         </div>
       </div>
     </footer>

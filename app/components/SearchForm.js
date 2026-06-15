@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
-import { Calendar, MapPin, Clock, AlertTriangle, ArrowRightLeft } from "lucide-react";
+import { Calendar, MapPin, Clock, AlertTriangle, ArrowRightLeft, Compass } from "lucide-react";
 
 export default function SearchForm({ vertical = false }) {
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function SearchForm({ vertical = false }) {
     const end = new Date(`${returnDate}T${returnTime}`);
 
     if (start <= new Date()) {
-      setValidationError(lang === "pl" ? "Data odbioru musi być w przyszłości!" : "Pickup date must be in the future!");
+      setValidationError(lang === "pl" ? "Data odbioru must be w przyszłości!" : "Pickup date must be in the future!");
       return false;
     }
 
@@ -123,13 +123,13 @@ export default function SearchForm({ vertical = false }) {
   const isCustomReturn = returnLocation.toLowerCase().includes("dostawa") || returnLocation.toLowerCase().includes("address");
 
   return (
-    <div className={`glass-panel border-slate-100 p-6 sm:p-8 rounded-2xl glow-red shadow-xl bg-white/95 w-full`}>
-      <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center space-x-2.5 border-b border-slate-100 pb-4">
+    <div className={`glass-panel border-slate-100 ${vertical ? "p-5" : "p-6 sm:p-8"} rounded-2xl glow-red shadow-xl bg-white/95 w-full`}>
+      <h3 className={`font-black text-slate-800 flex items-center space-x-2.5 border-b border-slate-100 ${vertical ? "text-base mb-4 pb-3" : "text-xl mb-6 pb-4"}`}>
         <Calendar className="w-5.5 h-5.5 text-brand-red" />
         <span>{t("searchTitle")}</span>
       </h3>
 
-      <form onSubmit={handleSearch} className="space-y-6">
+      <form onSubmit={handleSearch} className={vertical ? "space-y-4" : "space-y-6"}>
         {/* Error Notification */}
         {validationError && (
           <div className="flex items-center space-x-2 p-3 bg-brand-red/10 border border-brand-red/20 rounded-xl text-sm text-brand-red animate-shake">
@@ -139,11 +139,11 @@ export default function SearchForm({ vertical = false }) {
         )}
 
         {/* Locations Grid Wrapper */}
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16">
+        <div className={`relative grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16"}`}>
           {/* Pickup Location */}
           <div className="relative">
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-              <MapPin className="w-4 h-4 text-brand-red" />
+              <Compass className="w-4 h-4 text-brand-red" />
               <span>{t("pickupLocation")}</span>
             </label>
             <div className="relative">
@@ -164,17 +164,19 @@ export default function SearchForm({ vertical = false }) {
             </div>
           </div>
 
-          {/* Floating Swap button - absolute positioned between fields on both mobile and desktop */}
-          <div className="absolute left-1/2 top-[50%] sm:top-[60%] -translate-x-1/2 -translate-y-1/2 z-10 block">
-            <button
-              type="button"
-              onClick={swapLocations}
-              className="p-2.5 bg-white border border-slate-250 hover:border-brand-red rounded-full text-slate-500 hover:text-brand-red shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
-              title="Swap Locations"
-            >
-              <ArrowRightLeft className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Floating Swap button */}
+          {!vertical && (
+            <div className="absolute left-1/2 top-[50%] sm:top-[60%] -translate-x-1/2 -translate-y-1/2 z-10 block">
+              <button
+                type="button"
+                onClick={swapLocations}
+                className="p-2.5 bg-white border border-slate-250 hover:border-brand-red rounded-full text-slate-500 hover:text-brand-red shadow-md transition-all duration-200 hover:scale-110 active:scale-95"
+                title="Swap Locations"
+              >
+                <ArrowRightLeft className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           {/* Return Location */}
           <div>
@@ -202,7 +204,7 @@ export default function SearchForm({ vertical = false }) {
         </div>
 
         {/* Dates and Times Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className={`grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-5"}`}>
           {/* Pickup Date & Time */}
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
@@ -260,9 +262,9 @@ export default function SearchForm({ vertical = false }) {
           </div>
         </div>
 
-        {/* Custom Address Fields (Google Map simulation / custom input) */}
+        {/* Custom Address Fields */}
         {(isCustomPickup || isCustomReturn) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-slate-50 border border-slate-100 rounded-xl animate-fade-in text-sm text-slate-700">
+          <div className="grid grid-cols-1 gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl animate-fade-in text-sm text-slate-700">
             {isCustomPickup && (
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
@@ -274,7 +276,7 @@ export default function SearchForm({ vertical = false }) {
                   placeholder="np. ul. Chopina 15, Oława"
                   value={customAddress}
                   onChange={(e) => setCustomAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-brand-red font-semibold"
+                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-brand-red font-semibold text-xs"
                 />
               </div>
             )}
@@ -289,11 +291,11 @@ export default function SearchForm({ vertical = false }) {
                   placeholder={isCustomPickup ? "Taki sam jak dostawy / Same as delivery" : "np. Dworzec Kolejowy, Brzeg"}
                   value={customAddressReturn}
                   onChange={(e) => setCustomAddressReturn(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-brand-red font-semibold"
+                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-brand-red font-semibold text-xs"
                 />
               </div>
             )}
-            <div className="col-span-1 sm:col-span-2 text-xs text-brand-red font-bold">
+            <div className="text-[10px] text-brand-red font-bold">
               ℹ️ {t("individualPriceAlert")}
             </div>
           </div>
@@ -303,7 +305,7 @@ export default function SearchForm({ vertical = false }) {
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full bg-brand-red hover:bg-brand-red-hover text-white text-sm font-black tracking-widest py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0"
+            className="w-full bg-brand-red hover:bg-brand-red-hover text-white text-xs font-black tracking-widest py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0"
           >
             {t("searchBtn")}
           </button>

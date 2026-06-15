@@ -18,6 +18,8 @@ export default function Header() {
   const navItems = [
     { name: t("navHome"), path: "/" },
     { name: t("navVehicles"), path: "/vehicles" },
+    { name: t("navMyReservations"), path: "/my-reservations" },
+    { name: t("navBlog"), path: "/blog" },
     { name: t("navFAQ"), path: "/faq" },
     { name: t("navReviews"), path: "/reviews" },
     { name: t("navTerms"), path: "/terms" },
@@ -36,6 +38,19 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+
+        {/* Support Top Bar */}
+        <div className="bg-brand-dark text-[11px] text-gray-300 py-1.5 px-4 sm:px-6 border-b border-brand-accent/20">
+          <div className="max-w-7xl mx-auto flex justify-between items-center font-semibold">
+            <div className="flex items-center space-x-2 text-gray-100">
+              <span className="text-brand-red">📞</span>
+              <span>+48 789 200 100</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-100">
+              <span>{t("phoneHours")}</span>
+            </div>
+          </div>
+        </div>
 
         {/* Main Header Bar */}
         <div className="flex justify-between items-center px-4 sm:px-6 max-w-7xl mx-auto">

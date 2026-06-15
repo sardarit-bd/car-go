@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import SidebarCTA from "@/app/components/SidebarCTA";
 import { useApp } from "@/app/context/AppContext";
-import { Mail, Phone, MapPin, Clock, Send, ShieldCheck } from "lucide-react";
+import { Clock, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { useState } from "react";
 
 export default function Contact() {
   const { lang, t, logEmail } = useApp();
-  
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
@@ -60,131 +61,135 @@ ${msg}
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
-      
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
+
       {/* Title */}
       <div className="text-center space-y-3">
-        <h1 className="text-3xl font-extrabold text-slate-800 uppercase">{t("contactTitle")}</h1>
-        <p className="text-sm text-slate-500">
-          Masz dodatkowe pytania? Skontaktuj się z naszą obsługą klienta telefonicznie lub napisz wiadomość.
+        <h1 className="text-3xl font-extrabold text-slate-800 uppercase">{t("navContact")}</h1>
+        <p className="text-sm font-semibold text-slate-500">
+          {lang === "pl"
+            ? "Masz dodatkowe pytania? Skontaktuj się z naszą obsługą klienta telefonicznie lub napisz wiadomość."
+            : "Have additional questions? Contact our customer support team by phone or write a message."}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Left Column: Direct Info & Map */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="glass-panel p-6 rounded-2xl space-y-6">
-            <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Dane Wypożyczalni / Rental Info:
-            </h2>
+      <div className="max-w-5xl mx-auto space-y-12">
+        {/* Contact Page Content */}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
-            <div className="space-y-4 text-xs font-semibold text-slate-600">
-              <div className="flex items-start space-x-3.5">
-                <MapPin className="w-5 h-5 text-brand-red flex-shrink-0" />
-                <div>
-                  <p className="text-slate-400 font-normal">Siedziba i Baza Floty / Base Address:</p>
-                  <p className="text-slate-800 font-extrabold mt-0.5">CAR-GO.PL Adam Rybiński</p>
-                  <p className="mt-0.5">ul. Smaków 12, 49-318 Skarbimierz-Osiedle</p>
-                  <p className="text-[10px] text-slate-400">Woj. opolskie, Polska</p>
-                </div>
-              </div>
+            {/* Left Column: Direct Info & Map */}
+            <div className="md:col-span-5 space-y-6">
+              <div className="glass-panel p-6 rounded-2xl space-y-6">
+                <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Dane Wypożyczalni / Rental Info:
+                </h2>
 
-              <div className="flex items-start space-x-3.5">
-                <Phone className="w-5 h-5 text-brand-red flex-shrink-0" />
-                <div>
-                  <p className="text-slate-400 font-normal">Infolinia rezerwacji / Phone hotline:</p>
-                  <p className="text-slate-800 font-extrabold mt-0.5">+48 789 200 100</p>
-                </div>
-              </div>
+                <div className="space-y-4 text-xs font-semibold text-slate-600">
+                  <div className="flex items-start space-x-3.5">
+                    <MapPin className="w-5 h-5 text-brand-red flex-shrink-0" />
+                    <div>
+                      <p className="text-slate-400 font-normal">Siedziba i Baza Floty / Base Address:</p>
+                      <p className="text-slate-800 font-extrabold mt-0.5">CAR-GO.PL Adam Rybiński</p>
+                      <p className="mt-0.5">ul. Smaków 12, 49-318 Skarbimierz-Osiedle</p>
+                      <p className="text-[10px] text-slate-400">Woj. opolskie, Polska</p>
+                    </div>
+                  </div>
 
-              <div className="flex items-start space-x-3.5">
-                <Mail className="w-5 h-5 text-brand-red flex-shrink-0" />
-                <div>
-                  <p className="text-slate-400 font-normal">Kontakt e-mail / Email support:</p>
-                  <p className="text-slate-800 font-extrabold mt-0.5">reservations@car-go.pl</p>
-                </div>
-              </div>
+                  <div className="flex items-start space-x-3.5">
+                    <Phone className="w-5 h-5 text-brand-red flex-shrink-0" />
+                    <div>
+                      <p className="text-slate-400 font-normal">Infolinia rezerwacji / Phone hotline:</p>
+                      <p className="text-slate-800 font-extrabold mt-0.5">+48 789 200 100</p>
+                    </div>
+                  </div>
 
-              <div className="flex items-start space-x-3.5">
-                <Clock className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                <div>
-                  <p className="text-slate-400 font-normal">Godziny obsługi / Working Hours:</p>
-                  <p className="text-slate-800 mt-0.5">{t("phoneHours")}</p>
+                  <div className="flex items-start space-x-3.5">
+                    <Mail className="w-5 h-5 text-brand-red flex-shrink-0" />
+                    <div>
+                      <p className="text-slate-400 font-normal">Kontakt e-mail / Email support:</p>
+                      <p className="text-slate-800 font-extrabold mt-0.5">reservations@car-go.pl</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3.5">
+                    <Clock className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-slate-400 font-normal">Godziny obsługi / Working Hours:</p>
+                      <p className="text-slate-800 mt-0.5">{t("phoneHours")}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Map Simulation */}
-          <div className="glass-panel rounded-2xl overflow-hidden h-56 shadow-sm border border-slate-100 relative">
-            {renderMapSvg()}
-            <div className="absolute bottom-2.5 left-2.5 bg-white/95 shadow-md px-3 py-1 rounded text-[10px] text-slate-700 font-bold border border-slate-100">
-              Skarbimierz-Osiedle, ul. Smaków 12
-            </div>
-          </div>
-        </div>
+            {/* Right Column: Contact form */}
+            <div className="md:col-span-7">
+              <div className="glass-panel p-6 rounded-2xl space-y-5">
+                <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2.5">
+                  {t("contactFormTitle")}
+                </h2>
 
-        {/* Right Column: Contact form */}
-        <div className="lg:col-span-7">
-          <div className="glass-panel p-6 rounded-2xl space-y-5">
-            <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2.5">
-              {t("contactFormTitle")}
-            </h2>
+                {sent ? (
+                  <div className="p-8 border border-green-600/30 bg-green-50/50 rounded-xl text-center space-y-2 text-green-700 animate-fade-in">
+                    <ShieldCheck className="w-10 h-10 mx-auto" />
+                    <p className="text-sm font-bold">{t("contactSuccess")}</p>
+                    <p className="text-xs text-slate-505">Skontaktujemy się z Tobą wkrótce.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactName")} *</label>
+                        <input
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactEmail")} *</label>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red"
+                        />
+                      </div>
+                    </div>
 
-            {sent ? (
-              <div className="p-8 border border-green-600/30 bg-green-50/50 rounded-xl text-center space-y-2 text-green-700 animate-fade-in">
-                <ShieldCheck className="w-10 h-10 mx-auto" />
-                <p className="text-sm font-bold">{t("contactSuccess")}</p>
-                <p className="text-xs text-slate-500">Skontaktujemy się z Tobą wkrótce.</p>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactMessage")} *</label>
+                      <textarea
+                        rows={5}
+                        required
+                        value={msg}
+                        onChange={(e) => setMsg(e.target.value)}
+                        className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red resize-none"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition duration-200 shadow"
+                    >
+                      {t("contactSubmit")}
+                    </button>
+                  </form>
+                )}
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactName")} *</label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactEmail")} *</label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red"
-                    />
-                  </div>
-                </div>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">{t("contactMessage")} *</label>
-                  <textarea
-                    rows={5}
-                    required
-                    value={msg}
-                    onChange={(e) => setMsg(e.target.value)}
-                    className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition duration-200 shadow"
-                >
-                  {t("contactSubmit")}
-                </button>
-              </form>
-            )}
           </div>
         </div>
 
+        {/* Bottom CTA Panel */}
+        <div className="max-w-xl mx-auto pt-4">
+          <SidebarCTA />
+        </div>
       </div>
 
     </div>

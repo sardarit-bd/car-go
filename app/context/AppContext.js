@@ -44,7 +44,7 @@ const initialTranslations = {
     gearAuto: "Automatyczna",
     gearManual: "Manualna",
     seatsUnit: "miejsca",
-    luggageUnit: "walizki",
+    luggageUnit: "L",
     reviewsTitle: "Opinie Naszych Klientów",
     addReview: "Dodaj Opinię",
     ratingLabel: "Ocena",
@@ -109,7 +109,33 @@ const initialTranslations = {
     contactMessage: "Treść wiadomości",
     contactSubmit: "Wyślij Wiadomość",
     contactSuccess: "Wiadomość została wysłana! Odpowiemy najszybciej jak to możliwe.",
-    faqTitle: "Często Zadawane Pytania (FAQ)"
+    faqTitle: "Często Zadawane Pytania (FAQ)",
+    navMyReservations: "Moje Rezerwacje",
+    navBlog: "Blog",
+    specifications: "Specyfikacja",
+    viewAllVehicles: "Zobacz wszystkie pojazdy",
+    payments: "Płatności",
+    locationsTitle: "Lokalizacje",
+    sentSuccess: "Wysłano pomyślnie!",
+    capacityFilter: "Miejsca siedzące",
+    seatsFilterAll: "Dowolna liczba miejsc",
+    seatsFilter4: "4 miejsca",
+    seatsFilter5: "5 miejsc",
+    longTermTitle: "Wynajem Długoterminowy",
+    longTermText: "Potrzebujesz samochodu na wynajem długoterminowy? Skontaktuj się z nami już dziś i omówmy ofertę dopasowaną do Twoich potrzeb.",
+    contactUsBtn: "Skontaktuj się",
+    readMore: "Czytaj więcej",
+    publishedOn: "Opublikowano",
+    blogTitle: "Nasz Blog i Porady",
+    blogSubtitle: "Dowiedz się więcej o wynajmie samochodów, podróżach oraz najlepszych trasach w rejonie.",
+    verifyEmailLabel: "Adres e-mail rezerwacji",
+    printVoucher: "Drukuj potwierdzenie",
+    downloadPdf: "Pobierz PDF",
+    supportLabel: "Infolinia / Wsparcie",
+    payPickupInfo: "Gotówka / Karta przy odbiorze",
+    technicalSupport: "Obsługa techniczna",
+    domainValidity: "Domena ważna do",
+    backToVehicles: "Powrót do pojazdów"
   },
   en: {
     brandName: "CAR-GO",
@@ -149,7 +175,7 @@ const initialTranslations = {
     gearAuto: "Automatic",
     gearManual: "Manual",
     seatsUnit: "seats",
-    luggageUnit: "suitcases",
+    luggageUnit: "L",
     reviewsTitle: "Our Customer Reviews",
     addReview: "Add Review",
     ratingLabel: "Rating",
@@ -214,9 +240,35 @@ const initialTranslations = {
     contactMessage: "Message content",
     contactSubmit: "Send Message",
     contactSuccess: "Message has been sent! We will reply as soon as possible.",
-    faqTitle: "Frequently Asked Questions (FAQ)"
+    faqTitle: "Frequently Asked Questions (FAQ)",
+    navMyReservations: "My Reservations",
+    navBlog: "Blog",
+    specifications: "Specifications",
+    viewAllVehicles: "View all vehicles",
+    payments: "Payments",
+    locationsTitle: "Locations",
+    sentSuccess: "Sent successfully!",
+    capacityFilter: "Seating capacity",
+    seatsFilterAll: "All capacities",
+    seatsFilter4: "4 seats",
+    seatsFilter5: "5 seats",
+    longTermTitle: "Long-Term Rental",
+    longTermText: "Need a car for long-term rental? Contact us today and let's discuss a customized rental solution for your needs.",
+    contactUsBtn: "Contact us",
+    readMore: "Read more",
+    publishedOn: "Published on",
+    blogTitle: "Our Blog & Tips",
+    blogSubtitle: "Learn more about car rental, travels and best routes in the region.",
+    verifyEmailLabel: "Booking Email Address",
+    printVoucher: "Print confirmation",
+    downloadPdf: "Download PDF",
+    supportLabel: "Hotline / Support",
+    payPickupInfo: "Cash / Card at Pickup",
+    technicalSupport: "Technical support",
+    domainValidity: "Domain valid until",
+    backToVehicles: "Back to vehicles"
   }
-};
+};;
 
 // Initial default vehicles
 const initialVehicles = [
@@ -227,7 +279,7 @@ const initialVehicles = [
     class: "A (Economy)",
     fuel: "Petrol",
     seats: 4,
-    luggage: 1,
+    luggage: 185,
     transmission: "Manual",
     price: 99,
     deposit: 1000,
@@ -248,7 +300,7 @@ const initialVehicles = [
     class: "B (Compact)",
     fuel: "Petrol",
     seats: 5,
-    luggage: 2,
+    luggage: 380,
     transmission: "Manual",
     price: 129,
     deposit: 1200,
@@ -269,7 +321,7 @@ const initialVehicles = [
     class: "C (Medium/Sedan)",
     fuel: "Petrol", // Petrol Hybrid
     seats: 5,
-    luggage: 3,
+    luggage: 470,
     transmission: "Automatic",
     price: 169,
     deposit: 1500,
@@ -290,7 +342,7 @@ const initialVehicles = [
     class: "D (SUV)",
     fuel: "Petrol",
     seats: 5,
-    luggage: 4,
+    luggage: 620,
     transmission: "Automatic",
     price: 219,
     deposit: 2000,
@@ -311,7 +363,7 @@ const initialVehicles = [
     class: "E (Premium)",
     fuel: "Diesel",
     seats: 5,
-    luggage: 3,
+    luggage: 480,
     transmission: "Automatic",
     price: 299,
     deposit: 2500,
@@ -325,7 +377,7 @@ const initialVehicles = [
       year: "2022"
     }
   }
-];
+];;
 
 // Initial default locations with minimum rental period
 const initialLocations = [

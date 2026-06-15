@@ -2,7 +2,7 @@
 
 import SearchForm from "@/app/components/SearchForm";
 import { useApp } from "@/app/context/AppContext";
-import { AlertCircle, Briefcase, CheckCircle, Settings, Sparkles, Star, Users } from "lucide-react";
+import { Briefcase, CheckCircle, Settings, Sparkles, Star, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -48,8 +48,7 @@ export default function Home() {
               <span>{t("tagline")}</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-              <span className="text-gradient block">{getCmsText("homeHeader", "WYNAJEM SAMOCHODÓW")}</span>
-              <span className="text-gradient-red italic block mt-1">CAR-GO.PL</span>
+              <span className="text-gradient block">{getCmsText("homeHeader", lang === "pl" ? "WYNAJEM SAMOCHODÓW" : "CAR RENTAL")}</span>
             </h1>
             <p className="text-base text-slate-500 max-w-md mx-auto lg:mx-0 font-medium">
               {getCmsText("homeSubheader", "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.")}
@@ -92,12 +91,12 @@ export default function Home() {
             <div key={car.id} className="group bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md hover:border-slate-350 transition-all duration-300 hover:translate-y-[-4px]">
 
               {/* Vehicle Graphic */}
-              <div className="bg-slate-50/70 p-6 flex justify-center items-center border-b border-slate-100 relative overflow-hidden h-40">
+              <div className="bg-slate-50/70 p-0 flex justify-center items-center border-b border-slate-100 relative overflow-hidden h-40">
                 {car.image || car.id === "fiat-500" ? (
                   <img
                     src={car.image || "/fiat500.png"}
                     alt={`${car.brand} ${car.model}`}
-                    className="h-28 w-auto object-contain transition duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
                   />
                 ) : (
                   renderCarSvg()
@@ -135,7 +134,7 @@ export default function Home() {
                   </span>
                   <span className="flex items-center space-x-1 justify-center border-l border-slate-100 border-r">
                     <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{car.luggage} {t("luggageUnit").slice(0, 3)}</span>
+                    <span>{car.luggage} {t("luggageUnit")}</span>
                   </span>
                   <span className="flex items-center space-x-1 justify-center">
                     <Settings className="w-3.5 h-3.5 text-slate-400" />
@@ -146,9 +145,9 @@ export default function Home() {
                 <div className="flex space-x-3 pt-1">
                   <Link
                     href={`/vehicles/${car.id}`}
-                    className="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs text-slate-700 font-bold rounded-lg transition"
+                    className="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs text-slate-705 font-bold rounded-lg transition"
                   >
-                    SPECYFIKACJA / SPECS
+                    {t("specifications").toUpperCase()}
                   </Link>
                   <Link
                     href={`/checkout?step=1&car=${car.id}`}
@@ -168,7 +167,7 @@ export default function Home() {
             href="/vehicles"
             className="inline-flex items-center space-x-2 px-6 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 rounded-lg shadow-sm transition"
           >
-            <span>ZOBACZ WSZYSTKIE POJAZDY / VIEW ALL VEHICLES</span>
+            <span>{t("viewAllVehicles").toUpperCase()}</span>
             <span>→</span>
           </Link>
         </div>
@@ -212,18 +211,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Minimum Rental Rules Banner */}
-      <section className="px-4 sm:px-6 max-w-5xl mx-auto">
-        <div className="p-6 bg-yellow-50 border border-yellow-100 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center space-x-3.5 text-left">
-            <AlertCircle className="w-8 h-8 text-yellow-600 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-bold text-yellow-800">Weryfikacja Minimalnego Czasu Wynajmu</h3>
-              <p className="text-xs text-slate-600 leading-relaxed mt-0.5 font-medium">
-                Nasz system automatycznie kontroluje minimalny okres najmu. Dla rejonów Oława oraz Grodków minimalny okres najmu wynosi 5 dni. Baza Skarbimierz oraz miasto Brzeg pozwalają na rezerwacje 1-dniowe.
-              </p>
-            </div>
+      {/* Long-Term Rental CTA Promo Banner */}
+      <section className="px-4 sm:px-6 max-w-5xl mx-auto animate-fade-in">
+        <div className="p-8 bg-brand-dark border border-brand-accent/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+          <div className="space-y-2.5 text-left relative z-10">
+            <span className="px-2.5 py-1 bg-brand-red/10 border border-brand-red/35 rounded-full text-[10px] font-black uppercase text-brand-red tracking-wider">
+              {t("longTermTitle")}
+            </span>
+            <p className="text-base sm:text-lg font-bold text-white leading-relaxed max-w-2xl">
+              {t("longTermText")}
+            </p>
           </div>
+          <div className="relative z-10 w-full md:w-auto flex-shrink-0">
+            <Link
+              href="/contact"
+              className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-black tracking-widest uppercase rounded-xl shadow transition-all duration-200 hover:-translate-y-0.5 text-center"
+            >
+              {t("contactUsBtn")}
+            </Link>
+          </div>
+          <div className="absolute right-0 top-0 w-48 h-48 bg-brand-red/5 rounded-full filter blur-3xl pointer-events-none" />
         </div>
       </section>
 
