@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import { ArrowLeft, Calendar, Clock, Sparkles } from "lucide-react";
-import SidebarCTA from "@/app/components/SidebarCTA";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { blogPosts } from "../page";
 
 export default function BlogPost() {
@@ -36,7 +34,7 @@ export default function BlogPost() {
       return lang === "pl" ? (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">Wynajem samochodu powinien być prosty i przyjemny. Niestety, brak uwagi przy podpisywaniu umowy lub odbiorze pojazdu może skutkować nieprzewidzianymi kosztami. Oto 5 najważniejszych porad, które pomogą Ci uniknąć problemów:</p>
-          
+
           <div className="space-y-2">
             <h3 className="text-base font-extrabold text-slate-800">1. Wybierz odpowiedni pakiet ochrony (Ubezpieczenie)</h3>
             <p>Podstawowe ubezpieczenie zazwyczaj zawiera udział własny w szkodzie (np. do 5000 PLN). Jeśli chcesz uniknąć stresu związanego z ewentualnymi zarysowaniami na parkingu, wybierz pakiet Gold lub Platinum. W pakiecie Platinum Twój udział własny wynosi 0 PLN, a kaucja jest całkowicie zniesiona.</p>
@@ -65,7 +63,7 @@ export default function BlogPost() {
       ) : (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">Renting a car should be simple and pleasant. However, lack of attention when signing the contract or collecting the vehicle can result in unexpected fees. Here are the top 5 tips to help you avoid common pitfalls:</p>
-          
+
           <div className="space-y-2">
             <h3 className="text-base font-extrabold text-slate-800">1. Choose the Right Protection Package (Insurance)</h3>
             <p>Basic insurance usually includes a deductible in case of damage (e.g. up to 5000 PLN). If you want to avoid stress associated with parking lot scratches, choose the Gold or Platinum package. In the Platinum package, your deductible is 0 PLN, and the security deposit is waived.</p>
@@ -98,7 +96,7 @@ export default function BlogPost() {
       return lang === "pl" ? (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">Rozwój mobilności przyniósł alternatywne sposoby pozyskiwania pojazdów. Dziś firmy i osoby prywatne coraz częściej rezygnują z tradycyjnego zakupu lub leasingu na rzecz elastycznego wynajmu. Porównajmy wynajem długoterminowy z krótkoterminowym:</p>
-          
+
           <div className="space-y-2.5">
             <h3 className="text-base font-extrabold text-slate-800">Wynajem Krótkoterminowy (1 - 30 dni)</h3>
             <p>Idealne rozwiązanie na weekendowe wyjazdy, podróże służbowe lub jako auto zastępcze. Główną zaletą jest szybkość rezerwacji i brak zobowiązań. Możesz wynająć auto na 1 dobę, załatwić sprawy w Oławie czy Brzegu i oddać pojazd bez żadnych dalszych kosztów.</p>
@@ -121,7 +119,7 @@ export default function BlogPost() {
       ) : (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">The evolution of mobility has introduced alternative ways to acquire vehicles. Today, businesses and individuals increasingly choose flexible rentals over traditional purchases or leasing. Let's compare long-term and short-term options:</p>
-          
+
           <div className="space-y-2.5">
             <h3 className="text-base font-extrabold text-slate-800">Short-Term Rental (1 - 30 days)</h3>
             <p>Perfect for weekend road trips, business travel, or temporary replacement cars. The main advantage is the immediate booking process and no commitments. You can rent a car for 1 day, complete your tasks in Oława or Brzeg, and return it with no ongoing costs.</p>
@@ -148,7 +146,7 @@ export default function BlogPost() {
       return lang === "pl" ? (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">Region leżący na granicy Dolnego Śląska i Opolszczyzny to doskonałe miejsce na weekendowe wycieczki samochodowe. Dzięki bliskości autostrady A4 i dobrze skomunikowanym drogom lokalnym, możesz w krótkim czasie odwiedzić wiele wspaniałych miejsc. Oto nasza propozycja trasy:</p>
-          
+
           <div className="space-y-2">
             <h3 className="text-base font-extrabold text-slate-800">Stop 1: Brzeg - Zamek Piastów Śląskich</h3>
             <p>Zaczynamy w Brzegu. Zamek Piastów Śląskich, nazywany ze względu na swój renesansowy dziedziniec „Śląskim Wawelem”, to absolutny hit. Bogato rzeźbiony portal bramy wjazdowej zapiera dech w piersiach. Na miejscu znajduje się ciekawe muzeum historyczne.</p>
@@ -167,7 +165,7 @@ export default function BlogPost() {
       ) : (
         <div className="space-y-6 text-sm text-slate-650 leading-relaxed font-medium">
           <p className="text-base text-slate-800 font-bold">The border area of Lower Silesia and Opole province is an ideal destination for weekend road trips. Thanks to the proximity of the A4 highway and good local roads, you can visit many stunning spots in a short time. Here is our recommended itinerary:</p>
-          
+
           <div className="space-y-2">
             <h3 className="text-base font-extrabold text-slate-800">Stop 1: Brzeg - Castle of the Silesian Piasts</h3>
             <p>We begin in Brzeg. The Castle, often called the "Silesian Wawel" due to its magnificent Renaissance courtyard, is a must-see. The richly carved entrance gate portal is breathtaking. Inside, you will find an interesting historical museum.</p>
@@ -259,11 +257,6 @@ export default function BlogPost() {
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* Bottom CTA Panel */}
-        <div className="max-w-xl mx-auto pt-4">
-          <SidebarCTA />
         </div>
       </div>
     </div>
