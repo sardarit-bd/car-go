@@ -5,6 +5,7 @@ import { LogOut, Menu, Search, Shield, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import CallingInfo from "./CallingInfo";
 
 export default function Header() {
   const { lang, setLang, currentUser, logoutUser, adminUser, logoutAdmin, t } = useApp();
@@ -15,14 +16,15 @@ export default function Header() {
   const [searchRef, setSearchRef] = useState("");
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
+
   const navItems = [
     { name: t("navHome"), path: "/" },
     { name: t("navVehicles"), path: "/vehicles" },
     { name: t("navMyReservations"), path: "/my-reservations" },
-    { name: t("navBlog"), path: "/blog" },
+    { name: t("navTerms"), path: "/terms" },
     { name: t("navFAQ"), path: "/faq" },
     { name: t("navReviews"), path: "/reviews" },
-    { name: t("navTerms"), path: "/terms" },
+    { name: t("navBlog"), path: "/blog" },
     { name: t("navContact"), path: "/contact" }
   ];
 
@@ -40,15 +42,13 @@ export default function Header() {
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
 
         {/* Support Top Bar */}
-        <div className="bg-brand-dark text-[11px] text-gray-300 py-1.5 px-4 sm:px-6 border-b border-brand-accent/20">
-          <div className="max-w-7xl mx-auto flex justify-between items-center font-semibold">
-            <div className="flex items-center space-x-2 text-gray-100">
-              <span className="text-brand-red">📞</span>
-              <span>+48 789 200 100</span>
-            </div>
-            <div className="flex items-center space-x-2 text-gray-100">
+        <div className="hidden md:flex bg-white py-2 px-4 sm:px-6 border-b border-gray-200 items-center">
+          <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
+
+            <div className="flex items-center space-x-2 text-slate-500 font-bold text-lg">
               <span>{t("phoneHours")}</span>
             </div>
+            <CallingInfo />
           </div>
         </div>
 

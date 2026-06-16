@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AppContext = createContext();
 
@@ -9,7 +9,7 @@ const initialTranslations = {
   pl: {
     brandName: "CAR-GO",
     tagline: "Szybko, Wygodnie, Bezpiecznie",
-    phoneHours: "Pon-Sob: 8:00 - 20:00",
+    phoneHours: "Pon-Sob: 8:00 - 22:00",
     navHome: "Główna",
     navVehicles: "Pojazdy",
     navFAQ: "FAQ",
@@ -140,7 +140,7 @@ const initialTranslations = {
   en: {
     brandName: "CAR-GO",
     tagline: "Fast, Convenient, Safe",
-    phoneHours: "Mon-Sat: 8:00 AM - 8:00 PM",
+    phoneHours: "Mon-Sat: 8:00 AM - 22:00 PM",
     navHome: "Home",
     navVehicles: "Vehicles",
     navFAQ: "FAQ",
@@ -486,7 +486,7 @@ const initialReviews = [
 
 // Initial content texts (Polish/English keys that can be updated in CMS)
 const initialContentTexts = {
-  homeHeader: { pl: "WYNAJEM SAMOCHODÓW CAR-GO", en: "CAR-GO CAR RENTAL" },
+  homeHeader: { pl: "WYNAJEM SAMOCHODÓW", en: "CAR RENTAL" },
   homeSubheader: { pl: "Zawsze na czas, zawsze pod Twój adres.", en: "Always on time, delivered straight to your address." },
   whyChooseUs: { pl: "Dlaczego my?", en: "Why Choose Us?" },
   reviewsHeader: { pl: "Oceny klientów mówią same za siebie", en: "Customer reviews speak for themselves" }
@@ -581,19 +581,17 @@ Okres wynajmu / Rental period: ${newBooking.dates.pickupDate} ${newBooking.dates
 Miejsce odbioru / Pickup: ${newBooking.dates.pickupLocation}
 Miejsce zwrotu / Return: ${newBooking.dates.returnLocation}
 
-Koszt całkowity / Total price: ${
-      newBooking.pricing.total === "Individual Price"
+Koszt całkowity / Total price: ${newBooking.pricing.total === "Individual Price"
         ? "Cena Indywidualna (Oczekuje na wycenę / Awaiting custom quote)"
         : `PLN ${newBooking.pricing.total.toFixed(2)}`
-    }
+      }
 Kaucja / Deposit: PLN ${newBooking.car.deposit}
 
 Ważne / Important:
-${
-  newBooking.pricing.total === "Individual Price"
-    ? "Oczekuj na kontakt telefoniczny lub e-mail z wyceną dostawy pod wskazany adres."
-    : "Rezerwacja musi zostać zatwierdzona przez administratora w ciągu 24 godzin."
-}
+${newBooking.pricing.total === "Individual Price"
+        ? "Oczekuj na kontakt telefoniczny lub e-mail z wyceną dostawy pod wskazany adres."
+        : "Rezerwacja musi zostać zatwierdzona przez administratora w ciągu 24 godzin."
+      }
 We will confirm your booking within 24 hours.
 
 Pozdrawiamy / Best regards,

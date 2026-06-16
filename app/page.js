@@ -48,7 +48,9 @@ export default function Home() {
               <span>{t("tagline")}</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-              <span className="text-gradient block">{getCmsText("homeHeader", lang === "pl" ? "WYNAJEM SAMOCHODÓW" : "CAR RENTAL")}</span>
+              {/* <span className="text-gradient block">{getCmsText("homeHeader", lang === "pl" ? "WYNAJEM SAMOCHODÓW" : "CAR RENTAL")}</span> */}
+              <span className="text-gradient block">{getCmsText("homeHeader")}</span>
+              <span className="text-gradient block">{lang === "pl" ? "" : "CAR GO"}</span>
             </h1>
             <p className="text-base text-slate-500 max-w-md mx-auto lg:mx-0 font-medium">
               {getCmsText("homeSubheader", "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.")}

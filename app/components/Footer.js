@@ -122,47 +122,43 @@ ${formMsg}
         {/* Payment & Social Media Column */}
         <div className="space-y-4">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">{t("payments")}</h4>
-          <div className="flex flex-wrap gap-2 items-center max-w-[200px]">
-            {/* BLIK Logo */}
-            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="BLIK">
-              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
-                <text x="50" y="24" dominantBaseline="middle" textAnchor="middle" fontWeight="900" fontSize="22" fontFamily="sans-serif" fill="#1e293b" fontStyle="italic">blik</text>
-              </svg>
+          <div className="flex flex-wrap gap-2 items-center max-w-[240px]">
+
+            {/* Google Pay Logo */}
+            <div className="bg-white px-1 py-1 rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10" title="Google Pay">
+              <img src="/googlepay.webp" alt="Google Pay" className="max-h-full max-w-full object-contain" />
             </div>
-            {/* Przelewy24 Logo */}
-            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Przelewy24">
-              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
-                <circle cx="38" cy="20" r="9" fill="#cc1d24" />
-                <circle cx="58" cy="20" r="9" fill="#0c4a9f" />
-                <text x="48" y="24" dominantBaseline="middle" textAnchor="middle" fontWeight="950" fontSize="11" fontFamily="sans-serif" fill="#fff">P24</text>
-              </svg>
-            </div>
-            {/* Autopay Logo */}
-            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10 text-center" title="Autopay">
-              <span className="text-[8px] font-black text-blue-600 tracking-tighter uppercase font-sans">autopay</span>
-            </div>
+
             {/* Visa Logo */}
-            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Visa">
-              <svg viewBox="0 0 100 40" className="h-4 w-auto">
-                <text x="50" y="23" dominantBaseline="middle" textAnchor="middle" fontWeight="900" fontSize="22" fontFamily="sans-serif" fill="#1a1f71" fontStyle="italic">VISA</text>
-              </svg>
+            <div className="bg-white rounded px-1 py-0.5 flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10 hover:border-slate-400/30 transition-all duration-200 hover:scale-105" title="Visa">
+              <img src="/VISA.png" alt="Visa" className="max-h-full max-w-full object-contain rounded-[2px]" />
             </div>
             {/* Mastercard Logo */}
-            <div className="bg-white rounded px-1.5 py-0.5 flex items-center justify-center h-7 w-12 shadow-sm border border-slate-700/10" title="Mastercard">
-              <svg viewBox="0 0 100 40" className="h-4.5 w-auto">
-                <circle cx="42" cy="20" r="10" fill="#eb001b" opacity="0.9" />
-                <circle cx="58" cy="20" r="10" fill="#ff5f00" opacity="0.9" />
-              </svg>
+            <div className="bg-white rounded px-0 py-0 flex items-center justify-center h-9 w-14 shadow-sm border border-slate-700/10 " title="Mastercard">
+              <img src="/mastercard.jpg" alt="Mastercard" className="max-h-full max-w-full object-contain" />
             </div>
+
+            {/* Autopay Logo */}
+            <div className="bg-white rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10" title="Autopay">
+              <img src="/autopay.png" alt="Autopay" className="max-h-full max-w-full object-contain" />
+            </div>
+
+            {/* BLIK Logo */}
+            <div className="bg-white rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10" title="BLIK">
+              <img src="/blik.jpg" alt="BLIK" className="max-h-full max-w-full object-contain" />
+            </div>
+
           </div>
+
+
           <p className="text-[10px] text-gray-400 font-bold">{t("payPickupInfo")}</p>
 
           <h4 className="text-sm font-bold text-white uppercase tracking-wider pt-2">Social Media</h4>
           <div className="flex space-x-3">
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-brand-accent flex items-center justify-center text-gray-400 hover:text-white hover:border-brand-red hover:bg-brand-red/10 transition">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-brand-accent bg-gray-600 flex items-center justify-center text-gray-200 hover:text-white hover:border-brand-red hover:bg-brand-red/10 transition">
               <Facebook className="w-4 h-4" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-brand-accent flex items-center justify-center text-gray-400 hover:text-white hover:border-brand-red hover:bg-brand-red/10 transition">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full border border-brand-accent bg-gray-600 flex items-center justify-center text-gray-200 hover:text-white hover:border-brand-red hover:bg-brand-red/10 transition">
               <Instagram className="w-4 h-4" />
             </a>
           </div>

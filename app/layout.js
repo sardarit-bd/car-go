@@ -15,7 +15,7 @@ export const metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon-1.png",
   }
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.png" sizes="any" />
+        <link rel="icon" href="/favicon-1.png" sizes="any" />
       </head>
       <body className="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-brand-red selection:text-white">
         <AppProvider>
