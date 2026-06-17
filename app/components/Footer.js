@@ -130,7 +130,7 @@ ${formMsg}
             </div>
 
             {/* Visa Logo */}
-            <div className="bg-white rounded px-1 py-0.5 flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10 hover:border-slate-400/30 transition-all duration-200 hover:scale-105" title="Visa">
+            <div className="bg-white rounded px-1 py-0.5 flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10" title="Visa">
               <img src="/VISA.png" alt="Visa" className="max-h-full max-w-full object-contain rounded-[2px]" />
             </div>
             {/* Mastercard Logo */}

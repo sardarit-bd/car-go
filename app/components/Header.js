@@ -40,27 +40,15 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
-
-        {/* Support Top Bar */}
-        <div className="hidden md:flex bg-white py-2 px-4 sm:px-6 border-b border-gray-200 items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
-
-            <div className="flex items-center space-x-2 text-slate-500 font-bold text-lg">
-              <span>{t("phoneHours")}</span>
-            </div>
-            <CallingInfo />
-          </div>
-        </div>
-
         {/* Main Header Bar */}
-        <div className="flex justify-between items-center px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="flex justify-between items-end pb-3 pt-2 px-4 sm:px-6 max-w-7xl mx-auto">
           {/* Logo Area (Dynamic Image to SVG Fallback) */}
           <Link href="/" className="flex items-center group">
             <div className="relative flex items-center justify-center">
               <img
                 src="/logo.png"
                 alt="CAR-GO.PL"
-                className="h-20 w-auto object-contain block"
+                className="h-12 lg:h-20 w-auto object-contain"
                 onError={(e) => {
                   e.target.style.display = "none";
                   const fallback = e.target.nextSibling;
@@ -71,14 +59,14 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-7">
+          <nav className="hidden lg:flex flex-wrap items-center justify-center space-x-6 pb-1.5 md:max-w-md lg:max-w-lg ">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-sm font-semibold transition duration-200 ${isActive ? "text-brand-red" : "text-slate-600 hover:text-slate-900"
+                  className={`text-lg font-medium transition duration-200 ${isActive ? "text-brand-red" : "text-gray-500 hover:text-slate-900"
                     }`}
                 >
                   {item.name}
@@ -88,82 +76,88 @@ export default function Header() {
           </nav>
 
           {/* Header Action Buttons */}
-          <div className="hidden sm:flex items-center space-x-4">
-            {/* Language Switcher */}
-            <div className="flex items-center space-x-1 border border-slate-200 rounded-full p-0.5 bg-slate-50">
-              <button
-                onClick={() => setLang("pl")}
-                className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "pl" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
-                  }`}
-                title="Polski"
-              >
-                PL
-              </button>
-              <button
-                onClick={() => setLang("en")}
-                className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "en" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
-                  }`}
-                title="English"
-              >
-                EN
-              </button>
+          <div className="flex gap-2 flex-col items-end">
+            <div className="hidden lg:block">
+              <CallingInfo />
             </div>
-
-            {/* Quick Lookup Button */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="p-2 border border-slate-200 hover:border-slate-400 rounded-full text-slate-500 hover:text-slate-800 transition bg-slate-50"
-              title={t("lookupTitle")}
-            >
-              <Search className="w-4 h-4" />
-            </button>
-
-            {/* User Account Login / Actions */}
-            <div className="relative">
-              {currentUser ? (
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full hover:bg-slate-100 transition text-sm font-semibold text-slate-700"
-                  >
-                    <User className="w-4 h-4 text-brand-red" />
-                    <span className="max-w-[100px] truncate">{currentUser.firstName}</span>
-                  </button>
-                  {userDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium">
-                      <Link
-                        href="/account"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="block px-4 py-2 text-slate-700 hover:bg-slate-50"
-                      >
-                        {t("navMyAccount")}
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          logoutUser();
-                          router.push("/");
-                        }}
-                        className="w-full text-left block px-4 py-2 text-brand-red hover:bg-slate-50"
-                      >
-                        <span className="flex items-center space-x-1.5">
-                          <LogOut className="w-4 h-4" />
-                          <span>{t("navLogout")}</span>
-                        </span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  href="/account/login"
-                  className="flex items-center space-x-1.5 px-5 py-2 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-full shadow-sm hover:shadow-md transition duration-200"
+            <div className="hidden sm:flex items-center space-x-4">
+              {/* Language Switcher */}
+              <div className="flex items-center space-x-1 border border-slate-200 rounded-full p-0.5 bg-slate-50">
+                <button
+                  onClick={() => setLang("pl")}
+                  className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "pl" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  title="Polski"
                 >
-                  <User className="w-4 h-4" />
-                  <span>{t("navLogin")}</span>
-                </Link>
-              )}
+                  PL
+                </button>
+                <button
+                  onClick={() => setLang("en")}
+                  className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "en" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  title="English"
+                >
+                  EN
+                </button>
+              </div>
+
+              {/* Quick Lookup Button */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="p-2 border border-slate-200 hover:border-slate-400 rounded-full text-slate-500 hover:text-slate-800 transition bg-slate-50"
+                title={t("lookupTitle")}
+              >
+                <Search className="w-4 h-4" />
+              </button>
+
+              {/* User Account Login / Actions */}
+              <div className="relative">
+                {currentUser ? (
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full hover:bg-slate-100 transition text-sm font-semibold text-slate-700"
+                    >
+                      <User className="w-4 h-4 text-brand-red" />
+                      <span className="max-w-[100px] truncate">{currentUser.firstName}</span>
+                    </button>
+                    {userDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium">
+                        <Link
+                          href="/account"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-slate-700 hover:bg-slate-50"
+                        >
+                          {t("navMyAccount")}
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            logoutUser();
+                            router.push("/");
+                          }}
+                          className="w-full text-left block px-4 py-2 text-brand-red hover:bg-slate-50"
+                        >
+                          <span className="flex items-center space-x-1.5">
+                            <LogOut className="w-4 h-4" />
+                            <span>{t("navLogout")}</span>
+                          </span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href="/account/login"
+                    className="flex items-center space-x-1.5 px-5 py-2 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-full shadow-sm hover:shadow-md transition duration-200"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>{t("navLogin")}</span>
+                  </Link>
+                )}
+              </div>
             </div>
+
           </div>
 
           {/* Mobile Actions & Hamburger */}
