@@ -106,10 +106,12 @@ export default function SearchForm({ vertical = false }) {
         isCustomPrice: isCustomPickup || isCustomReturn
       };
 
+      console.log("Pickup Location:", searchData.pickupLocation);
+      console.log("Return Location:", searchData.returnLocation);
       setSearchParams(searchData);
-      
+      console.log(searchData);
       // Navigate to checkout search results page
-      router.push("/checkout?step=1");
+      // router.push("/checkout?step=1");
     }
   };
 
@@ -121,7 +123,7 @@ export default function SearchForm({ vertical = false }) {
 
   const isCustomPickup = pickupLocation.toLowerCase().includes("dostawa") || pickupLocation.toLowerCase().includes("address");
   const isCustomReturn = returnLocation.toLowerCase().includes("dostawa") || returnLocation.toLowerCase().includes("address");
-
+  console.log(isCustomPickup, isCustomReturn);
   return (
     <div className={`glass-panel border-slate-100 ${vertical ? "p-5" : "p-6 sm:p-8"} rounded-2xl glow-red shadow-xl bg-white/95 w-full`}>
       <h3 className={`font-black text-slate-800 flex items-center space-x-2.5 border-b border-slate-100 ${vertical ? "text-base mb-4 pb-3" : "text-xl mb-6 pb-4"}`}>

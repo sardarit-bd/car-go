@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-
+import api from "@/lib/axios";
 const AppContext = createContext();
 
 // Default CMS translations
@@ -379,7 +379,7 @@ const initialVehicles = [
   }
 ];;
 
-// Initial default locations with minimum rental period
+
 const initialLocations = [
   { id: "skarbimierz", name: "Skarbimierz-Osiedle", minDays: 1 },
   { id: "brzeg", name: "Brzeg", minDays: 1 },
@@ -507,6 +507,110 @@ export function AppProvider({ children }) {
   const [cmsTranslations, setCmsTranslations] = useState(initialTranslations);
   const [cmsTexts, setCmsTexts] = useState(initialContentTexts);
   const [searchParams, setSearchParams] = useState(null); // stores active vehicle search params
+  const fetchVehicles = async () => {
+    try {
+      const response = await api.get("/api/vehicle");
+      const backendVehicles = response.data.data.vehicles;
+      
+      const mappedVehicles = backendVehicles.map((v) => ({
+        id: v.id,
+        brand: v.brand,
+        model: v.model,
+        class: v.class || "Standard",
+        fuel: "Petrol", 
+        seats: v.seats,
+        luggage: 0,
+        transmission: "Manual", 
+        price: parseFloat(v.pricePerDay) || 0,
+        deposit: 0,
+       
+        image: v.images && v.images.length > 0 
+          ? `${process.env.NEXT_PUBLIC_API_URL}${v.images[0].imageUrl}` 
+          : "/fallback-car.png", 
+        description: v.description,
+        descriptionEn: v.description, 
+        specs: {
+          engine: "N/A",
+          consumption: "N/A",
+          aircon: "Yes",
+          year: "N/A"
+        }
+      }));
+
+      setVehicles(mappedVehicles);
+      saveState("cargo_vehicles", mappedVehicles);
+    } catch (error) {
+      console.error("Failed to fetch vehicles from backend:", error);
+      // Fallback to initial mock data if API fails
+      setVehicles(initialVehicles); 
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await api.get("/api/locations");
+      // Handle both wrapped and unwrapped response formats
+      const backendLocations = response.data.data || response.data; 
+      
+      const mappedLocations = backendLocations.map((l) => ({
+        id: l.id,
+        name: l.name,
+        minDays: 1 // Fallback: Backend schema doesn't have minDays
+      }));
+
+      setLocations(mappedLocations);
+      saveState("cargo_locations", mappedLocations);
+    } catch (error) {
+      console.error("Failed to fetch locations from backend:", error);
+      setLocations(initialLocations);
+    }
+  };
+
+
+
+  const fetchPackages = async () => {
+    try {
+      const response = await api.get("/api/packages");
+      const backendPackages = response.data.data;
+      
+      const mapped = backendPackages.map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        pricePerDay: parseFloat(pkg.price),
+        featuresPl: pkg.description || [], 
+        featuresEn: pkg.description || []
+      }));
+
+      setPackages(mapped);
+      saveState("cargo_packages", mapped);
+    } catch (error) {
+      console.error(" Failed to fetch packages from backend:", error);
+    }
+  };
+
+  const fetchAddons = async () => {
+    try {
+      const response = await api.get("/api/addons");
+      const backendAddons = response.data.data;
+      
+      const mapped = backendAddons.map(addon => ({
+        id: addon.id,
+        name: addon.name,
+        price: parseFloat(addon.price),
+        isPerDay: true, 
+        descriptionPl: addon.description,
+        descriptionEn: addon.description
+      }));
+
+      setAddons(mapped);
+      saveState("cargo_addons", mapped);
+    } catch (error) {
+      console.error(" Failed to fetch addons from backend:", error);
+    }
+  };
+
+
+
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -519,7 +623,7 @@ export function AppProvider({ children }) {
     const localBookings = localStorage.getItem("cargo_bookings");
     const localEmails = localStorage.getItem("cargo_emails");
     const localLang = localStorage.getItem("cargo_lang");
-    const localUser = localStorage.getItem("cargo_user");
+    const localUser = localStorage.getItem("user");
     const localAdmin = localStorage.getItem("cargo_admin");
     const localTranslations = localStorage.getItem("cargo_translations");
     const localCmsTexts = localStorage.getItem("cargo_cmstexts");
@@ -551,6 +655,10 @@ export function AppProvider({ children }) {
     if (localAdmin) setAdminUser(JSON.parse(localAdmin));
     if (localTranslations) setCmsTranslations(JSON.parse(localTranslations));
     if (localCmsTexts) setCmsTexts(JSON.parse(localCmsTexts));
+    fetchVehicles();
+    fetchLocations();
+    fetchPackages(); 
+    fetchAddons();   
   }, []);
 
   // Sync state to localStorage helpers
@@ -763,43 +871,51 @@ Zespół CAR-GO.PL
     saveState("cargo_faqs", updated);
   };
 
-  // Auth Functions
-  const registerUser = (email, password) => {
-    // Simulated registration
-    const user = { email, phone: "", firstName: "Klient", lastName: "CAR-GO" };
+  const setUser = (user) => {
     setCurrentUser(user);
-    saveState("cargo_user", user);
-
-    // Update customer records in local storage
-    const localUsers = JSON.parse(localStorage.getItem("cargo_users_db") || "[]");
-    if (!localUsers.some((u) => u.email === email)) {
-      localUsers.push({ email, password, firstName: "Klient", lastName: "CAR-GO", phone: "" });
-      localStorage.setItem("cargo_users_db", JSON.stringify(localUsers));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(user)); // Only store user data, NOT the token
     }
-    return true;
   };
 
-  const loginUser = (email, password) => {
-    const localUsers = JSON.parse(localStorage.getItem("cargo_users_db") || "[]");
-    const user = localUsers.find((u) => u.email === email && u.password === password);
-    if (user) {
-      setCurrentUser(user);
-      saveState("cargo_user", user);
-      return true;
-    }
-    // Simple fallback check
-    if (email && password.length >= 4) {
-      const fallbackUser = { email, firstName: "Klient", lastName: "CAR-GO", phone: "" };
-      setCurrentUser(fallbackUser);
-      saveState("cargo_user", fallbackUser);
-      return true;
-    }
-    return false;
-  };
-
-  const logoutUser = () => {
+  const clearUser = () => {
     setCurrentUser(null);
-    localStorage.removeItem("cargo_user");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
+    }
+  };
+
+  // --- UPDATED AUTH FUNCTIONS ---
+  const registerUser = async (userData) => {
+    try {
+      const response = await api.post("/api/auth/register", userData);
+      const { user } = response.data.data;
+      setUser(user);
+      return { success: true, user };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Registration failed" };
+    }
+  };
+
+  const loginUser = async (email, password) => {
+    try {
+      const response = await api.post("/api/auth/login", { email, password });
+      const { user } = response.data.data;
+      setUser(user);
+      return { success: true, user };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Login failed" };
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      clearUser();
+    }
   };
 
   const updateProfile = (phone, password = null) => {
@@ -861,6 +977,9 @@ Zespół CAR-GO.PL
         adminUser,
         cmsTexts,
         searchParams,
+        fetchVehicles,
+        fetchLocations,
+        
         setSearchParams,
         t,
         addBooking,

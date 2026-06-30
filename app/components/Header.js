@@ -16,7 +16,6 @@ export default function Header() {
   const [searchRef, setSearchRef] = useState("");
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-
   const navItems = [
     { name: t("navHome"), path: "/" },
     { name: t("navVehicles"), path: "/vehicles" },
@@ -39,34 +38,36 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        {/* Main Header Bar */}
-        <div className="flex justify-between items-end pb-3 pt-2 px-4 sm:px-6 max-w-7xl mx-auto">
-          {/* Logo Area (Dynamic Image to SVG Fallback) */}
-          <Link href="/" className="flex items-center group">
-            <div className="relative flex items-center justify-center">
-              <img
-                src="/logo.png"
-                alt="CAR-GO.PL"
-                className="h-12 lg:h-20 w-auto object-contain"
-                onError={(e) => {
-                  e.target.style.display = "none";
-                  const fallback = e.target.nextSibling;
-                  if (fallback) fallback.style.display = "flex";
-                }}
-              />
-            </div>
+
+      <div className="fixed top-0 left-0 right-0 z-50 h-[3px] bg-slate-900" />
+
+      <header className="fixed top-[3px] left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100">
+
+        <div className="flex justify-between items-center h-20 lg:h-24 px-4 sm:px-6 container mx-auto">
+
+
+          <Link href="/" className="flex items-center group shrink-0">
+            <img
+              src="/logo.png"
+              alt="CAR-GO.PL"
+              className="h-9 lg:h-11 w-auto object-contain"
+              onError={(e) => {
+                e.target.style.display = "none";
+                const fallback = e.target.nextSibling;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex flex-wrap items-center justify-center space-x-6 pb-1.5 md:max-w-md lg:max-w-lg ">
+   
+          <nav className="hidden lg:flex items-center justify-center gap-8 flex-1 px-8">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-lg font-medium transition duration-200 ${isActive ? "text-brand-red" : "text-gray-500 hover:text-slate-900"
+                  className={`text-[15px] font-semibold whitespace-nowrap transition duration-200 ${isActive ? "text-brand-red" : "text-slate-700 hover:text-slate-950"
                     }`}
                 >
                   {item.name}
@@ -75,97 +76,96 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Header Action Buttons */}
-          <div className="flex gap-2 flex-col items-end">
-            <div className="hidden lg:block">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <div className="hidden xl:block mr-1">
               <CallingInfo />
             </div>
-            <div className="hidden sm:flex items-center space-x-4">
-              {/* Language Switcher */}
-              <div className="flex items-center space-x-1 border border-slate-200 rounded-full p-0.5 bg-slate-50">
-                <button
-                  onClick={() => setLang("pl")}
-                  className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "pl" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
-                    }`}
-                  title="Polski"
-                >
-                  PL
-                </button>
-                <button
-                  onClick={() => setLang("en")}
-                  className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition ${lang === "en" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
-                    }`}
-                  title="English"
-                >
-                  EN
-                </button>
-              </div>
 
-              {/* Quick Lookup Button */}
+
+            <div className="flex items-center gap-0.5 border border-slate-200 rounded-full p-0.5 bg-slate-50">
               <button
-                onClick={() => setSearchOpen(true)}
-                className="p-2 border border-slate-200 hover:border-slate-400 rounded-full text-slate-500 hover:text-slate-800 transition bg-slate-50"
-                title={t("lookupTitle")}
+                onClick={() => setLang("pl")}
+                className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition ${lang === "pl" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                title="Polski"
               >
-                <Search className="w-4 h-4" />
+                PL
               </button>
-
-              {/* User Account Login / Actions */}
-              <div className="relative">
-                {currentUser ? (
-                  <div className="flex items-center space-x-1">
-                    <button
-                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full hover:bg-slate-100 transition text-sm font-semibold text-slate-700"
-                    >
-                      <User className="w-4 h-4 text-brand-red" />
-                      <span className="max-w-[100px] truncate">{currentUser.firstName}</span>
-                    </button>
-                    {userDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium">
-                        <Link
-                          href="/account"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="block px-4 py-2 text-slate-700 hover:bg-slate-50"
-                        >
-                          {t("navMyAccount")}
-                        </Link>
-                        <button
-                          onClick={() => {
-                            setUserDropdownOpen(false);
-                            logoutUser();
-                            router.push("/");
-                          }}
-                          className="w-full text-left block px-4 py-2 text-brand-red hover:bg-slate-50"
-                        >
-                          <span className="flex items-center space-x-1.5">
-                            <LogOut className="w-4 h-4" />
-                            <span>{t("navLogout")}</span>
-                          </span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    href="/account/login"
-                    className="flex items-center space-x-1.5 px-5 py-2 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-full shadow-sm hover:shadow-md transition duration-200"
-                  >
-                    <User className="w-4 h-4" />
-                    <span>{t("navLogin")}</span>
-                  </Link>
-                )}
-              </div>
+              <button
+                onClick={() => setLang("en")}
+                className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition ${lang === "en" ? "bg-brand-red text-white" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                title="English"
+              >
+                EN
+              </button>
             </div>
 
+  
+            <div className="relative">
+              {currentUser ? (
+                <div className="flex items-center">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center space-x-2 pl-2 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full hover:bg-slate-100 transition text-sm font-semibold text-slate-700"
+                  >
+                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white border border-slate-200">
+                      <User className="w-3.5 h-3.5 text-brand-red" />
+                    </span>
+                    <span className="max-w-[100px] truncate">{currentUser.firstName}</span>
+                  </button>
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium z-10">
+                      <Link
+                        href="/account"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="block px-4 py-2 text-slate-700 hover:bg-slate-50"
+                      >
+                        {t("navMyAccount")}
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          logoutUser();
+                          router.push("/");
+                        }}
+                        className="w-full text-left block px-4 py-2 text-brand-red hover:bg-slate-50"
+                      >
+                        <span className="flex items-center space-x-1.5">
+                          <LogOut className="w-4 h-4" />
+                          <span>{t("navLogout")}</span>
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/account/login"
+                  className="flex items-center space-x-1.5 px-5 py-2.5 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-full shadow-sm hover:shadow-md transition duration-200"
+                >
+                  <User className="w-4 h-4" />
+                  <span>{t("navLogin")}</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Quick Lookup Button — circular accent button, like the arrow CTA in reference */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center justify-center w-11 h-11 bg-brand-red hover:bg-brand-red-hover rounded-full text-white transition duration-200 shadow-sm hover:shadow-md shrink-0"
+              title={t("lookupTitle")}
+            >
+              <Search className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Mobile Actions & Hamburger */}
-          <div className="flex lg:hidden items-center space-x-3">
+          <div className="flex sm:hidden items-center gap-2">
             {/* Quick Lookup Mobile */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="p-2 text-slate-500 hover:text-slate-800 bg-slate-50 rounded-full border border-slate-200"
+              className="flex items-center justify-center w-9 h-9 text-white bg-brand-red rounded-full transition"
             >
               <Search className="w-4 h-4" />
             </button>
@@ -173,7 +173,7 @@ export default function Header() {
             {/* Mobile Lang Button */}
             <button
               onClick={() => setLang(lang === "pl" ? "en" : "pl")}
-              className="p-2 text-slate-500 hover:text-slate-800 bg-slate-50 rounded-full border border-slate-200 text-xs font-extrabold w-8 h-8 flex items-center justify-center"
+              className="flex items-center justify-center w-9 h-9 text-slate-600 bg-slate-50 rounded-full border border-slate-200 text-xs font-extrabold"
             >
               {lang.toUpperCase()}
             </button>
@@ -181,23 +181,25 @@ export default function Header() {
             {/* Hamburger Trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-500 hover:text-slate-800 bg-slate-50 rounded-full border border-slate-200"
+              className="flex items-center justify-center w-9 h-9 text-slate-600 bg-slate-50 rounded-full border border-slate-200"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-100 px-4 py-4 space-y-4 animate-slide-down">
-            <nav className="flex flex-col space-y-3">
+          <div className="lg:hidden border-t border-slate-100 px-4 py-5 space-y-5 animate-slide-down bg-white shadow-lg">
+            <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`text-base font-bold py-1 ${pathname === item.path ? "text-brand-red border-l-2 border-brand-red pl-2.5" : "text-slate-600 pl-2.5"
+                  className={`text-base font-semibold py-2.5 px-3 rounded-lg transition ${pathname === item.path
+                      ? "text-brand-red bg-brand-red/5"
+                      : "text-slate-700 hover:bg-slate-50"
                     }`}
                 >
                   {item.name}
@@ -205,13 +207,13 @@ export default function Header() {
               ))}
             </nav>
 
-            <div className="border-t border-slate-100 pt-4 flex flex-col space-y-3">
+            <div className="border-t border-slate-100 pt-4 flex flex-col space-y-2">
               {currentUser ? (
                 <>
                   <Link
                     href="/account"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 text-slate-700 font-bold py-1 pl-2.5"
+                    className="flex items-center space-x-2 text-slate-700 font-bold py-2.5 px-3 rounded-lg hover:bg-slate-50"
                   >
                     <User className="w-4 h-4 text-brand-red" />
                     <span>{t("navMyAccount")} ({currentUser.firstName})</span>
@@ -222,7 +224,7 @@ export default function Header() {
                       logoutUser();
                       router.push("/");
                     }}
-                    className="flex items-center space-x-2 text-brand-red font-bold py-1 pl-2.5 text-left"
+                    className="flex items-center space-x-2 text-brand-red font-bold py-2.5 px-3 rounded-lg hover:bg-slate-50 text-left"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>{t("navLogout")}</span>
@@ -232,7 +234,7 @@ export default function Header() {
                 <Link
                   href="/account/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center space-x-2 py-2.5 bg-brand-red text-white font-bold rounded-lg shadow-sm"
+                  className="flex items-center justify-center space-x-2 py-3 bg-brand-red text-white font-bold rounded-full shadow-sm"
                 >
                   <User className="w-4 h-4" />
                   <span>{t("navLogin")}</span>
@@ -241,7 +243,7 @@ export default function Header() {
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center space-x-1 text-xs text-slate-400 py-1"
+                className="flex items-center justify-center space-x-1 text-xs text-slate-400 py-2"
               >
                 <Shield className="w-3.5 h-3.5" />
                 <span>CMS Admin Dashboard</span>

@@ -17,7 +17,7 @@ export default function CustomerPanel() {
     vehicles,
     t
   } = useApp();
-
+  console.log(currentUser);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,20 +33,11 @@ export default function CustomerPanel() {
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
   // Redirect to login if not logged in
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/account/login");
-    } else {
-      setPhone(currentUser.phone || "");
-      if (vehicles.length > 0) {
-        setReviewCar(vehicles[0].brand + " " + vehicles[0].model);
-      }
-    }
-  }, [currentUser, router, vehicles]);
 
-  if (!currentUser) {
-    return null;
-  }
+
+  // if (!currentUser) {
+  //   return null;
+  // }
 
   // Find bookings of this client
   const myBookings = bookings.filter((b) => b.customer.email.toLowerCase() === currentUser.email.toLowerCase());
@@ -54,7 +45,7 @@ export default function CustomerPanel() {
   const handleUpdateProfile = (e) => {
     e.preventDefault();
     setSaveSuccess(false);
-
+    console.log(password);
     if (password && password !== confirmPassword) {
       alert(lang === "pl" ? "Hasła nie pasują!" : "Passwords do not match!");
       return;
@@ -139,7 +130,7 @@ export default function CustomerPanel() {
                   <input
                     type="text"
                     disabled
-                    value={currentUser.firstName}
+                    value={currentUser?.firstName}
                     className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed"
                   />
                 </div>
@@ -148,7 +139,7 @@ export default function CustomerPanel() {
                   <input
                     type="text"
                     disabled
-                    value={currentUser.lastName}
+                    value={currentUser?.lastName}
                     className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed"
                   />
                 </div>
@@ -159,7 +150,7 @@ export default function CustomerPanel() {
                 <input
                   type="email"
                   disabled
-                  value={currentUser.email}
+                  value={currentUser?.email}
                   className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed font-mono"
                 />
               </div>

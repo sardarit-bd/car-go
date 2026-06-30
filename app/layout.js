@@ -20,6 +20,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  
   return (
     <html lang="en">
       <head>
@@ -38,7 +39,7 @@ export default function RootLayout({ children }) {
   );
 }
 
-// Separate component to wrap Footer in order to avoid React client/server context hydration warnings
+
 function ProviderFooterWrapper() {
   return <Footer />;
 }

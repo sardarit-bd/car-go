@@ -7,52 +7,161 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+const API_BASE = "http://localhost:5000";
+
+// Maps a raw API reservation object into the shape the voucher card expects
+function mapApiBookingToVoucherShape(item) {
+  const pickupDate = new Date(item.pickupDate);
+  const returnDate = new Date(item.returnDate);
+  const days = Math.max(
+    1,
+    Math.round((returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24))
+  );
+
+  const carCost = item.vehicle?.pricePerDay
+    ? parseFloat(item.vehicle.pricePerDay) * days
+    : 0;
+  const packageCost = item.packageData?.price ? parseFloat(item.packageData.price) : 0;
+  const addonsCost = Array.isArray(item.addonsData)
+    ? item.addonsData.reduce((sum, a) => sum + (parseFloat(a.price) || 0), 0)
+    : 0;
+
+  const total = item.totalPrice ? parseFloat(item.totalPrice) : carCost + packageCost + addonsCost;
+
+  const fmtDate = (d) => d.toLocaleDateString("pl-PL");
+  const fmtTime = (d) => d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+
+  return {
+    id: item.id,
+    status: item.status ? item.status.toLowerCase() : "pending",
+    paymentStatus: "payment_upon_pickup", // not provided by API; defaulting
+    customer: {
+      firstName: item.customerFirstName,
+      lastName: item.customerLastName,
+      email: item.customerEmail,
+      phone: item.phoneNumber,
+    },
+    dates: {
+      pickupDate: fmtDate(pickupDate),
+      pickupTime: fmtTime(pickupDate),
+      returnDate: fmtDate(returnDate),
+      returnTime: fmtTime(returnDate),
+      pickupLocation: item.pickupLocationId || "—",
+      returnLocation: item.returnLocationId || "—",
+    },
+    car: {
+      brand: item.vehicle?.brand || "",
+      model: item.vehicle?.model || "",
+      class: item.vehicle?.class || "—",
+      transmission: item.vehicle?.transmission || "—",
+      fuel: item.vehicle?.fuel || "—",
+      deposit: item.vehicle?.deposit ?? "—",
+    },
+    package: {
+      name: item.packageData?.name || "—",
+    },
+    pricing: {
+      total,
+      days,
+      carCost,
+      packageCost,
+      addonsCost,
+    },
+  };
+}
+
 function MyReservationsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lang, bookings, currentUser, t } = useApp();
 
-  const [queryId, setQueryId] = useState("");
+  const [queryPhone, setQueryPhone] = useState("");
   const [queryEmail, setQueryEmail] = useState("");
+  const [results, setResults] = useState([]);
   const [activeBooking, setActiveBooking] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const urlId = searchParams.get("id");
+  const urlPhone = searchParams.get("phone");
   const urlEmail = searchParams.get("email");
 
   useEffect(() => {
-    if (urlId && urlEmail) {
-      setQueryId(urlId);
-      setQueryEmail(urlEmail);
-      const match = bookings.find(
-        (b) =>
-          b.id.toUpperCase() === urlId.toUpperCase().trim() &&
-          b.customer.email.toLowerCase() === urlEmail.toLowerCase().trim()
-      );
-      if (match) {
-        setActiveBooking(match);
-        setErrorMsg("");
-      } else {
-        setActiveBooking(null);
-        setErrorMsg(t("lookupNotFound"));
+    if (!urlPhone) return;
+
+    setQueryPhone(urlPhone);
+    setQueryEmail(urlEmail || "");
+    setActiveBooking(null);
+    setResults([]);
+    setErrorMsg("");
+    setLoading(true);
+    setSearched(true);
+
+    const fetchReservations = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/reservations/check/${encodeURIComponent(urlPhone)}`
+        );
+        const json = await res.json();
+
+        if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
+          setErrorMsg(t("lookupNotFound"));
+          setResults([]);
+          return;
+        }
+
+        let matches = json.data;
+
+        // If email was provided, narrow results down to that email when possible
+        if (urlEmail) {
+          const filtered = matches.filter(
+            (r) => r.customerEmail?.toLowerCase() === urlEmail.toLowerCase().trim()
+          );
+          if (filtered.length > 0) matches = filtered;
+        }
+
+        const mapped = matches.map(mapApiBookingToVoucherShape);
+
+        if (mapped.length === 1) {
+          setActiveBooking(mapped[0]);
+        } else {
+          setResults(mapped);
+        }
+      } catch (err) {
+        setErrorMsg(
+          lang === "pl"
+            ? "Nie udało się połączyć z serwerem. Spróbuj ponownie."
+            : "Could not connect to the server. Please try again."
+        );
+      } finally {
+        setLoading(false);
       }
-      setSearched(true);
-    }
-  }, [urlId, urlEmail, bookings, t]);
+    };
+
+    fetchReservations();
+  }, [urlPhone, urlEmail, lang, t]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (queryId.trim() && queryEmail.trim()) {
-      router.push(`/my-reservations?id=${queryId.trim()}&email=${encodeURIComponent(queryEmail.trim())}`);
-    }
+    if (!queryPhone.trim()) return;
+    const params = new URLSearchParams();
+    params.set("phone", queryPhone.trim());
+    if (queryEmail.trim()) params.set("email", queryEmail.trim());
+    router.push(`/my-reservations?${params.toString()}`);
   };
 
   const handlePrint = () => {
     window.print();
   };
 
-  // If client is logged in, list their bookings
+  const resetSearch = () => {
+    setSearched(false);
+    setActiveBooking(null);
+    setResults([]);
+    router.push("/my-reservations");
+  };
+
+  // If client is logged in, list their bookings (existing local context feature, unchanged)
   const myBookings = currentUser
     ? bookings.filter((b) => b.customer.email.toLowerCase() === currentUser.email.toLowerCase())
     : [];
@@ -86,11 +195,7 @@ function MyReservationsContent() {
               {/* Actions Header */}
               <div className="flex justify-between items-center bg-slate-100 p-4 rounded-xl border border-slate-200 no-print">
                 <button
-                  onClick={() => {
-                    setSearched(false);
-                    setActiveBooking(null);
-                    router.push("/my-reservations");
-                  }}
+                  onClick={resetSearch}
                   className="flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-800 transition"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -196,8 +301,8 @@ function MyReservationsContent() {
                     </h3>
                     <div className="text-slate-700">
                       <p className="text-base font-extrabold text-slate-800">{activeBooking.car.brand} {activeBooking.car.model}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">Klasa: {activeBooking.car.class} | Skrzynia: {activeBooking.car.transmission === "Automatic" ? t("gearAuto") : t("gearManual")}</p>
-                      <p className="text-xs text-slate-500">Paliwo: {activeBooking.car.fuel === "Petrol" ? t("fuelPetrol") : t("fuelDiesel")}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Klasa: {activeBooking.car.class} | Skrzynia: {activeBooking.car.transmission === "Automatic" ? t("gearAuto") : activeBooking.car.transmission === "Manual" ? t("gearManual") : activeBooking.car.transmission}</p>
+                      <p className="text-xs text-slate-500">Paliwo: {activeBooking.car.fuel === "Petrol" ? t("fuelPetrol") : activeBooking.car.fuel === "Diesel" ? t("fuelDiesel") : activeBooking.car.fuel}</p>
                     </div>
                   </div>
 
@@ -294,6 +399,41 @@ function MyReservationsContent() {
               `}</style>
 
             </div>
+          ) : searched && results.length > 0 ? (
+            /* MULTIPLE RESERVATIONS FOUND — selection list */
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4 no-print">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h2 className="text-base font-black text-slate-800 uppercase">
+                  {lang === "pl" ? "Znaleziono kilka rezerwacji" : "Multiple reservations found"}
+                </h2>
+                <button
+                  onClick={resetSearch}
+                  className="flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-800 transition"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>{lang === "pl" ? "Wyszukaj ponownie" : "Search again"}</span>
+                </button>
+              </div>
+              <div className="divide-y divide-slate-100">
+                {results.map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => setActiveBooking(b)}
+                    className="w-full text-left py-3.5 flex justify-between items-center text-xs font-semibold hover:bg-slate-50 transition rounded-lg px-2"
+                  >
+                    <div>
+                      <p className="text-slate-800 font-mono font-extrabold">{b.id}</p>
+                      <p className="text-slate-400 font-normal">
+                        {b.dates.pickupDate} - {b.dates.returnDate} | <strong className="text-slate-650">{b.car.brand} {b.car.model}</strong>
+                      </p>
+                    </div>
+                    <span className="px-3 py-1.5 bg-white border border-slate-200 rounded text-[10px]">
+                      ZOBACZ / VIEW
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : (
             <div className="space-y-6">
 
@@ -305,11 +445,17 @@ function MyReservationsContent() {
                     <span>Zweryfikuj szczegóły rezerwacji / Verify Booking</span>
                   </h2>
                   <p className="text-xs text-slate-500 font-semibold">
-                    Wprowadź numer rezerwacji oraz e-mail podany podczas dokonywania zamówienia, aby przejść do szczegółów.
+                    Wprowadź numer telefonu (oraz opcjonalnie e-mail) podany podczas dokonywania zamówienia, aby przejść do szczegółów.
                   </p>
                 </div>
 
-                {errorMsg && (
+                {loading && (
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 font-semibold">
+                    {lang === "pl" ? "Wyszukiwanie rezerwacji..." : "Looking up your reservation..."}
+                  </div>
+                )}
+
+                {!loading && errorMsg && (
                   <div className="p-3.5 bg-brand-red/10 border border-brand-red/20 rounded-xl text-xs text-brand-red font-semibold flex items-center space-x-2">
                     <ShieldAlert className="w-4.5 h-4.5 flex-shrink-0" />
                     <span>{errorMsg}</span>
@@ -319,21 +465,20 @@ function MyReservationsContent() {
                 <form onSubmit={handleSearchSubmit} className="space-y-4 text-xs font-bold text-slate-500">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block mb-1.5">{t("confirmNum")} *</label>
+                      <label className="block mb-1.5">{lang === "pl" ? "Numer telefonu" : "Phone Number"} *</label>
                       <input
-                        type="text"
+                        type="tel"
                         required
-                        placeholder="np. CAR-GO-123456"
-                        value={queryId}
-                        onChange={(e) => setQueryId(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none uppercase tracking-widest font-mono"
+                        placeholder="np. +1 (398) 143-4806"
+                        value={queryPhone}
+                        onChange={(e) => setQueryPhone(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block mb-1.5">{t("verifyEmailLabel")} *</label>
+                      <label className="block mb-1.5">{t("verifyEmailLabel")} ({lang === "pl" ? "opcjonalnie" : "optional"})</label>
                       <input
                         type="email"
-                        required
                         placeholder="np. jan.kowalski@email.com"
                         value={queryEmail}
                         onChange={(e) => setQueryEmail(e.target.value)}
