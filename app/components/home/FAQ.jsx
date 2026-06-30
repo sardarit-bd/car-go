@@ -30,25 +30,12 @@ export default function FAQSection({ t }) {
   };
 
   return (
-    <section className="px-4 sm:px-6 py-16 sm:py-24">
-      <div className="max-w-7xl mx-auto  rounded-[3rem] overflow-hidden  border border-slate-100/50">
+    <section className="px-1 sm:px-1 py-10 sm:py-24">
+      <div className="max-w-7xl mx-auto bg-[#fdfbf9] rounded-[3rem] overflow-hidden shadow-sm border border-slate-100/50">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center">
           
-          <div className="relative h-[500px] lg:h-[650px] flex items-center justify-center overflow-hidden order-2 lg:order-1 bg-gradient-to-br from-brand-red/5 via-white to-slate-100">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-slate-200/50 to-transparent rounded-full blur-3xl"></div>
-            <div className="relative z-10 w-[95%] max-w-2xl">
-              <img 
-                src="https://pngimg.com/d/car_PNG101972.png" 
-                alt="Black Sedan" 
-                className="w-full h-auto object-contain drop-shadow-2xl"
-              />
-            </div>
-            {/* <div className="absolute top-[15%] right-[25%] text-brand-red text-6xl font-black z-20 select-none opacity-80">*</div> */}
-            <div className="absolute bottom-[15%] left-[10%] w-24 h-24 bg-brand-red/10 rounded-full blur-xl"></div>
-          </div>
 
-   
-          <div className="p-8 sm:p-12 lg:p-16 order-1 lg:order-2">
+          <div className="p-2 sm:p-2 lg:p-16 order-1 lg:order-2">
             <div className="mb-10">
               <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1 mb-3">
                 <span className="text-brand-red">*</span> Frequently Asked Questions
