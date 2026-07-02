@@ -34,20 +34,16 @@ export default function FAQSection({ t }) {
       <div className="max-w-7xl mx-auto  rounded-[3rem] overflow-hidden  border border-slate-100/50">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center">
           
-          <div className="relative h-[500px] lg:h-[650px] flex items-center justify-center overflow-hidden order-2 lg:order-1 bg-gradient-to-br from-brand-red/5 via-white to-slate-100">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-slate-200/50 to-transparent rounded-full blur-3xl"></div>
-            <div className="relative z-10 w-[95%] max-w-2xl">
-              <img 
-                src="https://pngimg.com/d/car_PNG101972.png" 
-                alt="Black Sedan" 
-                className="w-full h-auto object-contain drop-shadow-2xl"
-              />
-            </div>
-            {/* <div className="absolute top-[15%] right-[25%] text-brand-red text-6xl font-black z-20 select-none opacity-80">*</div> */}
-            <div className="absolute bottom-[15%] left-[10%] w-24 h-24 bg-brand-red/10 rounded-full blur-xl"></div>
+          {/* Left Column - Image */}
+          <div className="relative h-[500px] lg:h-[650px] overflow-hidden order-2 lg:order-1 bg-gradient-to-br from-brand-red/5 via-white to-slate-100">
+            <img 
+              src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=810&w=1970&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+              alt="Black Sedan" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
 
-   
+          {/* Right Column - FAQ Content */}
           <div className="p-8 sm:p-12 lg:p-16 order-1 lg:order-2">
             <div className="mb-10">
               <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1 mb-3">

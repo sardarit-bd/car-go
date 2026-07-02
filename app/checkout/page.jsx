@@ -168,6 +168,13 @@ function CheckoutFlowContent() {
   const handleSaveDetails = async (e) => {
     e.preventDefault();
 
+
+
+    if (!activeSearch) {
+      alert(lang === "pl" ? "Brak danych wyszukiwania. Proszę wybrać pojazd ponownie." : "Search data missing. Please select a vehicle again.");
+      router.push("/checkout?step=1");
+      return;
+    }
     if (!consentPrivacy || !consentTerms || !consentData) {
       alert(lang === "pl" ? "Proszę zaakceptować wymagane zgody!" : "Please accept the required consents!");
       return;
@@ -240,14 +247,23 @@ function CheckoutFlowContent() {
     }
   };
 
-  const handleSimulatePayment = () => {
-    if (createdBooking) {
-      setPaymentCompleted(true);
+  const handleSimulatePayment = async () => {
+    if (!createdBooking) return;
+
+    try {
+      const response = await api.post(`/api/reservations/${createdBooking.id}/checkout-session`);
+      const { url } = response.data.data;
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error("Failed to create checkout session:", error);
+      alert(lang === "pl" ? "Nie udało się zainicjować płatności." : "Failed to initiate payment. Please try again.");
     }
   };
 
   return (
-    <div className="relative">
+    <div className="relative lg:pt-14 ">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
 

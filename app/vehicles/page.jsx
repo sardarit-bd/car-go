@@ -9,7 +9,7 @@ import { LoadingState, ErrorState, EmptyState } from "@/app/components/vehicles/
 import { useState } from "react";
 
 export default function Vehicles() {
-  const { lang, t, searchParams } = useApp();
+const { lang, t, searchParams, setSearchParams } = useApp();
 
   const initialApiParams = searchParams?.pickupDate ? {
     location: searchParams.pickupLocation,
@@ -24,10 +24,23 @@ export default function Vehicles() {
   const { vehicles, loading, error, updateApiParams, updateClientFilters } = useVehicles(initialApiParams);
 
   const handleSearchFormSubmit = (searchData) => {
+    // Update API params for filtering vehicles
     updateApiParams({
       location: searchData.pickupLocation,
       pickupDate: searchData.pickupDate,
       returnDate: searchData.returnDate,
+    });
+    
+    // Update global search params context for checkout
+    setSearchParams({
+      pickupLocation: searchData.pickupLocation,
+      returnLocation: searchData.returnLocation,
+      pickupDate: searchData.pickupDate,
+      returnDate: searchData.returnDate,
+      pickupTime: searchData.pickupTime,
+      returnTime: searchData.returnTime,
+      days: searchData.days,
+      isCustomPrice: searchData.isCustomPrice
     });
   };
 
@@ -74,7 +87,7 @@ export default function Vehicles() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* Left Sidebar - Search Form */}
-          <div className="lg:col-span-4 sticky top-36 hidden lg:block">
+          <div className="lg:col-span-4 lg:sticky top-36   block">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
               <SearchForm vertical={true} onSearch={handleSearchFormSubmit} />
             </div>
@@ -103,7 +116,7 @@ export default function Vehicles() {
 
             {/* Vehicle List */}
             {!loading && !error && vehicles.length > 0 ? (
-              <div className="space-y-5">
+              <div className="space-y-5 flex flex-wrap gap-5 justify-center">
                 {vehicles.map((car) => (
                   <VehicleCard 
                     key={car.id} 

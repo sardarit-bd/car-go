@@ -153,7 +153,7 @@ export default function FleetPreview({ vehicles, t }) {
                   {t("specifications").toUpperCase()}
                 </Link>
                 <Link
-                  href={`/checkout?step=1&car=${car.id}`}
+                  href={`/vehicles/${car.id}`}
                   className="flex-1 text-center py-3 bg-brand-red hover:bg-brand-red-hover text-xs text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-red/30 hover:-translate-y-0.5"
                 >
                   {t("reserveBtn")}

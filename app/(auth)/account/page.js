@@ -32,11 +32,17 @@ export default function CustomerPanel() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  // Redirect to login if not logged in
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/account/login");
+    } else if (currentUser.role === "ADMIN" || currentUser.role === "EMPLOYEE") {
+      router.push("/admin");
+    }
+  }, [currentUser, router]);
 
-
-  // if (!currentUser) {
-  //   return null;
+  if (!currentUser) {
+    return null;
+  }
   // }
 
   // Find bookings of this client

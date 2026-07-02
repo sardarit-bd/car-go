@@ -2,7 +2,7 @@
 
 import SidebarCTA from "@/app/components/SidebarCTA";
 import { useApp } from "@/app/context/AppContext";
-import { Clock, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { Clock, Mail, MapPin, Phone, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export default function Contact() {
@@ -12,32 +12,64 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const [sent, setSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && email && msg) {
-      logEmail({
-        id: "contact_page_" + Math.random().toString(36).substr(2, 9),
-        to: "reservations@car-go.pl",
-        subject: `[CAR-GO.PL Contact Page] Message from ${name}`,
-        body: `
+      setIsLoading(true);
+      
+      try {
+        // Use environment variable for API URL, fallback to localhost for dev
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        
+        const response = await fetch(`${API_URL}/api/contacts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            message: msg,
+            captchaToken: "dummy_token_for_testing", // Replace with real ReCaptcha/hCaptcha token if you implement one
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        // Keep local context logging for UI state/analytics fallback
+        logEmail({
+          id: "contact_page_" + Math.random().toString(36).substr(2, 9),
+          to: "reservations@car-go.pl",
+          subject: `[CAR-GO.PL Contact Page] Message from ${name}`,
+          body: `
 Sender Name: ${name}
 Sender Email: ${email}
 
 Message:
 ${msg}
-        `,
-        date: new Date().toLocaleString()
-      });
+          `,
+          date: new Date().toLocaleString()
+        });
 
-      setSent(true);
-      setName("");
-      setEmail("");
-      setMsg("");
+        setSent(true);
+        setName("");
+        setEmail("");
+        setMsg("");
 
-      setTimeout(() => {
-        setSent(false);
-      }, 5000);
+        setTimeout(() => {
+          setSent(false);
+        }, 5000);
+
+      } catch (error) {
+        console.error("Error submitting contact form:", error);
+        alert(lang === "pl" ? "Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie." : "An error occurred while sending the message. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -134,7 +166,7 @@ ${msg}
                   <div className="p-8 border border-green-600/30 bg-green-50/50 rounded-xl text-center space-y-2 text-green-700 animate-fade-in">
                     <ShieldCheck className="w-10 h-10 mx-auto" />
                     <p className="text-sm font-bold">{t("contactSuccess")}</p>
-                    <p className="text-xs text-slate-505">Skontaktujemy się z Tobą wkrótce.</p>
+                    <p className="text-xs text-slate-500">Skontaktujemy się z Tobą wkrótce.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -174,9 +206,14 @@ ${msg}
 
                     <button
                       type="submit"
-                      className="w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition duration-200 shadow"
+                      disabled={isLoading}
+                      className="w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition duration-200 shadow flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      {t("contactSubmit")}
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        t("contactSubmit")
+                      )}
                     </button>
                   </form>
                 )}
@@ -184,11 +221,6 @@ ${msg}
             </div>
 
           </div>
-        </div>
-
-        {/* Bottom CTA Panel */}
-        <div className="max-w-xl mx-auto pt-4">
-          <SidebarCTA />
         </div>
       </div>
 

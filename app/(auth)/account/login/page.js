@@ -60,7 +60,7 @@ export default function CustomerLogin() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 animate-fade-in">
+    <div className="max-w-md mx-auto px-4 sm:px-6 py-28 animate-fade-in">
       <div className="glass-panel p-8 rounded-2xl space-y-6 shadow-sm border border-slate-100">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-black text-slate-800 uppercase">{t("navLogin")}</h1>

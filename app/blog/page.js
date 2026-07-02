@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import SidebarCTA from "@/app/components/SidebarCTA";
 import { useApp } from "@/app/context/AppContext";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
+import api from "@/lib/axios";
 
-// Mock blog data
+// NOTE: We keep the original mock data export here. 
+// If your blog detail page (app/blog/[id]/page.js) imports this, it will continue to work.
 export const blogPosts = [
   {
     id: "stress-free-rental-tips",
@@ -47,6 +50,51 @@ export const blogPosts = [
 
 export default function Blog() {
   const { lang, t } = useApp();
+  
+  // Use a separate state variable for the dynamic API data
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        
+        // Fetch blogs from the API
+        const response = await api.get("/api/blogs", { params: { page: 1, limit: 20 } });
+
+        if (response.data.success && response.data.data?.data) {
+          const mappedPosts = response.data.data.data.map((blog) => {
+            // Calculate read time (approx 200 words per minute)
+            const wordCount = blog.content ? blog.content.trim().split(/\s+/).length : 0;
+            const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
+            
+            // Extract YYYY-MM-DD from the ISO date string
+            const formattedDate = blog.date ? blog.date.split('T')[0] : '';
+
+            return {
+              id: blog.id,
+              // Map the single title/content to both language fields
+              titlePl: blog.title,
+              titleEn: blog.title,
+              summaryPl: blog.content,
+              summaryEn: blog.content,
+              date: formattedDate,
+              readTimePl: `${readTimeMin} min czytania`,
+              readTimeEn: `${readTimeMin} min read`,
+              tag: "Blog", // API doesn't provide tags, using a default
+              image: `${baseUrl}${blog.image}`
+            };
+          });
+          
+          setPosts(mappedPosts);
+        }
+      } catch (error) {
+        console.error("Failed to fetch blogs:", error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
@@ -63,7 +111,8 @@ export default function Blog() {
         {/* Blog Catalogue Content */}
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {blogPosts.map((post) => {
+            {/* Map over the dynamic 'posts' state instead of the hardcoded array */}
+            {posts.map((post) => {
               const title = lang === "pl" ? post.titlePl : post.titleEn;
               const summary = lang === "pl" ? post.summaryPl : post.summaryEn;
               const readTime = lang === "pl" ? post.readTimePl : post.readTimeEn;
@@ -126,9 +175,9 @@ export default function Blog() {
         </div>
 
         {/* Bottom CTA Panel */}
-        <div className="max-w-xl mx-auto pt-4">
+        {/* <div className="max-w-xl mx-auto pt-4">
           <SidebarCTA />
-        </div>
+        </div> */}
       </div>
     </div>
   );

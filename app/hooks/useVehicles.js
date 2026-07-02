@@ -1,38 +1,32 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import api from "@/lib/axios";
 
-// Accept initialParams to set the initial API state
 export default function useVehicles(initialParams = {}) {
-  const [allVehicles, setAllVehicles] = useState([]);
-  const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Initialize apiParams with the passed initialParams
-  const [apiParams, setApiParams] = useState(initialParams);
-  
-  // Parameters that only trigger client-side filtering (no API call)
+
+  // Initialize apiParams with the passed initialParams, defaulting page to 1
+  const [apiParams, setApiParams] = useState({ page: 1, ...initialParams });
+
+  // Client-side-only filters (applied after fetch, no refetch needed)
   const [clientFilters, setClientFilters] = useState({
     searchTerm: "",
     transmission: "all",
   });
 
-  // Fetch data from backend
   const fetchVehicles = useCallback(async (params) => {
     setLoading(true);
     setError(null);
     try {
-      // Clean undefined/null/empty values so they aren't sent to the API
+      // Clean undefined/null/empty/"all" values so they aren't sent to the API
       const cleanParams = Object.fromEntries(
-        Object.entries(params).filter(([_, v]) => v != null && v !== "")
+        Object.entries(params).filter(([_, v]) => v != null && v !== "" && v !== "all")
       );
-      
+
       const response = await api.get("/api/vehicle", { params: cleanParams });
-      
-      // Handle different possible response structures from your backend
       const rawData = response.data?.data?.vehicles || response.data?.vehicles || [];
-      
-      // MAP BACKEND DATA TO FRONTEND EXPECTED STRUCTURE
+
       const mappedData = rawData.map(car => ({
         id: car.id,
         image: car.images?.[0]?.imageUrl || car.image || null,
@@ -47,57 +41,55 @@ export default function useVehicles(initialParams = {}) {
         luggage: car.luggage || 0,
         transmission: car.transmission || "Automatic",
       }));
-      
-      setAllVehicles(mappedData);
+
+      setVehicles(mappedData);
     } catch (err) {
       console.error("Error fetching vehicles:", err);
       setError(err);
-      setAllVehicles([]);
+      setVehicles([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Effect to fetch from API when apiParams change
   useEffect(() => {
     fetchVehicles(apiParams);
   }, [apiParams, fetchVehicles]);
 
-  // Effect to apply client-side filters when allVehicles or clientFilters change
-  useEffect(() => {
-    let result = [...allVehicles];
-
-    if (clientFilters.searchTerm) {
-      const term = clientFilters.searchTerm.toLowerCase();
-      result = result.filter(car => 
-        car.brand?.toLowerCase().includes(term) ||
-        car.model?.toLowerCase().includes(term) ||
-        car.class?.toLowerCase().includes(term)
-      );
-    }
-
-    if (clientFilters.transmission && clientFilters.transmission !== "all") {
-      result = result.filter(car => 
-        car.transmission?.toLowerCase() === clientFilters.transmission.toLowerCase()
-      );
-    }
-
-    setFilteredVehicles(result);
-  }, [allVehicles, clientFilters]);
-
   const updateApiParams = (newParams) => {
-    setApiParams(prev => ({ ...prev, ...newParams }));
+    // If newParams explicitly includes a page, use it. Otherwise, reset to 1.
+    const pageToSet = newParams.page !== undefined ? newParams.page : 1;
+    setApiParams(prev => ({ ...prev, ...newParams, page: pageToSet }));
   };
 
   const updateClientFilters = (newFilters) => {
     setClientFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  return { 
-    vehicles: filteredVehicles, 
-    loading, 
-    error, 
-    updateApiParams, 
-    updateClientFilters 
+  const filteredVehicles = useMemo(() => {
+    return vehicles.filter((car) => {
+      // Search term matches brand, model, or description (case-insensitive)
+      const term = clientFilters.searchTerm?.trim().toLowerCase();
+      const matchesSearch = term
+        ? `${car.brand} ${car.model}`.toLowerCase().includes(term) ||
+          car.description?.toLowerCase().includes(term) ||
+          car.descriptionEn?.toLowerCase().includes(term)
+        : true;
+
+      // Transmission filter
+      const matchesTransmission =
+        clientFilters.transmission === "all" ||
+        car.transmission?.toLowerCase() === clientFilters.transmission?.toLowerCase();
+
+      return matchesSearch && matchesTransmission;
+    });
+  }, [vehicles, clientFilters]);
+
+  return {
+    vehicles: filteredVehicles,
+    loading,
+    error,
+    updateApiParams,
+    updateClientFilters,
   };
 }

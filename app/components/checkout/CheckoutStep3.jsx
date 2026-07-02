@@ -2,7 +2,7 @@
 
 import { CreditCard, User, Loader2 } from "lucide-react";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 export default function CheckoutStep3({
   firstName, setFirstName,
   lastName, setLastName,
@@ -22,6 +22,7 @@ export default function CheckoutStep3({
   handleSubmit,
   t
 }) {
+    const router = useRouter();
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <h2 className="text-2xl font-black text-slate-900 pb-3 border-b border-slate-200">
@@ -225,6 +226,7 @@ export default function CheckoutStep3({
         type="submit"
         disabled={isSubmitting}
         className="w-full py-4 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-black rounded-xl shadow-lg shadow-brand-red/20 hover:shadow-brand-red/40 transition-all duration-300 uppercase tracking-widest disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        onClick={() => router.push("/checkout?step=4")} 
       >
         {isSubmitting ? (
           <>
