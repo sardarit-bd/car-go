@@ -673,6 +673,10 @@ export function AppProvider({ children }) {
           id: frontendId,
           backendId: l.id,
           name: l.name,
+          address: l.address || "",
+          city: l.city || "",
+          country: l.country || "",
+          phone: l.phone || "",
           minDays: 1,
           isCustomAddress: frontendId === "delivery",
         };
@@ -790,16 +794,19 @@ export function AppProvider({ children }) {
     try {
       await api.post("/api/locations", {
         name: locationData.name,
-        address: locationData.name,
-        city: "Default City",
-        country: "PL",
-        phone: "+48000000000",
+        address: locationData.address,
+        city: locationData.city,
+        country: locationData.country,
+        phone: locationData.phone,
       });
       await fetchLocations();
       return { success: true };
     } catch (error) {
       console.error("Failed to add location:", error);
-      return { success: false };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to add location",
+      };
     }
   };
 
@@ -929,10 +936,10 @@ export function AppProvider({ children }) {
 
       setUser(user);
 
-      // Case-insensitive role check
       const userRole = user?.role?.toUpperCase();
       if (userRole === "ADMIN" || userRole === "EMPLOYEE") {
         const adminData = {
+          id: user.id,
           username: user.email,
           role: userRole === "ADMIN" ? "owner" : "employee",
         };
@@ -1128,7 +1135,11 @@ export function AppProvider({ children }) {
       (username === "employee" && password === "employee123")
     ) {
       const role = username === "admin" ? "owner" : "employee";
-      const admin = { username, role };
+      const admin = {
+        id: "mock-admin-id-123",
+        username,
+        role,
+      };
       setAdminUser(admin);
       saveState("cargo_admin", admin);
       return true;
@@ -1138,9 +1149,10 @@ export function AppProvider({ children }) {
 
   const logoutAdmin = () => {
     setAdminUser(null);
-    localStorage.removeItem("cargo_admin");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cargo_admin");
+    }
   };
-
   const t = (key) => {
     return cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
   };

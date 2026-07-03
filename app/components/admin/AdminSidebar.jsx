@@ -11,6 +11,11 @@ import {
   Mail,
   LogOut,
   Shield,
+  Layout,
+  Blocks,
+  Boxes,
+  PanelTop,
+  Contact,  
 } from "lucide-react";
 
 export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logoutAdmin, router }) {
@@ -59,24 +64,53 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
         <span>Moderacja Opinii / Reviews</span>
       </button>
       <button
-        onClick={() => setActiveTab("content")}
+        onClick={() => setActiveTab("cms")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
-          activeTab === "content"
-            ? "bg-brand-red text-white"
-            : "hover:bg-slate-50 hover:text-slate-800"
+          activeTab === "cms" ? "bg-brand-red text-white" : "hover:bg-slate-50 hover:text-slate-800"
         }`}
       >
-        <Edit3 className="w-4 h-4" /> <span>Edycja Treści / CMS Texts</span>
+        <Layout className="w-4 h-4" /> <span>Zarządzanie CMS / CMS Manager</span>
       </button>
+
       <button
-        onClick={() => setActiveTab("pricing")}
+        onClick={() => setActiveTab("addons")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
-          activeTab === "pricing"
+          activeTab === "addons"
             ? "bg-brand-red text-white"
             : "hover:bg-slate-50 hover:text-slate-800"
         }`}
       >
-        <Tag className="w-4 h-4" /> <span>Cennik i Pakiety / Pricing</span>
+        <Blocks className="w-4 h-4" /> <span>Dodatki / Add-ons</span>
+      </button>
+            <button
+        onClick={() => setActiveTab("packages")}
+        className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
+          activeTab === "packages"
+            ? "bg-brand-red text-white"
+            : "hover:bg-slate-50 hover:text-slate-800"
+        }`}
+      >
+        <Boxes className="w-4 h-4" /> <span>Pakiety Ochrony / Packages</span>
+      </button>
+                  <button
+        onClick={() => setActiveTab("blog")}
+        className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
+          activeTab === "blog"
+            ? "bg-brand-red text-white"
+            : "hover:bg-slate-50 hover:text-slate-800"
+        }`}
+      >
+        <PanelTop className="w-4 h-4" /> <span>Blog / Artykuły</span>
+      </button>
+                  <button
+        onClick={() => setActiveTab("contact")}
+        className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
+          activeTab === "contact"
+            ? "bg-brand-red text-white"
+            : "hover:bg-slate-50 hover:text-slate-800"
+        }`}
+      >
+        <Contact className="w-4 h-4" /> <span>Wiadomości / Contact</span>
       </button>
       <button
         onClick={() => setActiveTab("emails")}

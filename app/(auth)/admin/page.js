@@ -12,10 +12,13 @@ import FleetTab from "@/app/components/admin/FleetTab";
 import LocationsTab from "@/app/components/admin/LocationsTab";
 import ReviewsTab from "@/app/components/admin/ReviewsTab";
 import ContentTab from "@/app/components/admin/ContentTab";
-import PricingTab from "@/app/components/admin/PricingTab";
+import CmsTab from "@/app/components/admin/CmsTab"; //
 import EmailsTab from "@/app/components/admin/EmailsTab";
 import BookingDetailsModal from "@/app/components/admin/BookingDetailsModal";
-
+import AddonsTab from "@/app/components/admin/AddonsTab";
+import PackagesTab from "@/app/components/admin/PackagesTab";
+import BlogTab from "@/app/components/admin/BlogTab";
+import ContactTab from "@/app/components/admin/ContactTab";
 export default function AdminDashboard() {
   const router = useRouter();
   const {
@@ -118,12 +121,14 @@ export default function AdminDashboard() {
           {/* TAB 4: Reviews */}
           {activeTab === "reviews" && <ReviewsTab />}
 
-          {/* TAB 5: CMS */}
-          {activeTab === "content" && <ContentTab />}
+          {/* TAB 5: CMS (Replaces/Supplements ContentTab) */}
+          {activeTab === "cms" && <CmsTab />}
 
-          {/* TAB 6: Pricing */}
-          {activeTab === "pricing" && <PricingTab />}
+          {activeTab === "addons" && <AddonsTab />}
 
+          {activeTab === "packages" && <PackagesTab />}
+          {activeTab === "blog" && <BlogTab />}
+          {activeTab === "contact" && <ContactTab />}
           {/* TAB 7: Emails */}
           {activeTab === "emails" && <EmailsTab />}
         </div>
