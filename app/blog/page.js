@@ -7,69 +7,85 @@ import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 import api from "@/lib/axios";
 
-// NOTE: We keep the original mock data export here. 
+// NOTE: We keep the original mock data export here.
 // If your blog detail page (app/blog/[id]/page.js) imports this, it will continue to work.
 export const blogPosts = [
   {
     id: "stress-free-rental-tips",
     titlePl: "5 Porad jak wynająć samochód bez stresu i ukrytych kosztów",
     titleEn: "5 Tips for Stress-Free Car Rental with Zero Hidden Fees",
-    summaryPl: "Wypożyczenie auta to świetny sposób na niezależność, ale warto pamiętać o kilku ważnych zasadach. Przeczytaj, na co zwrócić uwagę przed odbiorem auta.",
-    summaryEn: "Renting a car is a great way to stay independent, but it's important to remember a few key rules. Read on to know what to check before pickup.",
+    summaryPl:
+      "Wypożyczenie auta to świetny sposób na niezależność, ale warto pamiętać o kilku ważnych zasadach. Przeczytaj, na co zwrócić uwagę przed odbiorem auta.",
+    summaryEn:
+      "Renting a car is a great way to stay independent, but it's important to remember a few key rules. Read on to know what to check before pickup.",
     date: "2026-06-01",
     readTimePl: "4 min czytania",
     readTimeEn: "4 min read",
     tag: "Porady / Tips",
-    image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=600&auto=format&fit=crop"
+    image:
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: "long-term-vs-short-term",
-    titlePl: "Wynajem długoterminowy vs krótko- i średnioterminowy. Porównanie korzyści",
+    titlePl:
+      "Wynajem długoterminowy vs krótko- i średnioterminowy. Porównanie korzyści",
     titleEn: "Long-Term vs Short-Term Car Rental. Benefit Comparison",
-    summaryPl: "Zastanawiasz się, które rozwiązanie finansowe jest korzystniejsze dla Twojej firmy lub wyjazdów prywatnych? Porównujemy koszty ubezpieczenia, serwisu i eksploatacji.",
-    summaryEn: "Wondering which financial solution is more beneficial for your business or personal travels? We compare the cost of insurance, service, and maintenance.",
+    summaryPl:
+      "Zastanawiasz się, które rozwiązanie finansowe jest korzystniejsze dla Twojej firmy lub wyjazdów prywatnych? Porównujemy koszty ubezpieczenia, serwisu i eksploatacji.",
+    summaryEn:
+      "Wondering which financial solution is more beneficial for your business or personal travels? We compare the cost of insurance, service, and maintenance.",
     date: "2026-06-10",
     readTimePl: "6 min czytania",
     readTimeEn: "6 min read",
     tag: "Biznes / Business",
-    image: "https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600&auto=format&fit=crop"
+    image:
+      "https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600&auto=format&fit=crop",
   },
   {
     id: "discover-lower-silesia-by-car",
-    titlePl: "Odkryj rejon Oławy, Brzegu i Skarbimierza. Najciekawsze trasy weekendowe",
+    titlePl:
+      "Odkryj rejon Oławy, Brzegu i Skarbimierza. Najciekawsze trasy weekendowe",
     titleEn: "Discover Oława, Brzeg and Skarbimierz. Best Weekend Roadtrips",
-    summaryPl: "Dolny Śląsk i Opolszczyzna kryją wiele niesamowitych zabytków i malowniczych tras. Wybierz jeden z naszych sprawdzonych planów wycieczek i ruszaj w drogę.",
-    summaryEn: "Lower Silesia and Opole region hide many amazing monuments and scenic roads. Select one of our proven trip plans and hit the road.",
+    summaryPl:
+      "Dolny Śląsk i Opolszczyzna kryją wiele niesamowitych zabytków i malowniczych tras. Wybierz jeden z naszych sprawdzonych planów wycieczek i ruszaj w drogę.",
+    summaryEn:
+      "Lower Silesia and Opole region hide many amazing monuments and scenic roads. Select one of our proven trip plans and hit the road.",
     date: "2026-06-14",
     readTimePl: "5 min czytania",
     readTimeEn: "5 min read",
     tag: "Podróże / Travels",
-    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop"
-  }
+    image:
+      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop",
+  },
 ];
 
 export default function Blog() {
   const { lang, t } = useApp();
-  
+
   // Use a separate state variable for the dynamic API data
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        
+        const baseUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
         // Fetch blogs from the API
-        const response = await api.get("/api/blogs", { params: { page: 1, limit: 20 } });
+        const response = await api.get("/api/blogs", {
+          params: { page: 1, limit: 20 },
+        });
 
         if (response.data.success && response.data.data?.data) {
           const mappedPosts = response.data.data.data.map((blog) => {
             // Calculate read time (approx 200 words per minute)
-            const wordCount = blog.content ? blog.content.trim().split(/\s+/).length : 0;
+            const wordCount = blog.content
+              ? blog.content.trim().split(/\s+/).length
+              : 0;
             const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
-            
+
             // Extract YYYY-MM-DD from the ISO date string
-            const formattedDate = blog.date ? blog.date.split('T')[0] : '';
+            const formattedDate = blog.date ? blog.date.split("T")[0] : "";
 
             return {
               id: blog.id,
@@ -82,10 +98,10 @@ export default function Blog() {
               readTimePl: `${readTimeMin} min czytania`,
               readTimeEn: `${readTimeMin} min read`,
               tag: "Blog", // API doesn't provide tags, using a default
-              image: `${baseUrl}${blog.image}`
+              image: `${baseUrl}${blog.image}`,
             };
           });
-          
+
           setPosts(mappedPosts);
         }
       } catch (error) {
@@ -97,11 +113,12 @@ export default function Blog() {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
-
+    <div className="container mx-auto max-lg:py-20 px-4 sm:px-6 space-y-12">
       {/* Title Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-800 uppercase">{t("blogTitle")}</h1>
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-800 uppercase">
+          {t("blogTitle")}
+        </h1>
         <p className="text-sm font-semibold text-slate-500">
           {t("blogSubtitle")}
         </p>
@@ -115,7 +132,8 @@ export default function Blog() {
             {posts.map((post) => {
               const title = lang === "pl" ? post.titlePl : post.titleEn;
               const summary = lang === "pl" ? post.summaryPl : post.summaryEn;
-              const readTime = lang === "pl" ? post.readTimePl : post.readTimeEn;
+              const readTime =
+                lang === "pl" ? post.readTimePl : post.readTimeEn;
 
               return (
                 <div

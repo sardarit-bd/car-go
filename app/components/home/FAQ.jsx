@@ -25,7 +25,7 @@ export default function FAQSection({ t }) {
 
   return (
     <section className="px-4 sm:px-6 py-16 sm:py-24">
-      <div className="max-w-7xl mx-auto rounded-[3rem] overflow-hidden border border-slate-100/50">
+      <div className="container mx-auto rounded-[3rem] overflow-hidden border border-slate-100/50">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center">
           
           <div className="relative h-[500px] lg:h-[650px] overflow-hidden order-2 lg:order-1 bg-gradient-to-br from-brand-red/5 via-white to-slate-100">

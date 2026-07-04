@@ -23,7 +23,7 @@ export default function Header() {
     { name: t("navFAQ"), path: "/faq" },
     { name: t("navReviews"), path: "/reviews" },
     { name: t("navBlog"), path: "/blog" },
-    { name: t("navContact"), path: "/contact" }
+    { name: t("navContact"), path: "/contact" },
   ];
 
   const handleSearchSubmit = (e) => {
@@ -38,31 +38,30 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
-        <div className="flex justify-between items-center h-16 lg:h-20 px-4 sm:px-6 container mx-auto">
-
+        <div className="flex justify-between items-center h-16 lg:h-20 px-3 sm:px-6 container mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <img
               src="/logo.png"
               alt="CAR-GO.PL"
-              className="h-8 lg:h-10 w-auto object-contain"
+              className="h-7 sm:h-8 lg:h-10 w-auto object-contain"
               onError={(e) => {
                 e.target.style.display = "none";
               }}
             />
           </Link>
 
-          {/* Desktop & Tablet Navigation */}
-          <nav className="hidden md:flex items-center justify-center gap-1 lg:gap-6 flex-1 px-2 lg:px-8">
+          {/* Desktop Navigation - only shows on large screens where 7 items fit comfortably */}
+          <nav className="hidden lg:flex items-center justify-center gap-3 xl:gap-6 flex-1 px-4 xl:px-8 min-w-0">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-sm lg:text-[15px] font-medium whitespace-nowrap transition duration-200 px-2 lg:px-3 py-2 rounded-lg ${
-                    isActive 
-                      ? "text-brand-red bg-brand-red/5" 
+                  className={`text-[13px] xl:text-[15px] font-medium whitespace-nowrap transition duration-200 px-2 xl:px-3 py-2 rounded-lg ${
+                    isActive
+                      ? "text-brand-red bg-brand-red/5"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                   }`}
                 >
@@ -73,8 +72,7 @@ export default function Header() {
           </nav>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-            
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
             {/* Calling Info - Desktop Only */}
             <div className="hidden xl:block">
               <CallingInfo />
@@ -97,8 +95,9 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </button>
 
-            {/* User Area - Desktop */}
-            <div className="hidden sm:block relative">
+            {/* User Area - now synced to the same breakpoint (lg) as the nav & hamburger,
+                so it never overlaps with the mobile menu button */}
+            <div className="hidden lg:block relative">
               {currentUser ? (
                 <div className="flex items-center">
                   <button
@@ -108,7 +107,9 @@ export default function Header() {
                     <div className="w-7 h-7 rounded-full bg-brand-red/10 flex items-center justify-center">
                       <User className="w-3.5 h-3.5 text-brand-red" />
                     </div>
-                    <span className="max-w-[100px] truncate">{currentUser.firstName}</span>
+                    <span className="max-w-[100px] truncate">
+                      {currentUser.firstName}
+                    </span>
                   </button>
                   {userDropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium z-10">
@@ -146,19 +147,24 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - now shows below lg (covers phones AND tablets,
+                where the horizontal nav no longer fits) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden flex items-center justify-center w-9 h-9 bg-slate-50 hover:bg-slate-100 rounded-full transition"
+              className="lg:hidden flex items-center justify-center w-9 h-9 bg-slate-50 hover:bg-slate-100 rounded-full transition"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile/Tablet Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-100 bg-white animate-slide-down">
+          <div className="lg:hidden border-t border-slate-100 bg-white animate-slide-down max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="px-4 py-4 space-y-1">
               <nav className="flex flex-col">
                 {navItems.map((item) => (

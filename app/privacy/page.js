@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
   const privacyPage = cmsPages?.find((p) => p.type === "PRIVACY_POLICY");
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 animate-fade-in text-sm text-slate-650 leading-relaxed font-medium">
+    <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 space-y-8 animate-fade-in text-sm text-slate-650 leading-relaxed font-medium">
       {/* Title */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-extrabold text-slate-800 uppercase">

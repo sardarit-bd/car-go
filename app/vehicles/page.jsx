@@ -67,7 +67,7 @@ const { lang, t, searchParams, setSearchParams } = useApp();
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10">
 
         {/* Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto mb-12 sm:mb-16">

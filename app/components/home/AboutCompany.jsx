@@ -53,7 +53,7 @@ export default function AboutCompany({ t }) {
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="px-4 sm:px-6 container mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
             <span className="text-brand-red">*</span> {displaySubtitle}

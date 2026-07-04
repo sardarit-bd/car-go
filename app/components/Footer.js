@@ -68,7 +68,7 @@ ${formMsg}
 
   return (
     <footer className="bg-brand-dark/90 border-t border-brand-accent mt-auto pt-12 pb-6 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
         {/* Company & Info Column */}
         <div className="space-y-4">
           <Link href="/" className="flex items-center group">
@@ -350,7 +350,7 @@ ${formMsg}
       </div>
 
       {/* Copyright Bar */}
-      <div className="border-t border-brand-accent/40 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 max-w-7xl mx-auto space-y-2.5 sm:space-y-0">
+      <div className="border-t border-brand-accent/40 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 container mx-auto space-y-2.5 sm:space-y-0">
         <div>
           © {new Date().getFullYear()} CAR-GO.PL.{" "}
           {lang === "pl"

@@ -60,7 +60,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 animate-fade-in">
+    <div className="container mx-auto px-4 sm:px-6 space-y-8 animate-fade-in">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-6 gap-4">
         <div className="flex items-center space-x-3">
