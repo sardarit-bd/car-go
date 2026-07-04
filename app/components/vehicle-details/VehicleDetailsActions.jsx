@@ -2,7 +2,7 @@
 
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 
-export default function VehicleDetailsActions({ car, t, lang, onBookNow }) {
+export default function VehicleDetailsActions({ car, t, lang }) {
   return (
     <div className="space-y-4">
       {/* Deposit Warning */}
@@ -33,14 +33,8 @@ export default function VehicleDetailsActions({ car, t, lang, onBookNow }) {
             : "Unlimited mileage and liability insurance included!"}
         </p>
       </div>
-
-      {/* Book Now Button */}
-      <button
-        onClick={onBookNow}
-        className="w-full py-4 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-black tracking-wider uppercase rounded-2xl shadow-lg shadow-brand-red/20 hover:shadow-brand-red/40 transition-all duration-300 hover:-translate-y-0.5"
-      >
-        {t("reserveBtn")}
-      </button>
+      
+      {/* The "Reserve" button has been moved to the SearchForm submit button */}
     </div>
   );
 }

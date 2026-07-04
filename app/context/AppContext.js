@@ -1,10 +1,16 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import api from "@/lib/axios";
 const AppContext = createContext();
 
-// Default CMS translations
+// Default CMS translations (kept as fallbacks)
 const initialTranslations = {
   pl: {
     brandName: "CAR-GO",
@@ -561,6 +567,17 @@ export function AppProvider({ children }) {
   const [adminUser, setAdminUser] = useState(null);
   const [cmsTranslations, setCmsTranslations] = useState(initialTranslations);
   const [cmsTexts, setCmsTexts] = useState(initialContentTexts);
+  const [cmsHero, setCmsHero] = useState(null);
+  const [cmsHeroFeatures, setCmsHeroFeatures] = useState([]);
+  const [cmsWhyChooseUs, setCmsWhyChooseUs] = useState(null);
+  const [cmsWhyChooseUsFeatures, setCmsWhyChooseUsFeatures] = useState([]);
+  const [cmsFaqs, setCmsFaqs] = useState([]);
+  const [cmsPages, setCmsPages] = useState([]);
+  const [cmsContacts, setCmsContacts] = useState([]);
+  const [cmsSocialMedia, setCmsSocialMedia] = useState([]);
+
+  const [authInitialized, setAuthInitialized] = useState(false);
+
   const [searchParamsState, setSearchParamsState] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("cargo_search_params");
@@ -568,6 +585,16 @@ export function AppProvider({ children }) {
     }
     return null;
   });
+
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      const localUser = localStorage.getItem("user");
+      const localAdmin = localStorage.getItem("cargo_admin");
+      if (localUser) setCurrentUser(JSON.parse(localUser));
+      if (localAdmin) setAdminUser(JSON.parse(localAdmin));
+      setAuthInitialized(true);
+    }
+  }, []);
 
   const setSearchParams = (params) => {
     setSearchParamsState(params);
@@ -755,6 +782,126 @@ export function AppProvider({ children }) {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get("/api/reviews");
+      const backendReviews = response.data.data || response.data;
+
+      const mapped = backendReviews.map((r) => ({
+        id: r.id,
+        name: r.user?.firstName
+          ? `${r.user.firstName} ${r.user.lastName || ""}`.trim()
+          : r.user?.name || "Klient",
+        rating: r.rating,
+        text: r.comment,
+        car: r.vehicle?.model || r.booking?.vehicle?.model || "Pojazd",
+        date: new Date(r.createdAt).toLocaleDateString(),
+        approved: r.status === "APPROVED",
+      }));
+
+      setReviews(mapped);
+      saveState("cargo_reviews", mapped);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      setReviews(initialReviews);
+    }
+  };
+  const fetchCmsHero = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/hero");
+      const data = response.data.data;
+      if (data) {
+        setCmsHero(data);
+        updateCmsText("homeHeader", data.titlePl, data.titleEn);
+        updateCmsText("homeSubheader", data.subtitlePl, data.subtitleEn);
+        updateCmsText("tagline", data.taglinePl, data.taglineEn);
+        saveState("cargo_cms_hero", data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch CMS Hero:", error);
+    }
+  };
+
+  const fetchCmsHeroFeatures = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/hero-feature");
+      const data = response.data.data || [];
+      setCmsHeroFeatures(data);
+      saveState("cargo_cms_hero_features", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Hero Features:", error);
+    }
+  };
+
+  const fetchCmsWhyChooseUs = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/why-choose-us");
+      const data = response.data.data;
+      if (data) {
+        setCmsWhyChooseUs(data);
+        updateCmsText("whyChooseUs", data.subtitlePl, data.subtitleEn);
+        saveState("cargo_cms_why_choose_us", data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch CMS Why Choose Us:", error);
+    }
+  };
+
+  const fetchCmsWhyChooseUsFeatures = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/why-choose-us-feature");
+      const data = response.data.data || [];
+      setCmsWhyChooseUsFeatures(data);
+      saveState("cargo_cms_why_choose_us_features", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Why Choose Us Features:", error);
+    }
+  };
+
+  const fetchCmsFaqs = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/faq");
+      const data = response.data.data || [];
+      setCmsFaqs(data);
+      saveState("cargo_cms_faqs", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS FAQs:", error);
+    }
+  };
+
+  const fetchCmsPages = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/page");
+      const data = response.data.data || response.data || [];
+      setCmsPages(data);
+      saveState("cargo_cms_pages", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Pages:", error);
+    }
+  };
+
+  const fetchCmsContacts = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/contact");
+      const data = response.data.data || response.data || [];
+      setCmsContacts(data);
+      saveState("cargo_cms_contacts", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Contacts:", error);
+    }
+  };
+
+  const fetchCmsSocialMedia = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/social-media");
+      const data = response.data.data || response.data || [];
+      setCmsSocialMedia(data);
+      saveState("cargo_cms_social_media", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Social Media:", error);
+    }
+  };
+
   const addVehicle = async (vehicleData) => {
     try {
       const formData = new FormData();
@@ -924,18 +1071,11 @@ export function AppProvider({ children }) {
   const loginUser = async (email, password) => {
     try {
       const response = await api.post("/api/auth/login", { email, password });
-
-      // Robustly extract user and token from different possible response structures
       const responseData = response.data.data || response.data;
       const user = responseData.user || responseData;
       const token = responseData.token || response.data.token;
-
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-
+      if (token) localStorage.setItem("token", token);
       setUser(user);
-
       const userRole = user?.role?.toUpperCase();
       if (userRole === "ADMIN" || userRole === "EMPLOYEE") {
         const adminData = {
@@ -946,7 +1086,6 @@ export function AppProvider({ children }) {
         setAdminUser(adminData);
         saveState("cargo_admin", adminData);
       }
-
       return { success: true, user };
     } catch (error) {
       console.error("Login error:", error);
@@ -982,10 +1121,23 @@ export function AppProvider({ children }) {
     const localBookings = localStorage.getItem("cargo_bookings");
     const localEmails = localStorage.getItem("cargo_emails");
     const localLang = localStorage.getItem("cargo_lang");
-    const localUser = localStorage.getItem("user");
-    const localAdmin = localStorage.getItem("cargo_admin");
+    // const localUser = localStorage.getItem("user");
+    // const localAdmin = localStorage.getItem("cargo_admin");
     const localTranslations = localStorage.getItem("cargo_translations");
     const localCmsTexts = localStorage.getItem("cargo_cmstexts");
+    const localCmsPages = localStorage.getItem("cargo_cms_pages");
+    const localCmsContacts = localStorage.getItem("cargo_cms_contacts");
+    const localCmsSocialMedia = localStorage.getItem("cargo_cms_social_media");
+    // NEW LOCAL STORAGE LOADS
+    const localCmsHero = localStorage.getItem("cargo_cms_hero");
+    const localCmsHeroFeatures = localStorage.getItem(
+      "cargo_cms_hero_features",
+    );
+    const localCmsWhyChooseUs = localStorage.getItem("cargo_cms_why_choose_us");
+    const localCmsWhyChooseUsFeatures = localStorage.getItem(
+      "cargo_cms_why_choose_us_features",
+    );
+    const localCmsFaqs = localStorage.getItem("cargo_cms_faqs");
 
     if (localVehicles) {
       try {
@@ -1002,16 +1154,38 @@ export function AppProvider({ children }) {
     if (localBookings) setBookings(JSON.parse(localBookings));
     if (localEmails) setEmails(JSON.parse(localEmails));
     if (localLang) setLang(localLang);
-    if (localUser) setCurrentUser(JSON.parse(localUser));
-    if (localAdmin) setAdminUser(JSON.parse(localAdmin));
+    // if (localUser) setCurrentUser(JSON.parse(localUser));
+    // if (localAdmin) setAdminUser(JSON.parse(localAdmin));
     if (localTranslations) setCmsTranslations(JSON.parse(localTranslations));
     if (localCmsTexts) setCmsTexts(JSON.parse(localCmsTexts));
 
+    // NEW CMS LOCAL STORAGE
+    if (localCmsHero) setCmsHero(JSON.parse(localCmsHero));
+    if (localCmsHeroFeatures)
+      setCmsHeroFeatures(JSON.parse(localCmsHeroFeatures));
+    if (localCmsWhyChooseUs) setCmsWhyChooseUs(JSON.parse(localCmsWhyChooseUs));
+    if (localCmsWhyChooseUsFeatures)
+      setCmsWhyChooseUsFeatures(JSON.parse(localCmsWhyChooseUsFeatures));
+    if (localCmsFaqs) setCmsFaqs(JSON.parse(localCmsFaqs));
+    if (localCmsPages) setCmsPages(JSON.parse(localCmsPages));
+    if (localCmsContacts) setCmsContacts(JSON.parse(localCmsContacts));
+    if (localCmsSocialMedia) setCmsSocialMedia(JSON.parse(localCmsSocialMedia));
     fetchVehicles();
     fetchLocations();
     fetchPackages();
     fetchAddons();
     fetchBookings();
+
+    // NEW CMS FETCHES
+    fetchCmsHero();
+    fetchCmsHeroFeatures();
+    fetchCmsWhyChooseUs();
+    fetchCmsWhyChooseUsFeatures();
+    fetchCmsFaqs();
+    fetchReviews();
+    fetchCmsPages();
+    fetchCmsContacts();
+    fetchCmsSocialMedia();
   }, []);
 
   const saveState = (key, value) => {
@@ -1035,7 +1209,6 @@ export function AppProvider({ children }) {
     setLang(newLang);
     localStorage.setItem("cargo_lang", newLang);
   };
-
   const addBooking = (newBooking) => {
     const updated = [newBooking, ...bookings].slice(0, 50);
     setBookings(updated);
@@ -1048,19 +1221,16 @@ export function AppProvider({ children }) {
       date: new Date().toLocaleString(),
     });
   };
-
   const logEmail = (emailLog) => {
     const updated = [emailLog, ...emails].slice(0, 100);
     setEmails(updated);
     saveState("cargo_emails", updated);
   };
-
   const addReview = (newReview) => {
     const updated = [newReview, ...reviews];
     setReviews(updated);
     saveState("cargo_reviews", updated);
   };
-
   const updateCmsTranslation = (language, key, text) => {
     const updated = {
       ...cmsTranslations,
@@ -1069,13 +1239,11 @@ export function AppProvider({ children }) {
     setCmsTranslations(updated);
     saveState("cargo_translations", updated);
   };
-
   const updateCmsText = (key, textPl, textEn) => {
     const updated = { ...cmsTexts, [key]: { pl: textPl, en: textEn } };
     setCmsTexts(updated);
     saveState("cargo_cmstexts", updated);
   };
-
   const saveVehicles = (updated) => {
     setVehicles(updated);
     saveState("cargo_vehicles", updated);
@@ -1096,18 +1264,15 @@ export function AppProvider({ children }) {
     setFaqs(updated);
     saveState("cargo_faqs", updated);
   };
-
   const setUser = (user) => {
     setCurrentUser(user);
     if (typeof window !== "undefined")
       localStorage.setItem("user", JSON.stringify(user));
   };
-
   const clearUser = () => {
     setCurrentUser(null);
     if (typeof window !== "undefined") localStorage.removeItem("user");
   };
-
   const registerUser = async (userData) => {
     try {
       const response = await api.post("/api/auth/register", userData);
@@ -1121,41 +1286,31 @@ export function AppProvider({ children }) {
       };
     }
   };
-
   const updateProfile = (phone, password = null) => {
     if (!currentUser) return;
     const updatedUser = { ...currentUser, phone };
     setCurrentUser(updatedUser);
     saveState("cargo_user", updatedUser);
   };
-
   const loginAdmin = (username, password) => {
     if (
       (username === "admin" && password === "admin123") ||
       (username === "employee" && password === "employee123")
     ) {
       const role = username === "admin" ? "owner" : "employee";
-      const admin = {
-        id: "mock-admin-id-123",
-        username,
-        role,
-      };
+      const admin = { id: "mock-admin-id-123", username, role };
       setAdminUser(admin);
       saveState("cargo_admin", admin);
       return true;
     }
     return false;
   };
-
   const logoutAdmin = () => {
     setAdminUser(null);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("cargo_admin");
-    }
+    if (typeof window !== "undefined") localStorage.removeItem("cargo_admin");
   };
-  const t = (key) => {
-    return cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
-  };
+  const t = (key) =>
+    cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
 
   return (
     <AppContext.Provider
@@ -1207,6 +1362,24 @@ export function AppProvider({ children }) {
         logoutAdmin,
         logEmail,
         isOwner: adminUser?.role === "owner",
+        cmsHero,
+        cmsHeroFeatures,
+        cmsWhyChooseUs,
+        cmsWhyChooseUsFeatures,
+        cmsFaqs,
+        fetchCmsHero,
+        fetchCmsHeroFeatures,
+        fetchCmsWhyChooseUs,
+        fetchCmsWhyChooseUsFeatures,
+        fetchCmsFaqs,
+        fetchReviews,
+        cmsPages,
+        cmsContacts,
+        cmsSocialMedia,
+        fetchCmsPages,
+        fetchCmsContacts,
+        fetchCmsSocialMedia,
+        authInitialized,
       }}
     >
       {children}

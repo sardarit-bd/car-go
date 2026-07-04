@@ -3,11 +3,20 @@
 import { useApp } from "@/app/context/AppContext";
 
 export default function CallingInfo({ className = "" }) {
-  const { lang } = useApp();
+  const { lang, cmsContacts } = useApp();
+
+  // 1. Find the dynamic phone number from the global CMS contacts
+  const phoneContact = cmsContacts?.find((c) => c.type === "PHONE");
+  
+  // 2. Use the dynamic value, or fallback to the original hardcoded number
+  const phoneNumber = phoneContact ? phoneContact.value : "+48 789 200 100";
+  
+  // 3. Clean the phone number for the tel: link (removes spaces, dashes, etc.)
+  const telLink = `tel:${phoneNumber.replace(/[\s\-\(\)]/g, "")}`;
 
   return (
     <a
-      href="tel:+48223790404"
+      href={telLink}
       className={`flex items-center space-x-3 group hover:no-underline select-none ${className}`}
     >
       {/* Orange Phone Icon with subtle animation on hover */}
@@ -24,7 +33,7 @@ export default function CallingInfo({ className = "" }) {
           {lang === "pl" ? "INFOLINIA 8:00 - 22:00" : "HOTLINE 8:00 - 22:00"}
         </span>
         <span className="text-lg md:text-xl font-black text-slate-800 leading-none group-hover:text-black transition-colors py-0">
-          +48 789 200 100
+          {phoneNumber}
         </span>
       </div>
     </a>

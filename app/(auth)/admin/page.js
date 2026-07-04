@@ -32,21 +32,21 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("bookings");
   const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
 
-  useEffect(() => {
-    if (!adminUser) {
-      router.push("/account/login");
-    }
-  }, [adminUser, router]);
+  // useEffect(() => {
+  //   if (!adminUser) {
+  //     router.push("/account/login");
+  //   }
+  // }, [adminUser, router]);
 
-  if (!adminUser) {
-    return (
-      <div className="text-center py-20 text-slate-500 font-bold">
-        Przekierowanie do logowania / Redirecting to login...
-      </div>
-    );
-  }
+  // if (!adminUser) {
+  //   return (
+  //     <div className="text-center py-20 text-slate-500 font-bold">
+  //       Przekierowanie do logowania / Redirecting to login...
+  //     </div>
+  //   );
+  // }
 
-  const isOwner = adminUser.role === "owner";
+  const isOwner = adminUser?.role === "owner";
 
   // Handlers for booking actions
   const handleBookingConfirm = async (id) => {
@@ -74,7 +74,7 @@ export default function AdminDashboard() {
             <p className="text-xs text-slate-500">
               Autoryzowana rola:{" "}
               <strong className="text-brand-red uppercase">
-                {adminUser.role === "owner"
+                {adminUser?.role === "owner"
                   ? "Właściciel / Owner"
                   : "Pracownik / Employee"}
               </strong>

@@ -6,19 +6,23 @@ import * as yup from "yup";
 import { Save, Plus, Trash2, Edit2, X } from "lucide-react";
 
 const heroSchema = yup.object().shape({
-  tagline: yup.string().required("Tagline is required"),
-  title: yup.string().required("Title is required"),
-  subtitle: yup.string().required("Subtitle is required"),
+  taglinePl: yup.string(),
+  taglineEn: yup.string(),
+  titlePl: yup.string().required("Title PL is required"),
+  titleEn: yup.string().required("Title EN is required"),
+  subtitlePl: yup.string().required("Subtitle PL is required"),
+  subtitleEn: yup.string().required("Subtitle EN is required"),
 });
 
 const featureSchema = yup.object().shape({
-  text: yup.string().required("Feature text is required"),
+  textPl: yup.string().required("Feature text PL is required"),
+  textEn: yup.string().required("Feature text EN is required"),
   order: yup.number().required("Order is required").min(0),
   isActive: yup.boolean().required(),
 });
 
 export default function CmsHero() {
-  const [hero, setHero] = useState({ tagline: "", title: "", subtitle: "" });
+  const [hero, setHero] = useState({ taglinePl: "", taglineEn: "", titlePl: "", titleEn: "", subtitlePl: "", subtitleEn: "" });
   const [heroId, setHeroId] = useState(null);
   const [features, setFeatures] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,7 +30,7 @@ export default function CmsHero() {
   const [success, setSuccess] = useState("");
 
   const [editingFeature, setEditingFeature] = useState(null);
-  const [featureForm, setFeatureForm] = useState({ text: "", order: 0, isActive: true });
+  const [featureForm, setFeatureForm] = useState({ textPl: "", textEn: "", order: 0, isActive: true });
 
   useEffect(() => {
     fetchHero();
@@ -37,7 +41,14 @@ export default function CmsHero() {
     try {
       const res = await api.get("/api/admin/cms/hero");
       if (res.data.data) {
-        setHero(res.data.data);
+        setHero({
+          taglinePl: res.data.data.taglinePl || "",
+          taglineEn: res.data.data.taglineEn || "",
+          titlePl: res.data.data.titlePl || "",
+          titleEn: res.data.data.titleEn || "",
+          subtitlePl: res.data.data.subtitlePl || "",
+          subtitleEn: res.data.data.subtitleEn || "",
+        });
         setHeroId(res.data.data.id);
       }
     } catch (err) { console.error(err); }
@@ -82,7 +93,7 @@ export default function CmsHero() {
       }
       setSuccess("Feature saved successfully!");
       setEditingFeature(null);
-      setFeatureForm({ text: "", order: features.length, isActive: true });
+      setFeatureForm({ textPl: "", textEn: "", order: features.length, isActive: true });
       fetchFeatures();
     } catch (err) {
       if (err.name === "ValidationError") setError(err.inner.map(e => e.message).join(", "));
@@ -101,12 +112,12 @@ export default function CmsHero() {
 
   const startEditFeature = (f) => {
     setEditingFeature(f);
-    setFeatureForm({ text: f.text, order: f.order, isActive: f.isActive });
+    setFeatureForm({ textPl: f.textPl || "", textEn: f.textEn || "", order: f.order, isActive: f.isActive });
   };
 
   const cancelEditFeature = () => {
     setEditingFeature(null);
-    setFeatureForm({ text: "", order: features.length, isActive: true });
+    setFeatureForm({ textPl: "", textEn: "", order: features.length, isActive: true });
   };
 
   return (
@@ -120,17 +131,35 @@ export default function CmsHero() {
         {success && <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm font-bold">{success}</div>}
         
         <form onSubmit={handleSaveHero} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-slate-500">
-          <div className="md:col-span-2">
-            <label className="block mb-1">Tagline</label>
-            <input type="text" value={hero.tagline} onChange={(e) => setHero({...hero, tagline: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Tagline (PL)</label>
+              <input type="text" value={hero.taglinePl} onChange={(e) => setHero({...hero, taglinePl: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
+            <div>
+              <label className="block mb-1">Tagline (EN)</label>
+              <input type="text" value={hero.taglineEn} onChange={(e) => setHero({...hero, taglineEn: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
           </div>
-          <div className="md:col-span-2">
-            <label className="block mb-1">Title</label>
-            <input type="text" value={hero.title} onChange={(e) => setHero({...hero, title: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Title (PL) *</label>
+              <input type="text" value={hero.titlePl} onChange={(e) => setHero({...hero, titlePl: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
+            <div>
+              <label className="block mb-1">Title (EN) *</label>
+              <input type="text" value={hero.titleEn} onChange={(e) => setHero({...hero, titleEn: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
           </div>
-          <div className="md:col-span-2">
-            <label className="block mb-1">Subtitle</label>
-            <textarea value={hero.subtitle} onChange={(e) => setHero({...hero, subtitle: e.target.value})} rows="2" className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red resize-none" />
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Subtitle (PL) *</label>
+              <textarea value={hero.subtitlePl} onChange={(e) => setHero({...hero, subtitlePl: e.target.value})} rows="2" className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red resize-none" />
+            </div>
+            <div>
+              <label className="block mb-1">Subtitle (EN) *</label>
+              <textarea value={hero.subtitleEn} onChange={(e) => setHero({...hero, subtitleEn: e.target.value})} rows="2" className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red resize-none" />
+            </div>
           </div>
           <div className="md:col-span-2 pt-2">
             <button type="submit" disabled={loading} className="w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded transition flex items-center justify-center gap-2">
@@ -147,9 +176,15 @@ export default function CmsHero() {
         </h2>
         
         <form onSubmit={handleSaveFeature} className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs font-bold text-slate-500 items-end">
-          <div className="md:col-span-6">
-            <label className="block mb-1">Feature Text</label>
-            <input type="text" value={featureForm.text} onChange={(e) => setFeatureForm({...featureForm, text: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+          <div className="md:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Text (PL) *</label>
+              <input type="text" value={featureForm.textPl} onChange={(e) => setFeatureForm({...featureForm, textPl: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
+            <div>
+              <label className="block mb-1">Text (EN) *</label>
+              <input type="text" value={featureForm.textEn} onChange={(e) => setFeatureForm({...featureForm, textEn: e.target.value})} className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red" />
+            </div>
           </div>
           <div className="md:col-span-2">
             <label className="block mb-1">Order</label>
@@ -177,13 +212,20 @@ export default function CmsHero() {
           ) : (
             [...features].sort((a,b) => a.order - b.order).map((f) => (
               <div key={f.id} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
-                <div className="flex items-center gap-3">
+                <div className="flex-1 pr-4 grid grid-cols-2 gap-x-4">
+                  <div>
+                    <span className="text-[10px] font-bold text-blue-600">PL:</span>
+                    <p className="text-slate-800 font-bold text-sm truncate">{f.textPl}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-green-600">EN:</span>
+                    <p className="text-slate-800 font-bold text-sm truncate">{f.textEn}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
                   <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${f.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {f.isActive ? 'ACTIVE' : 'INACTIVE'}
                   </span>
-                  <span className="text-slate-800 font-bold text-sm">{f.text}</span>
-                </div>
-                <div className="flex gap-2">
                   <button onClick={() => startEditFeature(f)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition"><Edit2 className="w-4 h-4" /></button>
                   <button onClick={() => handleDeleteFeature(f.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded transition"><Trash2 className="w-4 h-4" /></button>
                 </div>
@@ -194,4 +236,4 @@ export default function CmsHero() {
       </div>
     </div>
   );
-}   
+}

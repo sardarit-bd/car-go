@@ -1,34 +1,42 @@
 "use client";
 
 import { Car, MapPin, Headphones, ShieldCheck } from "lucide-react";
+import { useApp } from "@/app/context/AppContext";
 
 export default function AboutCompany({ t }) {
-  const features = [
-    {
-      icon: Car,
-      title: "Extensive Fleet Options",
-      description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa"
-    },
-    {
-      icon: Headphones,
-      title: "Exceptional Customer Service",
-      description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa"
-    },
-    {
-      icon: MapPin,
-      title: "Convenient Locations",
-      description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa"
-    },
-    {
-      icon: ShieldCheck,
-      title: "Reliability And Safety",
-      description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa"
-    }
+  const { lang, cmsWhyChooseUs, cmsWhyChooseUsFeatures } = useApp();
+  console.log("cmsWhyChooseUsFeatures:", cmsWhyChooseUsFeatures);
+  const icons = [Car, Headphones, MapPin, ShieldCheck];
+
+  // Map dynamic CMS features to current language and assign icons by index
+  const dynamicFeatures = (cmsWhyChooseUsFeatures || [])
+    .filter((f) => f.isActive)
+    .sort((a, b) => a.order - b.order)
+    .map((f, index) => ({
+      icon: icons[index] || Car,
+      title: lang === "pl" ? f.titlePl : f.titleEn,
+      description: lang === "pl" ? f.descriptionPl : f.descriptionEn,
+    }));
+
+  // Fallback to hardcoded features if CMS data is not loaded
+  const features = dynamicFeatures.length > 0 ? dynamicFeatures : [
+    { icon: Car, title: "Extensive Fleet Options", description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa" },
+    { icon: Headphones, title: "Exceptional Customer Service", description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa" },
+    { icon: MapPin, title: "Convenient Locations", description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa" },
+    { icon: ShieldCheck, title: "Reliability And Safety", description: "Quisque Sollicitudin Feugiat Risus, Eu Posuere Ex Euismod Eu. Phasellus Hendrerit, Massa" }
   ];
+
+  const displaySubtitle = (lang === "pl" ? cmsWhyChooseUs?.subtitlePl : cmsWhyChooseUs?.subtitleEn) || "Why Choose Us";
+  const displayTitle = (lang === "pl" ? cmsWhyChooseUs?.titlePl : cmsWhyChooseUs?.titleEn) || "Unmatched quality and service for your needs";
+  
+  // Handle image URL (prepend API URL if it's a relative path from uploads)
+  const rawImage = cmsWhyChooseUs?.mainImage;
+  const displayImage = rawImage 
+    ? (rawImage.startsWith("http") ? rawImage : `${process.env.NEXT_PUBLIC_API_URL}${rawImage}`)
+    : "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=800&q=80";
 
   return (
     <section className="py-16 sm:py-24 bg-white relative overflow-hidden">
-      {/* Decorative Elements - Left Side */}
       <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
         <div className="space-y-3">
           <div className="w-12 h-12 rounded-full border-2 border-brand-red/20"></div>
@@ -37,7 +45,6 @@ export default function AboutCompany({ t }) {
         </div>
       </div>
 
-      {/* Decorative Elements - Right Side */}
       <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
         <div className="space-y-3 text-right">
           <div className="w-6 h-6 rounded-full border-2 border-slate-200 ml-auto"></div>
@@ -47,20 +54,16 @@ export default function AboutCompany({ t }) {
       </div>
 
       <div className="px-4 sm:px-6 max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
-            <span className="text-brand-red">*</span> Why Choose Us
+            <span className="text-brand-red">*</span> {displaySubtitle}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight max-w-3xl mx-auto">
-            Unmatched quality and service <br className="hidden sm:block" /> for your needs
+            {displayTitle}
           </h2>
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
-          
-          {/* Left Column - Features 1 & 2 */}
           <div className="space-y-8 lg:space-y-12 order-2 lg:order-1">
             {features.slice(0, 2).map((feature, index) => (
               <div key={index} className="flex items-start gap-4 group">
@@ -75,23 +78,15 @@ export default function AboutCompany({ t }) {
             ))}
           </div>
 
-          {/* Center - Car Image */}
           <div className="relative flex justify-center order-1 lg:order-2">
             <div className="relative w-full max-w-md aspect-square">
-              {/* Circular Background */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=800&q=80" 
-                  alt="Red luxury car" 
-                  className="w-full h-full object-cover"
-                />
+                <img src={displayImage} alt="Car" className="w-full h-full object-cover" />
               </div>
-              {/* Decorative dot */}
               <div className="absolute top-4 right-8 w-3 h-3 bg-brand-red rounded-full"></div>
             </div>
           </div>
 
-          {/* Right Column - Features 3 & 4 */}
           <div className="space-y-8 lg:space-y-12 order-3">
             {features.slice(2, 4).map((feature, index) => (
               <div key={index} className="flex items-start gap-4 group">
@@ -105,7 +100,6 @@ export default function AboutCompany({ t }) {
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </section>

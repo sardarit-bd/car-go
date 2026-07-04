@@ -3,7 +3,19 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
-import { User, Calendar, ShieldCheck, Mail, Phone, Lock, Eye, Download, Star, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  User,
+  Calendar,
+  ShieldCheck,
+  Mail,
+  Phone,
+  Lock,
+  Eye,
+  Download,
+  Star,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function CustomerPanel() {
   const router = useRouter();
@@ -15,38 +27,41 @@ export default function CustomerPanel() {
     addReview,
     logoutUser,
     vehicles,
-    t
+    t,
   } = useApp();
   console.log(currentUser);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   // Reviews state
   const [reviewCar, setReviewCar] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
-  
+
   // Modals state
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/account/login");
-    } else if (currentUser.role === "ADMIN" || currentUser.role === "EMPLOYEE") {
-      router.push("/admin");
-    }
-  }, [currentUser, router]);
+  // useEffect(() => {
+  //   if (!currentUser) {
+  //     router.push("/account/login");
+  //   } else if (currentUser.role === "ADMIN" || currentUser.role === "EMPLOYEE") {
+  //     router.push("/admin");
+  //   }
+  // }, [currentUser, router]);
 
-  if (!currentUser) {
-    return null;
-  }
+  // if (!currentUser) {
+  //   return null;
+  // }
   // }
 
   // Find bookings of this client
-  const myBookings = bookings.filter((b) => b.customer.email.toLowerCase() === currentUser.email.toLowerCase());
+  const myBookings = bookings.filter(
+    (b) =>
+      b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase(),
+  );
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
@@ -61,7 +76,7 @@ export default function CustomerPanel() {
     setSaveSuccess(true);
     setPassword("");
     setConfirmPassword("");
-    
+
     setTimeout(() => {
       setSaveSuccess(false);
     }, 4000);
@@ -77,7 +92,7 @@ export default function CustomerPanel() {
         car: reviewCar,
         text: reviewText,
         date: new Date().toISOString().split("T")[0],
-        approved: false // awaits admin moderation
+        approved: false, // awaits admin moderation
       });
 
       setReviewSuccess(true);
@@ -94,12 +109,16 @@ export default function CustomerPanel() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in print:bg-white print:text-black">
-      
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-6 gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 uppercase">{t("navMyAccount")}</h1>
-          <p className="text-xs text-slate-500">Zarządzaj swoimi danymi kontaktowymi, historią rezerwacji i dodawaj opinie.</p>
+          <h1 className="text-3xl font-black text-slate-800 uppercase">
+            {t("navMyAccount")}
+          </h1>
+          <p className="text-xs text-slate-500">
+            Zarządzaj swoimi danymi kontaktowymi, historią rezerwacji i dodawaj
+            opinie.
+          </p>
         </div>
         <button
           onClick={() => {
@@ -113,7 +132,6 @@ export default function CustomerPanel() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
-        
         {/* Left Side: Profile Information Form */}
         <div className="lg:col-span-5 space-y-6 print:hidden">
           <div className="glass-panel p-6 rounded-2xl space-y-5">
@@ -128,8 +146,10 @@ export default function CustomerPanel() {
               </div>
             )}
 
-            <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs font-bold text-slate-500">
-              
+            <form
+              onSubmit={handleUpdateProfile}
+              className="space-y-4 text-xs font-bold text-slate-500"
+            >
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block mb-1.5">{t("firstName")}</label>
@@ -175,7 +195,9 @@ export default function CustomerPanel() {
               </div>
 
               <div className="border-t border-slate-100 pt-4 mt-2 space-y-3">
-                <p className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">Zmień Hasło / Change Password</p>
+                <p className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">
+                  Zmień Hasło / Change Password
+                </p>
                 <div>
                   <input
                     type="password"
@@ -202,14 +224,12 @@ export default function CustomerPanel() {
               >
                 ZAPISZ ZMIANY / SAVE CHANGES
               </button>
-
             </form>
           </div>
         </div>
 
         {/* Right Side: Reservation History */}
         <div className="lg:col-span-7 space-y-6 print:w-full">
-          
           {/* Reservation List */}
           <div className="glass-panel p-6 rounded-2xl space-y-5 print:border-none print:bg-white print:text-black">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5 print:text-black print:border-black">
@@ -222,38 +242,58 @@ export default function CustomerPanel() {
                   const statusColors = {
                     awaiting_confirmation: "bg-yellow-600 text-white",
                     confirmed: "bg-green-700 text-white",
-                    cancelled: "bg-red-700 text-white"
+                    cancelled: "bg-red-700 text-white",
                   };
 
                   const payColors = {
                     paid_online: "text-green-600",
                     payment_upon_pickup: "text-blue-600",
-                    awaiting_payment: "text-yellow-600"
+                    awaiting_payment: "text-yellow-600",
                   };
 
                   return (
-                    <div key={b.id} className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:border-black print:bg-white">
+                    <div
+                      key={b.id}
+                      className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:border-black print:bg-white"
+                    >
                       <div className="space-y-1 text-xs font-semibold">
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono text-sm font-extrabold text-slate-800 print:text-black">{b.id}</span>
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${statusColors[b.status]}`}>
-                            {b.status === "confirmed" ? t("statusConfirmed") :
-                             b.status === "cancelled" ? t("statusCancelled") : t("statusAwaiting")}
+                          <span className="font-mono text-sm font-extrabold text-slate-800 print:text-black">
+                            {b.id}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${statusColors[b.status]}`}
+                          >
+                            {b.status === "confirmed"
+                              ? t("statusConfirmed")
+                              : b.status === "cancelled"
+                                ? t("statusCancelled")
+                                : t("statusAwaiting")}
                           </span>
                         </div>
-                        <p className="text-slate-500 print:text-black">{b.dates.pickupDate} - {b.dates.returnDate} | <strong className="text-slate-800 print:text-black">{b.car.brand} {b.car.model}</strong></p>
+                        <p className="text-slate-500 print:text-black">
+                          {b.dates.pickupDate} - {b.dates.returnDate} |{" "}
+                          <strong className="text-slate-800 print:text-black">
+                            {b.car.brand} {b.car.model}
+                          </strong>
+                        </p>
                         <p className="text-[10px] text-slate-400 flex items-center space-x-1">
                           <span>Status płatności:</span>
                           <strong className={payColors[b.paymentStatus]}>
-                            {b.paymentStatus === "paid_online" ? t("payStatusPaid") :
-                             b.paymentStatus === "payment_upon_pickup" ? t("payStatusPickup") : t("payStatusAwaiting")}
+                            {b.paymentStatus === "paid_online"
+                              ? t("payStatusPaid")
+                              : b.paymentStatus === "payment_upon_pickup"
+                                ? t("payStatusPickup")
+                                : t("payStatusAwaiting")}
                           </strong>
                         </p>
                       </div>
-                      
+
                       <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto text-xs font-bold gap-2 print:hidden">
                         <span className="text-slate-800 text-sm font-extrabold">
-                          {b.pricing.total === "Individual Price" ? "Indywidualna" : `PLN ${b.pricing.total.toFixed(2)}`}
+                          {b.pricing.total === "Individual Price"
+                            ? "Indywidualna"
+                            : `PLN ${b.pricing.total.toFixed(2)}`}
                         </span>
                         <button
                           onClick={() => setSelectedBooking(b)}
@@ -283,11 +323,17 @@ export default function CustomerPanel() {
             {reviewSuccess && (
               <div className="p-3 bg-green-950/20 border border-green-800/30 text-green-500 text-xs font-bold rounded-lg flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4" />
-                <span>Opinia została wysłana! Oczekuje na zatwierdzenie przez administratora.</span>
+                <span>
+                  Opinia została wysłana! Oczekuje na zatwierdzenie przez
+                  administratora.
+                </span>
               </div>
             )}
 
-            <form onSubmit={handleSubmitReview} className="space-y-4 text-xs font-bold text-slate-500">
+            <form
+              onSubmit={handleSubmitReview}
+              className="space-y-4 text-xs font-bold text-slate-500"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1.5">Wybierz pojazd *</label>
@@ -303,7 +349,7 @@ export default function CustomerPanel() {
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block mb-1.5">{t("ratingLabel")} *</label>
                   <select
@@ -340,18 +386,17 @@ export default function CustomerPanel() {
               </button>
             </form>
           </div>
-
         </div>
-
       </div>
 
       {/* Details Modal (Printable) */}
       {selectedBooking && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4 print:relative print:bg-white print:text-black print:inset-0 print:p-0">
           <div className="w-full max-w-2xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto animate-scale-up print:border-none print:bg-white print:text-black print:max-h-full print:shadow-none print:p-0">
-            
             <div className="flex justify-between items-center border-b border-slate-100 pb-4 print:hidden">
-              <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">Szczegóły rezerwacji</h3>
+              <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
+                Szczegóły rezerwacji
+              </h3>
               <button
                 onClick={() => setSelectedBooking(null)}
                 className="px-3 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded text-[10px] text-slate-500 hover:text-slate-800"
@@ -362,17 +407,25 @@ export default function CustomerPanel() {
 
             {/* Print Layout details block */}
             <div className="space-y-6 text-sm text-slate-600 print:text-black">
-              
               <div className="flex justify-between items-baseline border-b border-slate-100 pb-4">
                 <div>
-                  <h4 className="text-xl font-black text-slate-800 font-mono print:text-black">{selectedBooking.id}</h4>
-                  <p className="text-xs text-slate-500">Data rezerwacji: {selectedBooking.date}</p>
+                  <h4 className="text-xl font-black text-slate-800 font-mono print:text-black">
+                    {selectedBooking.id}
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Data rezerwacji: {selectedBooking.date}
+                  </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 uppercase font-bold">Status:</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">
+                    Status:
+                  </span>
                   <p className="font-extrabold text-brand-red print:text-black">
-                    {selectedBooking.status === "confirmed" ? "POTWIERDZONA" :
-                     selectedBooking.status === "cancelled" ? "ANULOWANA" : "OCZEKUJE NA POTWIERDZENIE"}
+                    {selectedBooking.status === "confirmed"
+                      ? "POTWIERDZONA"
+                      : selectedBooking.status === "cancelled"
+                        ? "ANULOWANA"
+                        : "OCZEKUJE NA POTWIERDZENIE"}
                   </p>
                 </div>
               </div>
@@ -380,37 +433,80 @@ export default function CustomerPanel() {
               {/* Rented Car details */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl print:border-black">
-                  <h5 className="text-xs text-slate-400 uppercase font-bold">Pojazd / Vehicle</h5>
-                  <p className="font-extrabold text-slate-800 print:text-black">{selectedBooking.car.brand} {selectedBooking.car.model}</p>
-                  <p className="text-xs text-slate-500">Klasa: {selectedBooking.car.class} | Paliwo: {selectedBooking.car.fuel}</p>
+                  <h5 className="text-xs text-slate-400 uppercase font-bold">
+                    Pojazd / Vehicle
+                  </h5>
+                  <p className="font-extrabold text-slate-800 print:text-black">
+                    {selectedBooking.car.brand} {selectedBooking.car.model}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Klasa: {selectedBooking.car.class} | Paliwo:{" "}
+                    {selectedBooking.car.fuel}
+                  </p>
                 </div>
                 <div className="space-y-1.5 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl print:border-black">
-                  <h5 className="text-xs text-slate-400 uppercase font-bold">Pakiet ochrony</h5>
-                  <p className="font-extrabold text-slate-800 print:text-black">{selectedBooking.package.name.split(" / ")[0]}</p>
-                  <p className="text-xs text-slate-500">Cena: +PLN {selectedBooking.pricing.packageCost}</p>
+                  <h5 className="text-xs text-slate-400 uppercase font-bold">
+                    Pakiet ochrony
+                  </h5>
+                  <p className="font-extrabold text-slate-800 print:text-black">
+                    {selectedBooking.package.name.split(" / ")[0]}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Cena: +PLN {selectedBooking.pricing.packageCost}
+                  </p>
                 </div>
               </div>
 
               {/* Rental periods and locations */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                 <div className="space-y-1.5">
-                  <h5 className="text-xs text-slate-400 uppercase font-bold">Termin / Dates</h5>
-                  <p>Odbiór: <strong className="text-slate-800 print:text-black">{selectedBooking.dates.pickupDate}</strong> godz. {selectedBooking.dates.pickupTime}</p>
-                  <p>Zwrot: <strong className="text-slate-800 print:text-black">{selectedBooking.dates.returnDate}</strong> godz. {selectedBooking.dates.returnTime}</p>
-                  <p className="text-xs text-slate-500">Dni najmu: {selectedBooking.pricing.days} d.</p>
+                  <h5 className="text-xs text-slate-400 uppercase font-bold">
+                    Termin / Dates
+                  </h5>
+                  <p>
+                    Odbiór:{" "}
+                    <strong className="text-slate-800 print:text-black">
+                      {selectedBooking.dates.pickupDate}
+                    </strong>{" "}
+                    godz. {selectedBooking.dates.pickupTime}
+                  </p>
+                  <p>
+                    Zwrot:{" "}
+                    <strong className="text-slate-800 print:text-black">
+                      {selectedBooking.dates.returnDate}
+                    </strong>{" "}
+                    godz. {selectedBooking.dates.returnTime}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Dni najmu: {selectedBooking.pricing.days} d.
+                  </p>
                 </div>
-                
+
                 <div className="space-y-1.5">
-                  <h5 className="text-xs text-slate-400 uppercase font-bold">Lokalizacja / Locations</h5>
-                  <p>Punkt wydania: <strong className="text-slate-800 print:text-black">{selectedBooking.dates.pickupLocation}</strong></p>
-                  <p>Punkt zwrotu: <strong className="text-slate-800 print:text-black">{selectedBooking.dates.returnLocation}</strong></p>
+                  <h5 className="text-xs text-slate-400 uppercase font-bold">
+                    Lokalizacja / Locations
+                  </h5>
+                  <p>
+                    Punkt wydania:{" "}
+                    <strong className="text-slate-800 print:text-black">
+                      {selectedBooking.dates.pickupLocation}
+                    </strong>
+                  </p>
+                  <p>
+                    Punkt zwrotu:{" "}
+                    <strong className="text-slate-800 print:text-black">
+                      {selectedBooking.dates.returnLocation}
+                    </strong>
+                  </p>
                 </div>
               </div>
 
               {/* Addons selected */}
               {selectedBooking.addons.length > 0 && (
                 <div className="border-t border-slate-100 pt-4 space-y-1.5">
-                  <h5 className="text-xs text-slate-400 uppercase font-bold">Dodatkowe Akcesoria / Extras</h5>
+                  <h5 className="text-xs text-slate-400 uppercase font-bold">
+                    Dodatkowe Akcesoria / Extras
+                  </h5>
                   <ul className="list-disc pl-5 text-xs text-slate-600 space-y-0.5 print:text-black">
                     {selectedBooking.addons.map((addName, idx) => (
                       <li key={idx}>{addName.split(" / ")[0]}</li>
@@ -421,33 +517,45 @@ export default function CustomerPanel() {
 
               {/* Pricing overview */}
               <div className="border-t border-slate-100 pt-4 space-y-3.5">
-                <h5 className="text-xs text-slate-400 uppercase font-bold">Rozliczenie Finansowe / Pricing Breakdown</h5>
+                <h5 className="text-xs text-slate-400 uppercase font-bold">
+                  Rozliczenie Finansowe / Pricing Breakdown
+                </h5>
                 <div className="text-xs font-semibold text-slate-500 space-y-1 text-left">
                   <div className="flex justify-between">
-                    <span>Wynajem pojazdu ({selectedBooking.pricing.days} dni):</span>
-                    <span className="text-slate-800 print:text-black">PLN {selectedBooking.pricing.carCost.toFixed(2)}</span>
+                    <span>
+                      Wynajem pojazdu ({selectedBooking.pricing.days} dni):
+                    </span>
+                    <span className="text-slate-800 print:text-black">
+                      PLN {selectedBooking.pricing.carCost.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Pakiet ochrony:</span>
-                    <span className="text-slate-800 print:text-black">PLN {selectedBooking.pricing.packageCost.toFixed(2)}</span>
+                    <span className="text-slate-800 print:text-black">
+                      PLN {selectedBooking.pricing.packageCost.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Dodatki:</span>
-                    <span className="text-slate-800 print:text-black">PLN {selectedBooking.pricing.addonsCost.toFixed(2)}</span>
+                    <span className="text-slate-800 print:text-black">
+                      PLN {selectedBooking.pricing.addonsCost.toFixed(2)}
+                    </span>
                   </div>
-                  
+
                   <div className="flex justify-between text-base font-black text-slate-800 pt-2.5 border-t border-slate-100 print:text-black print:border-black">
                     <span>KOSZT BRUTTO (23% VAT):</span>
                     <span className="text-brand-red print:text-black">
-                      {selectedBooking.pricing.total === "Individual Price" ? "Wycena Indywidualna" : `PLN ${selectedBooking.pricing.total.toFixed(2)}`}
+                      {selectedBooking.pricing.total === "Individual Price"
+                        ? "Wycena Indywidualna"
+                        : `PLN ${selectedBooking.pricing.total.toFixed(2)}`}
                     </span>
                   </div>
                   <div className="text-right text-[10px] text-slate-400">
-                    Kaucja zwrotna (blokowana przy odbiorze): PLN {selectedBooking.car.deposit}
+                    Kaucja zwrotna (blokowana przy odbiorze): PLN{" "}
+                    {selectedBooking.car.deposit}
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* Print and Download Actions */}
@@ -460,11 +568,9 @@ export default function CustomerPanel() {
                 <span>DRUKUJ POTWIERDZENIE (DOWNLOAD PDF)</span>
               </button>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { CheckCircle2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { t } from "@/app/context/AppContext";
+// REMOVED: import { t } from "@/app/context/AppContext"; 
+// (This was crashing the component because 't' is not exported from the context file)
 
 export default function CheckoutStep4({ createdBooking, paymentCompleted, handleSimulatePayment, t }) {
   const router = useRouter();
@@ -84,4 +85,4 @@ export default function CheckoutStep4({ createdBooking, paymentCompleted, handle
       </div>
     </div>
   );
-}
+} 
