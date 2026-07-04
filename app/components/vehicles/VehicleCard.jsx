@@ -35,7 +35,7 @@ export default function VehicleCard({ car, lang, t }) {
         
         {car.image ? (
           <img
-            src={`http://localhost:5000${car.image}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL}${car.image}`}
             alt={`${car.brand} ${car.model}`}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

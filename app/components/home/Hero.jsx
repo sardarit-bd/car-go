@@ -8,7 +8,7 @@ import { CheckCircle2 } from "lucide-react";
 export default function Hero({ lang, getCmsText, t }) {
   const router = useRouter();
   const { setSearchParams, cmsHero, cmsHeroFeatures } = useApp();
-  console.log("CMS Hero Features:", cmsHeroFeatures);
+
   const displayTagline = (lang === "pl" ? cmsHero?.taglinePl : cmsHero?.taglineEn) || t("tagline");
   const displayTitle = (lang === "pl" ? cmsHero?.titlePl : cmsHero?.titleEn) || getCmsText("homeHeader");
   const displaySubtitle = (lang === "pl" ? cmsHero?.subtitlePl : cmsHero?.subtitleEn) || getCmsText("homeSubheader", "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.");

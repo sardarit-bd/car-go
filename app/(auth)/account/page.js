@@ -29,7 +29,7 @@ export default function CustomerPanel() {
     vehicles,
     t,
   } = useApp();
-  console.log(currentUser);
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -66,7 +66,7 @@ export default function CustomerPanel() {
   const handleUpdateProfile = (e) => {
     e.preventDefault();
     setSaveSuccess(false);
-    console.log(password);
+
     if (password && password !== confirmPassword) {
       alert(lang === "pl" ? "Hasła nie pasują!" : "Passwords do not match!");
       return;

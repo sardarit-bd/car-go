@@ -5,7 +5,7 @@ import { useApp } from "@/app/context/AppContext";
 
 export default function AboutCompany({ t }) {
   const { lang, cmsWhyChooseUs, cmsWhyChooseUsFeatures } = useApp();
-  console.log("cmsWhyChooseUsFeatures:", cmsWhyChooseUsFeatures);
+
   const icons = [Car, Headphones, MapPin, ShieldCheck];
 
   // Map dynamic CMS features to current language and assign icons by index

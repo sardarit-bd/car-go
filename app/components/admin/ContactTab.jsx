@@ -25,20 +25,18 @@ export default function ContactTab() {
 
       const res = await api.get("/api/contacts", { params });
       
-      // DEBUG: Check console to see exactly what the API returned
-      console.log("Raw API Response:", res.data);
 
-      // BULLETPROOF EXTRACTION: Handles any level of nesting
+
       let list = [];
       if (res.data?.data?.data && Array.isArray(res.data.data.data)) {
-        list = res.data.data.data; // Standard: { data: { data: [...] } }
+        list = res.data.data.data; 
       } else if (res.data?.data && Array.isArray(res.data.data)) {
-        list = res.data.data;      // Alternative: { data: [...] }
+        list = res.data.data;   
       } else if (Array.isArray(res.data)) {
-        list = res.data;           // Fallback: [...]
+        list = res.data; 
       }
       
-      console.log("Extracted Messages List:", list);
+
       setMessages(list);
       
       // Handle pagination metadata
@@ -83,8 +81,7 @@ export default function ContactTab() {
 
   if (!isOwner) return <div className="p-6 text-brand-red font-bold">Brak uprawnień.</div>;
 
-  // DEBUG: Verify state is updating
-  console.log("Current Messages State:", messages);
+
 
   return (
     <div className="space-y-6">

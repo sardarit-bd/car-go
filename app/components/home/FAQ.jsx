@@ -7,7 +7,7 @@ import { useApp } from "@/app/context/AppContext";
 export default function FAQSection({ t }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { lang, cmsFaqs } = useApp();
-  console.log("CMS FAQs:", cmsFaqs); // Debugging line to check the value of cmsFaqs
+
   // Map dynamic CMS FAQs to current language
   const dynamicFaqs = (cmsFaqs || [])
     .filter((f) => f.isActive)
@@ -17,13 +17,7 @@ export default function FAQSection({ t }) {
       answer: lang === "pl" ? f.answerPl : f.answerEn,
     }));
 
-  // Fallback to hardcoded FAQs if CMS data is not loaded
-  // const faqs = dynamicFaqs.length > 0 ? dynamicFaqs : [
-  //   { question: "What Do I Need To Rent A Car?", answer: "You will need a valid driver's license, a credit card in your name, and proof of insurance. International drivers may also need an International Driving Permit." },
-  //   { question: "How Old Do I Need To Be To Rent A Car?", answer: "The minimum age to rent a car is typically 21 years old. Drivers under 25 may be subject to a young driver surcharge." },
-  //   { question: "Can I Rent A Car With A Debit Card?", answer: "Yes, we accept debit cards, but a credit card is often preferred for the security deposit. Please check our specific policy for debit card usage." },
-  //   { question: "Is there a mileage limit?", answer: "Most of our rentals come with unlimited mileage within the country. Cross-border travel may have specific restrictions." }
-  // ];
+
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);

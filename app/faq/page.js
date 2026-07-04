@@ -7,7 +7,6 @@ import { useApp } from "@/app/context/AppContext";
 export default function FAQSection({ t }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { lang, cmsFaqs } = useApp();
-  console.log("CMS FAQs:", cmsFaqs);
 
   const dynamicFaqs = (cmsFaqs || [])
     .filter((f) => f.isActive)

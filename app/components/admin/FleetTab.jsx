@@ -393,7 +393,7 @@ export default function FleetTab() {
                 <div className="relative h-40 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
                   {v.image ? (
                     <img
-                      src={v.image.startsWith('http') ? v.image : `http://localhost:5000${v.image}`}
+                      src={v.image.startsWith('http') ? v.image : `${process.env.NEXT_PUBLIC_API_URL}${v.image}`}
                       alt={`${v.brand} ${v.model}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />

@@ -33,17 +33,14 @@ export default function BlogTab() {
       const res = await api.get("/api/blogs", {
         params: { page, limit: 10, search: searchQuery }
       });
+
       
-      // DEBUG: Check your browser console to see the exact structure
-      console.log("Blog API Response:", res.data); 
-      
-      // Robustly extract data regardless of backend structure
       const responseData = res.data.data; 
       const list = responseData.data || [];
       
       setBlogs(list);
       
-      // Handle pagination metadata
+
       if (responseData.totalPages) setTotalPages(responseData.totalPages);
       else if (root.meta?.totalPages) setTotalPages(root.meta.totalPages);
     } catch (err) {
@@ -120,7 +117,7 @@ export default function BlogTab() {
       date: blog.date ? blog.date.split('T')[0] : "",
       image: null // Keep existing image if not changed
     });
-    setImagePreview(blog.imageUrl ? `http://localhost:5000${blog.imageUrl}` : null);
+    setImagePreview(blog.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${blog.imageUrl}` : null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -231,7 +228,7 @@ export default function BlogTab() {
               <div key={blog.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col gap-3">
                 <div className="flex gap-3">
                   {blog.imageUrl && (
-                    <img src={`http://localhost:5000${blog.imageUrl}`} alt={blog.title} className="w-20 h-20 object-cover rounded-lg bg-slate-100" />
+                    <img src={`${process.env.NEXT_PUBLIC_API_URL}${blog.imageUrl}`} alt={blog.title} className="w-20 h-20 object-cover rounded-lg bg-slate-100" />
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-black text-slate-800 truncate">{blog.title}</h3>

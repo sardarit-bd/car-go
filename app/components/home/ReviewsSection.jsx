@@ -4,7 +4,7 @@ import { Star, Quote } from "lucide-react";
 import Link from "next/link";
 
 export default function ReviewsSection({ reviews, approvedReviews, t }) {
-  console.log("ReviewsSection: reviews:", approvedReviews);
+
   return (
     <section className="px-4 sm:px-6 container mx-auto py-16 sm:py-24">
 
