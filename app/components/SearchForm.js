@@ -3,13 +3,19 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
-import { Calendar, MapPin, Clock, AlertTriangle, ArrowRightLeft, Compass } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  AlertTriangle,
+  ArrowRightLeft,
+  Compass,
+} from "lucide-react";
 
-export default function SearchForm({ vertical = false }) {
+export default function SearchForm({ vertical = false, onSearch }) {
   const router = useRouter();
   const { lang, locations, setSearchParams, t } = useApp();
 
-  // Initialize with tomorrow and 3 days later
   const getTomorrowString = (offsetDays = 1) => {
     const today = new Date();
     today.setDate(today.getDate() + offsetDays);
@@ -22,7 +28,7 @@ export default function SearchForm({ vertical = false }) {
   const [returnDate, setReturnDate] = useState("");
   const [pickupTime, setPickupTime] = useState("08:00");
   const [returnTime, setReturnTime] = useState("08:00");
-  
+
   const [validationError, setValidationError] = useState("");
   const [customAddress, setCustomAddress] = useState("");
   const [customAddressReturn, setCustomAddressReturn] = useState("");
@@ -58,12 +64,20 @@ export default function SearchForm({ vertical = false }) {
     const end = new Date(`${returnDate}T${returnTime}`);
 
     if (start <= new Date()) {
-      setValidationError(lang === "pl" ? "Data odbioru must be w przyszłości!" : "Pickup date must be in the future!");
+      setValidationError(
+        lang === "pl"
+          ? "Data odbioru must be w przyszłości!"
+          : "Pickup date must be in the future!",
+      );
       return false;
     }
 
     if (end <= start) {
-      setValidationError(lang === "pl" ? "Data zwrotu musi być po dacie odbioru!" : "Return date must be after pickup date!");
+      setValidationError(
+        lang === "pl"
+          ? "Data zwrotu musi być po dacie odbioru!"
+          : "Return date must be after pickup date!",
+      );
       return false;
     }
 
@@ -71,7 +85,9 @@ export default function SearchForm({ vertical = false }) {
 
     // Enforce minimum rental periods
     const getMinDaysForLocationName = (name) => {
-      const loc = locations.find((l) => name.includes(l.name) || l.name.includes(name));
+      const loc = locations.find(
+        (l) => name.includes(l.name) || l.name.includes(name),
+      );
       return loc ? loc.minDays : 1;
     };
 
@@ -92,24 +108,34 @@ export default function SearchForm({ vertical = false }) {
     e.preventDefault();
 
     if (checkValidation()) {
-      const isCustomPickup = pickupLocation.toLowerCase().includes("dostawa") || pickupLocation.toLowerCase().includes("address");
-      const isCustomReturn = returnLocation.toLowerCase().includes("dostawa") || returnLocation.toLowerCase().includes("address");
+      const isCustomPickup =
+        pickupLocation.toLowerCase().includes("dostawa") ||
+        pickupLocation.toLowerCase().includes("address");
+      const isCustomReturn =
+        returnLocation.toLowerCase().includes("dostawa") ||
+        returnLocation.toLowerCase().includes("address");
 
       const searchData = {
-        pickupLocation: isCustomPickup ? `Dostawa: ${customAddress}` : pickupLocation,
-        returnLocation: isCustomReturn ? `Odbiór: ${customAddressReturn || customAddress}` : returnLocation,
+        pickupLocation: isCustomPickup
+          ? `Dostawa: ${customAddress}`
+          : pickupLocation,
+        returnLocation: isCustomReturn
+          ? `Odbiór: ${customAddressReturn || customAddress}`
+          : returnLocation,
         pickupDate,
         returnDate,
         pickupTime,
         returnTime,
         days: calculateDays(),
-        isCustomPrice: isCustomPickup || isCustomReturn
+        isCustomPrice: isCustomPickup || isCustomReturn,
       };
 
-      setSearchParams(searchData);
-      
-      // Navigate to checkout search results page
-      router.push("/checkout?step=1");
+      if (onSearch) {
+        onSearch(searchData);
+      } else {
+        setSearchParams(searchData);
+        // router.push("/checkout?step=1");
+      }
     }
   };
 
@@ -119,18 +145,28 @@ export default function SearchForm({ vertical = false }) {
     setReturnLocation(temp);
   };
 
-  const isCustomPickup = pickupLocation.toLowerCase().includes("dostawa") || pickupLocation.toLowerCase().includes("address");
-  const isCustomReturn = returnLocation.toLowerCase().includes("dostawa") || returnLocation.toLowerCase().includes("address");
+  const isCustomPickup =
+    pickupLocation.toLowerCase().includes("dostawa") ||
+    pickupLocation.toLowerCase().includes("address");
+  const isCustomReturn =
+    returnLocation.toLowerCase().includes("dostawa") ||
+    returnLocation.toLowerCase().includes("address");
 
   return (
-    <div className={`glass-panel border-slate-100 ${vertical ? "p-5" : "p-6 sm:p-8"} rounded-2xl glow-red shadow-xl bg-white/95 w-full`}>
-      <h3 className={`font-black text-slate-800 flex items-center space-x-2.5 border-b border-slate-100 ${vertical ? "text-base mb-4 pb-3" : "text-xl mb-6 pb-4"}`}>
+    <div
+      className={`glass-panel border-slate-100 ${vertical ? "p-5" : "p-6 sm:p-8"} rounded-2xl glow-red shadow-xl bg-white/95 w-full`}
+    >
+      <h3
+        className={`font-black text-slate-800 flex items-center space-x-2.5 border-b border-slate-100 ${vertical ? "text-base mb-4 pb-3" : "text-xl mb-6 pb-4"}`}
+      >
         <Calendar className="w-5.5 h-5.5 text-brand-red" />
         <span>{t("searchTitle")}</span>
       </h3>
 
-      <form onSubmit={handleSearch} className={vertical ? "space-y-4" : "space-y-6"}>
-        {/* Error Notification */}
+      <form
+        onSubmit={handleSearch}
+        className={vertical ? "space-y-4" : "space-y-6"}
+      >
         {validationError && (
           <div className="flex items-center space-x-2 p-3 bg-brand-red/10 border border-brand-red/20 rounded-xl text-sm text-brand-red animate-shake">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
@@ -138,9 +174,9 @@ export default function SearchForm({ vertical = false }) {
           </div>
         )}
 
-        {/* Locations Grid Wrapper */}
-        <div className={`relative grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16"}`}>
-          {/* Pickup Location */}
+        <div
+          className={`relative grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16"}`}
+        >
           <div className="relative">
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Compass className="w-4 h-4 text-brand-red" />
@@ -154,7 +190,8 @@ export default function SearchForm({ vertical = false }) {
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.name}>
-                    {loc.name} {loc.minDays > 1 ? `(min. ${loc.minDays} dni)` : ""}
+                    {loc.name}{" "}
+                    {loc.minDays > 1 ? `(min. ${loc.minDays} dni)` : ""}
                   </option>
                 ))}
               </select>
@@ -164,7 +201,6 @@ export default function SearchForm({ vertical = false }) {
             </div>
           </div>
 
-          {/* Floating Swap button */}
           {!vertical && (
             <div className="absolute left-1/2 top-[50%] sm:top-[60%] -translate-x-1/2 -translate-y-1/2 z-10 block">
               <button
@@ -178,7 +214,6 @@ export default function SearchForm({ vertical = false }) {
             </div>
           )}
 
-          {/* Return Location */}
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <MapPin className="w-4 h-4 text-slate-400" />
@@ -192,7 +227,8 @@ export default function SearchForm({ vertical = false }) {
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.name}>
-                    {loc.name} {loc.minDays > 1 ? `(min. ${loc.minDays} dni)` : ""}
+                    {loc.name}{" "}
+                    {loc.minDays > 1 ? `(min. ${loc.minDays} dni)` : ""}
                   </option>
                 ))}
               </select>
@@ -203,9 +239,9 @@ export default function SearchForm({ vertical = false }) {
           </div>
         </div>
 
-        {/* Dates and Times Grid */}
-        <div className={`grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-5"}`}>
-          {/* Pickup Date & Time */}
+        <div
+          className={`grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-5"}`}
+        >
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
@@ -233,7 +269,6 @@ export default function SearchForm({ vertical = false }) {
             </div>
           </div>
 
-          {/* Return Date & Time */}
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
@@ -262,7 +297,6 @@ export default function SearchForm({ vertical = false }) {
           </div>
         </div>
 
-        {/* Custom Address Fields */}
         {(isCustomPickup || isCustomReturn) && (
           <div className="grid grid-cols-1 gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl animate-fade-in text-sm text-slate-700">
             {isCustomPickup && (
@@ -288,7 +322,11 @@ export default function SearchForm({ vertical = false }) {
                 <input
                   type="text"
                   required={isCustomReturn}
-                  placeholder={isCustomPickup ? "Taki sam jak dostawy / Same as delivery" : "np. Dworzec Kolejowy, Brzeg"}
+                  placeholder={
+                    isCustomPickup
+                      ? "Taki sam jak dostawy / Same as delivery"
+                      : "np. Dworzec Kolejowy, Brzeg"
+                  }
                   value={customAddressReturn}
                   onChange={(e) => setCustomAddressReturn(e.target.value)}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-brand-red font-semibold text-xs"
@@ -296,12 +334,11 @@ export default function SearchForm({ vertical = false }) {
               </div>
             )}
             <div className="text-[10px] text-brand-red font-bold">
-              ℹ️ {t("individualPriceAlert")}
+              {t("individualPriceAlert")}
             </div>
           </div>
         )}
 
-        {/* Search Submit Button */}
         <div className="pt-2">
           <button
             type="submit"

@@ -20,6 +20,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  
   return (
     <html lang="en">
       <head>
@@ -28,7 +29,7 @@ export default function RootLayout({ children }) {
       <body className="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-brand-red selection:text-white">
         <AppProvider>
           <Header />
-          <main className="flex-grow pt-36 pb-12">
+          <main className="flex-grow pt-10 lg:pt-0  pb-0">
             {children}
           </main>
           <ProviderFooterWrapper />
@@ -38,7 +39,7 @@ export default function RootLayout({ children }) {
   );
 }
 
-// Separate component to wrap Footer in order to avoid React client/server context hydration warnings
+
 function ProviderFooterWrapper() {
   return <Footer />;
 }

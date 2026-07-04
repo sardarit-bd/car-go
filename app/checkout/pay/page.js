@@ -14,18 +14,48 @@ function OnlinePaymentSimulatorContent() {
   const [activeBooking, setActiveBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paymentDone, setPaymentDone] = useState(false);
-  const [selectedGateway, setSelectedGateway] = useState("blik"); // blik, p24, autopay
+  const [selectedGateway, setSelectedGateway] = useState("blik"); 
 
   const id = searchParams.get("id");
+  const paymentStatusFromUrl = searchParams.get("status");
+
+
+
 
   useEffect(() => {
     if (id) {
-      // Find the booking in local state or localStorage
+
       const match = bookings.find((b) => b.id.toUpperCase() === id.toUpperCase().trim());
-      setActiveBooking(match || null);
+
+
+      if (paymentStatusFromUrl === "success" && match && match.paymentStatus !== "paid_online") {
+        
+
+        const localBookings = JSON.parse(localStorage.getItem("cargo_bookings") || "[]");
+        const updated = localBookings.map((b) => {
+          if (b.id === match.id) {
+            return { ...b, paymentStatus: "paid_online", status: "confirmed" };
+          }
+          return b;
+        });
+        localStorage.setItem("cargo_bookings", JSON.stringify(updated));
+
+
+        setActiveBooking({ ...match, paymentStatus: "paid_online", status: "confirmed" });
+        setPaymentDone(true);
+
+
+        if (updateBookingStatus) {
+          updateBookingStatus(match.id, "confirmed");
+        }
+      } else {
+
+        setActiveBooking(match || null);
+      }
     }
     setLoading(false);
-  }, [id, bookings]);
+  }, [id, bookings, paymentStatusFromUrl, updateBookingStatus]);
+
 
   if (loading) {
     return (
@@ -49,48 +79,12 @@ function OnlinePaymentSimulatorContent() {
   }
 
   const handlePay = () => {
-    // Modify booking payment status to paid_online
-    const localBookings = JSON.parse(localStorage.getItem("cargo_bookings") || "[]");
-    const updated = localBookings.map((b) => {
-      if (b.id === activeBooking.id) {
-        return { ...b, paymentStatus: "paid_online" };
-      }
-      return b;
-    });
-    localStorage.setItem("cargo_bookings", JSON.stringify(updated));
-
-    // Force context sync by calling updateBookingStatus with current status
-    updateBookingStatus(activeBooking.id, activeBooking.status);
-
-    // Send simulated confirmation email
-    const emailText = `
-Witaj/Hello ${activeBooking.customer.firstName} ${activeBooking.customer.lastName},
-
-Otrzymaliśmy płatność online za rezerwację ${activeBooking.id} za pośrednictwem bramki ${selectedGateway.toUpperCase()}!
-We have successfully received your online payment for booking ${activeBooking.id} via ${selectedGateway.toUpperCase()}!
-
-Kwota / Paid amount: PLN ${activeBooking.pricing.total.toFixed(2)}
-Status płatności / Payment status: OPŁACONA / PAID
-
-Oczekuj na ostateczne zatwierdzenie rezerwacji przez administratora.
-Please await final confirmation of your booking by the administrator.
-
-Pozdrawiamy / Best regards,
-Zespół CAR-GO.PL
-    `;
-
-    logEmail({
-      id: "pay_simulator_" + Math.random().toString(36).substr(2, 9),
-      to: activeBooking.customer.email,
-      subject: `[CAR-GO.PL] Potwierdzenie płatności / Payment confirmation ${activeBooking.id}`,
-      body: emailText,
-      date: new Date().toLocaleString()
-    });
-
-    setPaymentDone(true);
+    // (Keep your existing mock logic here if you still want a manual override button, 
+    // otherwise you can leave it empty or remove the button from the UI below)
+    setPaymentDone(true); 
   };
 
-  const isAlreadyPaid = activeBooking.paymentStatus === "paid_online" || paymentDone;
+  const isAlreadyPaid = activeBooking?.paymentStatus === "paid_online" || paymentDone || paymentStatusFromUrl === "success";
 
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12 animate-fade-in">

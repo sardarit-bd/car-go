@@ -1,10 +1,16 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+import api from "@/lib/axios";
 const AppContext = createContext();
 
-// Default CMS translations
+// Default CMS translations (kept as fallbacks)
 const initialTranslations = {
   pl: {
     brandName: "CAR-GO",
@@ -27,16 +33,19 @@ const initialTranslations = {
     pickupTime: "Godzina odbioru",
     returnTime: "Godzina zwrotu",
     searchBtn: "SZUKAJ POJAZDU",
-    minDaysWarning: "Dla tej lokalizacji minimalny okres wynajmu to {days} dni!",
+    minDaysWarning:
+      "Dla tej lokalizacji minimalny okres wynajmu to {days} dni!",
     requiredFields: "Proszę uzupełnić wszystkie pola wyszukiwania.",
     aboutTitle: "O Naszej Firmie",
-    aboutText: "CAR-GO to nowoczesna wypożyczalnia samochodów z siedzibą w Skarbimierzu-Osiedlu. Oferujemy wynajem krótko- i długoterminowy w miastach Oława, Grodków i Brzeg, a także dostawę pod wskazany adres. Nasza flota składa się z nowoczesnych, bezpiecznych i w pełni wyposażonych aut. Stawiamy na przejrzyste warunki, brak ukrytych kosztów oraz pełen profesjonalizm.",
+    aboutText:
+      "CAR-GO to nowoczesna wypożyczalnia samochodów z siedzibą w Skarbimierzu-Osiedlu. Oferujemy wynajem krótko- i długoterminowy w miastach Oława, Grodków i Brzeg, a także dostawę pod wskazany adres. Nasza flota składa się z nowoczesnych, bezpiecznych i w pełni wyposażonych aut. Stawiamy na przejrzyste warunki, brak ukrytych kosztów oraz pełen profesjonalizm.",
     motto1: "Nielimitowany przebieg",
     motto2: "Dostawa pod dom",
     motto3: "Brak ukrytych opłat",
     motto4: "Szybki proces online",
     fleetTitle: "Nasza Flota Pojazdów",
-    fleetSubtitle: "Wybierz idealny samochód dostosowany do Twoich potrzeb. Każdy pojazd jest regularnie serwisowany.",
+    fleetSubtitle:
+      "Wybierz idealny samochód dostosowany do Twoich potrzeb. Każdy pojazd jest regularnie serwisowany.",
     priceFrom: "Cena od",
     dayUnit: "/doba",
     fuelPetrol: "Benzyna",
@@ -78,18 +87,23 @@ const initialTranslations = {
     consentsTitle: "Wymagane zgody",
     consentPrivacy: "Akceptuję Politykę Prywatności",
     consentTerms: "Akceptuję Regulamin Wypożyczalni",
-    consentData: "Wyrażam zgodę na przetwarzanie danych osobowych w celu rezerwacji",
-    consentMarketing: "Wyrażam zgodę na przetwarzanie danych w celach marketingowych (opcjonalnie)",
+    consentData:
+      "Wyrażam zgodę na przetwarzanie danych osobowych w celu rezerwacji",
+    consentMarketing:
+      "Wyrażam zgodę na przetwarzanie danych w celach marketingowych (opcjonalnie)",
     confirmTitle: "Dziękujemy za dokonanie rezerwacji!",
     confirmNum: "Przypisany numer rezerwacji",
-    confirmPickupText: "Ważne! Rezerwacja online musi zostać potwierdzona przez administratora. Maksymalny czas oczekiwania wynosi 24 godziny.",
+    confirmPickupText:
+      "Ważne! Rezerwacja online musi zostać potwierdzona przez administratora. Maksymalny czas oczekiwania wynosi 24 godziny.",
     confirmPayBtn: "OPŁAĆ REZERWACJĘ",
-    confirmOnlineText: "Wybrałeś płatność online. Proszę kliknąć przycisk poniżej aby dokonać transakcji.",
+    confirmOnlineText:
+      "Wybrałeś płatność online. Proszę kliknąć przycisk poniżej aby dokonać transakcji.",
     lookupTitle: "Szybkie Sprawdzenie Rezerwacji",
     lookupPlaceholder: "Wpisz numer rezerwacji...",
     lookupBtn: "SPRAWDŹ",
     lookupNotFound: "Nie znaleziono rezerwacji o podanym numerze.",
-    lookupMaskedAlert: "Dane osobowe zostały częściowo ukryte w celu zachowania bezpieczeństwa.",
+    lookupMaskedAlert:
+      "Dane osobowe zostały częściowo ukryte w celu zachowania bezpieczeństwa.",
     statusAwaiting: "Oczekuje na potwierdzenie",
     statusConfirmed: "Potwierdzona",
     statusCancelled: "Anulowana",
@@ -101,14 +115,16 @@ const initialTranslations = {
     docId: "Dowód osobisty / Paszport",
     docLicense: "Ważne prawo jazdy",
     docCard: "Karta płatnicza",
-    individualPriceAlert: "Cena Indywidualna - skontaktujemy się telefonicznie w celu ustalenia kosztów transportu.",
+    individualPriceAlert:
+      "Cena Indywidualna - skontaktujemy się telefonicznie w celu ustalenia kosztów transportu.",
     contactTitle: "Skontaktuj się z nami",
     contactFormTitle: "Napisz do nas",
     contactName: "Twoje Imię",
     contactEmail: "Twój E-mail",
     contactMessage: "Treść wiadomości",
     contactSubmit: "Wyślij Wiadomość",
-    contactSuccess: "Wiadomość została wysłana! Odpowiemy najszybciej jak to możliwe.",
+    contactSuccess:
+      "Wiadomość została wysłana! Odpowiemy najszybciej jak to możliwe.",
     faqTitle: "Często Zadawane Pytania (FAQ)",
     navMyReservations: "Moje Rezerwacje",
     navBlog: "Blog",
@@ -122,12 +138,14 @@ const initialTranslations = {
     seatsFilter4: "4 miejsca",
     seatsFilter5: "5 miejsc",
     longTermTitle: "Wynajem Długoterminowy",
-    longTermText: "Potrzebujesz samochodu na wynajem długoterminowy? Skontaktuj się z nami już dziś i omówmy ofertę dopasowaną do Twoich potrzeb.",
+    longTermText:
+      "Potrzebujesz samochodu na wynajem długoterminowy? Skontaktuj się z nami już dziś i omówmy ofertę dopasowaną do Twoich potrzeb.",
     contactUsBtn: "Skontaktuj się",
     readMore: "Czytaj więcej",
     publishedOn: "Opublikowano",
     blogTitle: "Nasz Blog i Porady",
-    blogSubtitle: "Dowiedz się więcej o wynajmie samochodów, podróżach oraz najlepszych trasach w rejonie.",
+    blogSubtitle:
+      "Dowiedz się więcej o wynajmie samochodów, podróżach oraz najlepszych trasach w rejonie.",
     verifyEmailLabel: "Adres e-mail rezerwacji",
     printVoucher: "Drukuj potwierdzenie",
     downloadPdf: "Pobierz PDF",
@@ -135,7 +153,7 @@ const initialTranslations = {
     payPickupInfo: "Gotówka / Karta przy odbiorze",
     technicalSupport: "Obsługa techniczna",
     domainValidity: "Domena ważna do",
-    backToVehicles: "Powrót do pojazdów"
+    backToVehicles: "Powrót do pojazdów",
   },
   en: {
     brandName: "CAR-GO",
@@ -158,16 +176,19 @@ const initialTranslations = {
     pickupTime: "Pickup time",
     returnTime: "Return time",
     searchBtn: "SEARCH VEHICLE",
-    minDaysWarning: "For this location, the minimum rental period is {days} days!",
+    minDaysWarning:
+      "For this location, the minimum rental period is {days} days!",
     requiredFields: "Please fill in all search fields.",
     aboutTitle: "About Our Company",
-    aboutText: "CAR-GO is a modern car rental agency based in Skarbimierz-Osiedle. We offer short- and long-term rental in Oława, Grodków, and Brzeg, as well as direct delivery to your specified address. Our fleet consists of modern, safe, and fully equipped cars. We focus on transparent terms, no hidden costs, and absolute professionalism.",
+    aboutText:
+      "CAR-GO is a modern car rental agency based in Skarbimierz-Osiedle. We offer short- and long-term rental in Oława, Grodków, and Brzeg, as well as direct delivery to your specified address. Our fleet consists of modern, safe, and fully equipped cars. We focus on transparent terms, no hidden costs, and absolute professionalism.",
     motto1: "Unlimited mileage",
     motto2: "Delivery to home",
     motto3: "No hidden fees",
     motto4: "Quick online process",
     fleetTitle: "Our Vehicle Fleet",
-    fleetSubtitle: "Select the ideal car tailored to your needs. Every vehicle is serviced regularly.",
+    fleetSubtitle:
+      "Select the ideal car tailored to your needs. Every vehicle is serviced regularly.",
     priceFrom: "Price from",
     dayUnit: "/day",
     fuelPetrol: "Petrol",
@@ -209,18 +230,23 @@ const initialTranslations = {
     consentsTitle: "Required consents",
     consentPrivacy: "I accept the Privacy Policy",
     consentTerms: "I accept the Rental Terms and Conditions",
-    consentData: "I consent to the processing of my personal data for the reservation",
-    consentMarketing: "I consent to the processing of my data for marketing purposes (optional)",
+    consentData:
+      "I consent to the processing of my personal data for the reservation",
+    consentMarketing:
+      "I consent to the processing of my data for marketing purposes (optional)",
     confirmTitle: "Thank you for your booking!",
     confirmNum: "Assigned reservation number",
-    confirmPickupText: "Important! The online reservation must be confirmed by the administrator. The maximum waiting time is 24 hours.",
+    confirmPickupText:
+      "Important! The online reservation must be confirmed by the administrator. The maximum waiting time is 24 hours.",
     confirmPayBtn: "PAY ONLINE NOW",
-    confirmOnlineText: "You selected online payment. Please click the button below to complete the transaction.",
+    confirmOnlineText:
+      "You selected online payment. Please click the button below to complete the transaction.",
     lookupTitle: "Quick Reservation Check",
     lookupPlaceholder: "Enter reservation number...",
     lookupBtn: "CHECK",
     lookupNotFound: "Reservation with this number was not found.",
-    lookupMaskedAlert: "Personal details have been partially hidden for security reasons.",
+    lookupMaskedAlert:
+      "Personal details have been partially hidden for security reasons.",
     statusAwaiting: "Awaiting confirmation",
     statusConfirmed: "Confirmed",
     statusCancelled: "Cancelled",
@@ -232,7 +258,8 @@ const initialTranslations = {
     docId: "National ID Card / Passport",
     docLicense: "Valid driving licence",
     docCard: "Payment card",
-    individualPriceAlert: "Individual Price – we will contact you by phone to determine transportation costs.",
+    individualPriceAlert:
+      "Individual Price – we will contact you by phone to determine transportation costs.",
     contactTitle: "Contact Us",
     contactFormTitle: "Write to Us",
     contactName: "Your Name",
@@ -253,12 +280,14 @@ const initialTranslations = {
     seatsFilter4: "4 seats",
     seatsFilter5: "5 seats",
     longTermTitle: "Long-Term Rental",
-    longTermText: "Need a car for long-term rental? Contact us today and let's discuss a customized rental solution for your needs.",
+    longTermText:
+      "Need a car for long-term rental? Contact us today and let's discuss a customized rental solution for your needs.",
     contactUsBtn: "Contact us",
     readMore: "Read more",
     publishedOn: "Published on",
     blogTitle: "Our Blog & Tips",
-    blogSubtitle: "Learn more about car rental, travels and best routes in the region.",
+    blogSubtitle:
+      "Learn more about car rental, travels and best routes in the region.",
     verifyEmailLabel: "Booking Email Address",
     printVoucher: "Print confirmation",
     downloadPdf: "Download PDF",
@@ -266,11 +295,10 @@ const initialTranslations = {
     payPickupInfo: "Cash / Card at Pickup",
     technicalSupport: "Technical support",
     domainValidity: "Domain valid until",
-    backToVehicles: "Back to vehicles"
-  }
-};;
+    backToVehicles: "Back to vehicles",
+  },
+};
 
-// Initial default vehicles
 const initialVehicles = [
   {
     id: "fiat-500",
@@ -284,14 +312,14 @@ const initialVehicles = [
     price: 99,
     deposit: 1000,
     image: "/fiat500.png",
-    description: "Idealny, kompaktowy i ekonomiczny samochód miejski, łatwy w parkowaniu i prowadzeniu. Doskonale sprawdza się w zatłoczonych centrach miast.",
-    descriptionEn: "Perfect, compact and economic city car, easy to park and drive. Performs brilliantly in crowded city centers.",
+    description: "Idealny, kompaktowy i ekonomiczny samochód miejski.",
+    descriptionEn: "Perfect, compact and economic city car.",
     specs: {
       engine: "1.0 Hybrid 70 HP",
       consumption: "4.6 l/100km",
       aircon: "Yes",
-      year: "2023"
-    }
+      year: "2023",
+    },
   },
   {
     id: "skoda-fabia",
@@ -305,35 +333,35 @@ const initialVehicles = [
     price: 129,
     deposit: 1200,
     image: "/skoda-fabia.png",
-    description: "Przestronny i niezawodny hatchback, oferujący optymalny komfort dla kierowcy i pasażerów oraz pojemny bagażnik w swojej klasie.",
-    descriptionEn: "Spacious and reliable hatchback offering optimal comfort for driver and passengers and a competitive trunk capacity.",
+    description: "Przestronny i niezawodny hatchback.",
+    descriptionEn: "Spacious and reliable hatchback.",
     specs: {
       engine: "1.0 TSI 95 HP",
       consumption: "5.1 l/100km",
       aircon: "Yes",
-      year: "2023"
-    }
+      year: "2023",
+    },
   },
   {
     id: "toyota-corolla",
     brand: "Toyota",
     model: "Corolla",
     class: "C (Medium/Sedan)",
-    fuel: "Petrol", // Petrol Hybrid
+    fuel: "Petrol",
     seats: 5,
     luggage: 470,
     transmission: "Automatic",
     price: 169,
     deposit: 1500,
     image: "/toyota-corolla.png",
-    description: "Nowoczesny sedan z napędem hybrydowym, charakteryzujący się wyjątkowo niskim spalaniem, płynną automatyczną skrzynią biegów i bogatym wyposażeniem bezpieczeństwa.",
-    descriptionEn: "Modern hybrid sedan featuring exceptionally low fuel consumption, smooth automatic gearbox, and loaded with safety equipment.",
+    description: "Nowoczesny sedan z napędem hybrydowym.",
+    descriptionEn: "Modern hybrid sedan.",
     specs: {
       engine: "1.8 Hybrid 140 HP",
       consumption: "4.2 l/100km",
       aircon: "Yes (Dual-zone)",
-      year: "2022"
-    }
+      year: "2022",
+    },
   },
   {
     id: "hyundai-tucson",
@@ -347,14 +375,14 @@ const initialVehicles = [
     price: 219,
     deposit: 2000,
     image: "/hyundai-tucson.png",
-    description: "Mocny i stylowy SUV z podwyższonym zawieszeniem. Zapewnia doskonałą widoczność na drodze, ogromny bagażnik i komfort na długie trasy krajowe.",
-    descriptionEn: "Powerful and stylish SUV with high ground clearance. Ensures excellent road visibility, massive trunk, and superb comfort for long road trips.",
+    description: "Mocny i stylowy SUV.",
+    descriptionEn: "Powerful and stylish SUV.",
     specs: {
       engine: "1.6 T-GDI 150 HP",
       consumption: "6.8 l/100km",
       aircon: "Yes (Climatronic)",
-      year: "2023"
-    }
+      year: "2023",
+    },
   },
   {
     id: "bmw-3",
@@ -368,132 +396,165 @@ const initialVehicles = [
     price: 299,
     deposit: 2500,
     image: "/bmw-3.png",
-    description: "Luksusowy sedan sportowy z dynamicznym silnikiem diesla. Łączy prestiż, doskonałe właściwości jezdne i maksymalny komfort klasy premium.",
-    descriptionEn: "Luxury sport sedan powered by a dynamic diesel engine. Combines prestige, outstanding handling, and premium-class maximum comfort.",
+    description: "Luksusowy sedan sportowy.",
+    descriptionEn: "Luxury sport sedan.",
     specs: {
       engine: "2.0d 190 HP",
       consumption: "5.3 l/100km",
       aircon: "Yes (Automatic 3-zone)",
-      year: "2022"
-    }
-  }
-];;
+      year: "2022",
+    },
+  },
+];
 
-// Initial default locations with minimum rental period
 const initialLocations = [
   { id: "skarbimierz", name: "Skarbimierz-Osiedle", minDays: 1 },
   { id: "brzeg", name: "Brzeg", minDays: 1 },
   { id: "olawa", name: "Oława", minDays: 5 },
   { id: "grodkow", name: "Grodków", minDays: 5 },
-  { id: "delivery", name: "Dostawa pod wskazany adres / Custom Address Delivery", minDays: 1, isCustomAddress: true }
+  {
+    id: "delivery",
+    name: "Dostawa pod wskazany adres / Custom Address Delivery",
+    minDays: 1,
+    isCustomAddress: true,
+  },
 ];
 
-// Initial protection packages
 const initialPackages = [
   {
     id: "basic",
     name: "Podstawowy / Basic",
     pricePerDay: 0,
-    featuresPl: ["Udział własny w szkodzie do 5000 PLN", "Standardowy depozyt (kaucja)", "Pomoc drogowa Assistance (tylko w PL)"],
-    featuresEn: ["Deductible in case of damage up to 5000 PLN", "Standard security deposit", "Roadside Assistance (Poland only)"]
+    featuresPl: ["Udział własny w szkodzie do 5000 PLN"],
+    featuresEn: ["Deductible in case of damage up to 5000 PLN"],
   },
   {
     id: "gold",
     name: "Złoty / Gold Protect",
     pricePerDay: 30,
-    featuresPl: ["Obniżony udział w szkodzie do 1500 PLN", "Obniżony depozyt o 50%", "Ochrona szyb i opon", "Pełne Assistance PL"],
-    featuresEn: ["Reduced deductible up to 1500 PLN", "Security deposit reduced by 50%", "Glass and tire coverage", "Full Roadside Assistance PL"]
+    featuresPl: ["Obniżony udział w szkodzie do 1500 PLN"],
+    featuresEn: ["Reduced deductible up to 1500 PLN"],
   },
   {
     id: "platinum",
     name: "Platynowy / Platinum Protect",
     pricePerDay: 60,
-    featuresPl: ["Zniesienie udziału własnego (0 PLN)", "Zniesienie kaucji (0 PLN)", "Pełna ochrona szyb, opon i karoserii", "Pełne Assistance Europa"],
-    featuresEn: ["Zero deductible (0 PLN)", "No security deposit (0 PLN)", "Full coverage for glass, tires & bodywork", "Full Roadside Assistance Europe"]
-  }
+    featuresPl: ["Zniesienie udziału własnego (0 PLN)"],
+    featuresEn: ["Zero deductible (0 PLN)"],
+  },
 ];
 
-// Initial add-ons
 const initialAddons = [
-  { id: "child-seat", name: "Fotelik dla dziecka / Child Seat", price: 15, isPerDay: true, descriptionPl: "Bezpieczny fotelik dla dzieci 9-36 kg", descriptionEn: "Safe child seat for weights 9-36 kg" },
-  { id: "booster", name: "Podkładka dla dziecka / Booster Seat", price: 8, isPerDay: true, descriptionPl: "Podwyższenie dla starszych dzieci", descriptionEn: "Booster support for older kids" },
-  { id: "gps", name: "Nawigacja GPS / GPS Navigation", price: 10, isPerDay: true, descriptionPl: "Zaktualizowane mapy całej Europy", descriptionEn: "Updated maps of entire Europe" },
-  { id: "extra-driver", name: "Dodatkowy kierowca / Additional Driver", price: 50, isPerDay: false, descriptionPl: "Możliwość prowadzenia pojazdu przez drugą osobę", descriptionEn: "Allows a second person to drive the car" }
+  {
+    id: "child-seat",
+    name: "Fotelik dla dziecka / Child Seat",
+    price: 15,
+    isPerDay: true,
+    descriptionPl: "Bezpieczny fotelik",
+    descriptionEn: "Safe child seat",
+  },
+  {
+    id: "booster",
+    name: "Podkładka dla dziecka / Booster Seat",
+    price: 8,
+    isPerDay: true,
+    descriptionPl: "Podwyższenie",
+    descriptionEn: "Booster support",
+  },
+  {
+    id: "gps",
+    name: "Nawigacja GPS / GPS Navigation",
+    price: 10,
+    isPerDay: true,
+    descriptionPl: "Mapy Europy",
+    descriptionEn: "Maps of Europe",
+  },
+  {
+    id: "extra-driver",
+    name: "Dodatkowy kierowca / Additional Driver",
+    price: 50,
+    isPerDay: false,
+    descriptionPl: "Drugi kierowca",
+    descriptionEn: "Second driver",
+  },
 ];
 
-// Initial FAQ
 const initialFAQ = [
   {
     id: 1,
-    questionPl: "Jakie dokumenty są wymagane przy odbiorze auta?",
-    questionEn: "What documents are required when collecting the car?",
-    answerPl: "Do wynajmu niezbędne są: ważny dowód osobisty lub paszport, ważne prawo jazdy (akceptowane od co najmniej 1 roku) oraz karta płatnicza na nazwisko głównego kierowcy.",
-    answerEn: "To rent a car you will need: a valid national ID card or passport, a valid driving licence (held for at least 1 year), and a credit/debit card under the main driver's name."
+    questionPl: "Jakie dokumenty?",
+    questionEn: "What documents?",
+    answerPl: "Dowód, prawo jazdy, karta.",
+    answerEn: "ID, license, card.",
   },
   {
     id: 2,
-    questionPl: "Czy pobierana jest kaucja (depozyt)?",
-    questionEn: "Is a security deposit required?",
-    answerPl: "Tak, przy odbiorze auta blokowana jest kaucja zabezpieczająca na karcie płatniczej. Wysokość kaucji zależy od wybranego pojazdu i pakietu ochrony. W pakiecie Platynowym kaucja wynosi 0 PLN.",
-    answerEn: "Yes, a security deposit is pre-authorized on your card upon car pickup. The amount depends on the selected vehicle and protection package. In the Platinum package, the deposit is 0 PLN."
+    questionPl: "Kaucja?",
+    questionEn: "Deposit?",
+    answerPl: "Tak, zależna od auta.",
+    answerEn: "Yes, depends on car.",
   },
   {
     id: 3,
-    questionPl: "Czy mogę wyjechać wynajętym samochodem za granicę?",
-    questionEn: "Can I drive the rental vehicle abroad?",
-    answerPl: "Wyjazd za granicę jest dozwolony wyłącznie do krajów Unii Europejskiej po uzyskaniu uprzedniej pisemnej zgody i opłaceniu odpowiedniej opłaty dodatkowej. Szczegóły można ustalić telefonicznie.",
-    answerEn: "Driving abroad is allowed only to European Union countries, subject to prior written consent and payment of the corresponding additional fee. Details can be arranged by phone."
+    questionPl: "Za granicę?",
+    questionEn: "Abroad?",
+    answerPl: "Tylko UE.",
+    answerEn: "EU only.",
   },
   {
     id: 4,
-    questionPl: "Co zrobić w przypadku kolizji lub awarii pojazdu?",
-    questionEn: "What should I do in case of an accident or breakdown?",
-    answerPl: "W przypadku jakiegokolizyjnego zdarzenia lub awarii należy natychmiast skontaktować się z naszą infolinią Assistance dostępną pod numerem telefonu podanym na umowie wynajmu.",
-    answerEn: "In case of any traffic incident, collision, or technical breakdown, please immediately contact our Assistance hotline available at the phone number listed on your rental contract."
-  }
+    questionPl: "Awaria?",
+    questionEn: "Breakdown?",
+    answerPl: "Zadzwoń na infolinię.",
+    answerEn: "Call hotline.",
+  },
 ];
 
-// Initial reviews
 const initialReviews = [
   {
     id: 1,
     name: "Tomasz",
     rating: 5,
     car: "Toyota Corolla",
-    text: "Bardzo dobry kontakt z wypożyczalnią, auto czyste i pachnące. Dostawa pod dom w Oławie przebiegła punktualnie. Zdecydowanie polecam pakiet Platynowy - zero stresu!",
+    text: "Bardzo dobry kontakt!",
     date: "2026-06-05",
-    approved: true
+    approved: true,
   },
   {
     id: 2,
     name: "Anna",
     rating: 5,
     car: "Fiat 500",
-    text: "Urocze małe auto, idealne na weekendowy wyjazd do Wrocławia. Obsługa bardzo miła, formalności ograniczone do minimum. Na pewno wrócę!",
+    text: "Urocze małe auto!",
     date: "2026-06-10",
-    approved: true
+    approved: true,
   },
   {
     id: 3,
     name: "John",
     rating: 4,
     car: "BMW 3 Series",
-    text: "Car was clean and in perfect technical condition. Pickup at Brzeg railway station went smooth. Recommended.",
+    text: "Car was clean.",
     date: "2026-06-12",
-    approved: true
-  }
+    approved: true,
+  },
 ];
 
-// Initial content texts (Polish/English keys that can be updated in CMS)
 const initialContentTexts = {
   homeHeader: { pl: "WYNAJEM SAMOCHODÓW", en: "CAR RENTAL" },
-  homeSubheader: { pl: "Zawsze na czas, zawsze pod Twój adres.", en: "Always on time, delivered straight to your address." },
+  homeSubheader: {
+    pl: "Zawsze na czas, zawsze pod Twój adres.",
+    en: "Always on time, delivered straight to your address.",
+  },
   whyChooseUs: { pl: "Dlaczego my?", en: "Why Choose Us?" },
-  reviewsHeader: { pl: "Oceny klientów mówią same za siebie", en: "Customer reviews speak for themselves" }
+  reviewsHeader: {
+    pl: "Oceny klientów mówią same za siebie",
+    en: "Customer reviews speak for themselves",
+  },
 };
 
 export function AppProvider({ children }) {
-  const [lang, setLang] = useState("pl"); // pl or en
+  const [lang, setLang] = useState("pl");
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [locations, setLocations] = useState(initialLocations);
   const [packages, setPackages] = useState(initialPackages);
@@ -502,13 +563,554 @@ export function AppProvider({ children }) {
   const [reviews, setReviews] = useState(initialReviews);
   const [bookings, setBookings] = useState([]);
   const [emails, setEmails] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null); // simulated active user account
-  const [adminUser, setAdminUser] = useState(null); // simulated logged in admin
+  const [currentUser, setCurrentUser] = useState(null);
+  const [adminUser, setAdminUser] = useState(null);
   const [cmsTranslations, setCmsTranslations] = useState(initialTranslations);
   const [cmsTexts, setCmsTexts] = useState(initialContentTexts);
-  const [searchParams, setSearchParams] = useState(null); // stores active vehicle search params
+  const [cmsHero, setCmsHero] = useState(null);
+  const [cmsHeroFeatures, setCmsHeroFeatures] = useState([]);
+  const [cmsWhyChooseUs, setCmsWhyChooseUs] = useState(null);
+  const [cmsWhyChooseUsFeatures, setCmsWhyChooseUsFeatures] = useState([]);
+  const [cmsFaqs, setCmsFaqs] = useState([]);
+  const [cmsPages, setCmsPages] = useState([]);
+  const [cmsContacts, setCmsContacts] = useState([]);
+  const [cmsSocialMedia, setCmsSocialMedia] = useState([]);
 
-  // Load state from localStorage on mount
+  const [authInitialized, setAuthInitialized] = useState(false);
+
+  const [searchParamsState, setSearchParamsState] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("cargo_search_params");
+      return saved ? JSON.parse(saved) : null;
+    }
+    return null;
+  });
+
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      const localUser = localStorage.getItem("user");
+      const localAdmin = localStorage.getItem("cargo_admin");
+      if (localUser) setCurrentUser(JSON.parse(localUser));
+      if (localAdmin) setAdminUser(JSON.parse(localAdmin));
+      setAuthInitialized(true);
+    }
+  }, []);
+
+  const setSearchParams = (params) => {
+    setSearchParamsState(params);
+    if (typeof window !== "undefined") {
+      if (params)
+        localStorage.setItem("cargo_search_params", JSON.stringify(params));
+      else localStorage.removeItem("cargo_search_params");
+    }
+  };
+
+  const mapBooking = (b) => {
+    const pickup = new Date(b.pickupDate);
+    const returnD = new Date(b.returnDate);
+    const days = Math.max(
+      1,
+      Math.ceil((returnD - pickup) / (1000 * 60 * 60 * 24)),
+    );
+    return {
+      id: b.id,
+      customer: {
+        firstName: b.customerFirstName || "Unknown",
+        lastName: b.customerLastName || "",
+        email: b.customerEmail || "",
+        phone: b.phoneNumber || "",
+      },
+      dates: {
+        pickupDate: pickup.toISOString().split("T")[0],
+        returnDate: returnD.toISOString().split("T")[0],
+        pickupTime: pickup.toISOString().split("T")[1].substring(0, 5),
+        returnTime: returnD.toISOString().split("T")[1].substring(0, 5),
+        pickupLocation: b.pickupLocationId || "Custom Address",
+        returnLocation: b.returnLocationId || "Custom Address",
+      },
+      car: {
+        brand: b.vehicle?.brand || "Unknown",
+        model: b.vehicle?.model || "Unknown",
+        class: b.vehicle?.class || "Standard",
+        deposit: 0,
+        price: parseFloat(b.vehicle?.pricePerDay) || 0,
+      },
+      pricing: {
+        total: parseFloat(b.totalPrice) || 0,
+        days: days,
+        packageCost: b.packageData?.price || 0,
+        addonsCost: 0,
+      },
+      status: b.status.toLowerCase(),
+    };
+  };
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await api.get("/api/vehicle");
+      const backendVehicles = response.data.data.vehicles;
+      const mappedVehicles = backendVehicles.map((v) => ({
+        id: v.id,
+        brand: v.brand,
+        model: v.model,
+        class: v.class || "Standard",
+        fuel: "Petrol",
+        seats: v.seats,
+        luggage: 0,
+        transmission: "Manual",
+        price: parseFloat(v.pricePerDay) || 0,
+        deposit: 0,
+        image:
+          v.images && v.images.length > 0
+            ? `${process.env.NEXT_PUBLIC_API_URL}${v.images[0].imageUrl}`
+            : "/fallback-car.png",
+        description: v.description,
+        descriptionEn: v.description,
+        specs: {
+          engine: "N/A",
+          consumption: "N/A",
+          aircon: "Yes",
+          year: "N/A",
+        },
+      }));
+      setVehicles(mappedVehicles);
+      saveState("cargo_vehicles", mappedVehicles);
+    } catch (error) {
+      console.error("Failed to fetch vehicles:", error);
+      setVehicles(initialVehicles);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await api.get("/api/locations");
+      const backendLocations = response.data.data || response.data;
+      const mapped = backendLocations.map((l) => {
+        let frontendId = l.id;
+        const nameLower = l.name.toLowerCase();
+        if (nameLower.includes("skarbimierz")) frontendId = "skarbimierz";
+        else if (nameLower.includes("brzeg")) frontendId = "brzeg";
+        else if (nameLower.includes("oława") || nameLower.includes("olawa"))
+          frontendId = "olawa";
+        else if (nameLower.includes("grodków") || nameLower.includes("grodkow"))
+          frontendId = "grodkow";
+        else if (nameLower.includes("dostawa") || nameLower.includes("custom"))
+          frontendId = "delivery";
+        return {
+          id: frontendId,
+          backendId: l.id,
+          name: l.name,
+          address: l.address || "",
+          city: l.city || "",
+          country: l.country || "",
+          phone: l.phone || "",
+          minDays: 1,
+          isCustomAddress: frontendId === "delivery",
+        };
+      });
+      setLocations(mapped);
+      saveState("cargo_locations", mapped);
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+      setLocations(initialLocations);
+    }
+  };
+
+  const fetchPackages = async () => {
+    try {
+      const response = await api.get("/api/packages");
+      const backendPackages = response.data.data;
+      const mapped = backendPackages.map((pkg) => {
+        let frontendId = pkg.id;
+        const nameLower = pkg.name.toLowerCase();
+        if (nameLower.includes("gold")) frontendId = "gold";
+        else if (nameLower.includes("platinum")) frontendId = "platinum";
+        else if (nameLower.includes("basic")) frontendId = "basic";
+        return {
+          id: frontendId,
+          backendId: pkg.id,
+          name: pkg.name,
+          pricePerDay: parseFloat(pkg.price),
+          featuresPl: pkg.description || [],
+          featuresEn: pkg.description || [],
+        };
+      });
+      setPackages(mapped);
+      saveState("cargo_packages", mapped);
+    } catch (error) {
+      console.error("Failed to fetch packages:", error);
+    }
+  };
+
+  const fetchAddons = async () => {
+    try {
+      const response = await api.get("/api/addons");
+      const backendAddons = response.data.data;
+      const mapped = backendAddons.map((addon) => {
+        let frontendId = addon.id;
+        const nameLower = addon.name.toLowerCase();
+        if (nameLower.includes("child")) frontendId = "child-seat";
+        else if (nameLower.includes("booster")) frontendId = "booster";
+        else if (nameLower.includes("gps")) frontendId = "gps";
+        else if (nameLower.includes("driver")) frontendId = "extra-driver";
+        return {
+          id: frontendId,
+          backendId: addon.id,
+          name: addon.name,
+          price: parseFloat(addon.price),
+          isPerDay: true,
+          descriptionPl: addon.description,
+          descriptionEn: addon.description,
+        };
+      });
+      setAddons(mapped);
+      saveState("cargo_addons", mapped);
+    } catch (error) {
+      console.error("Failed to fetch addons:", error);
+    }
+  };
+
+  const fetchBookings = async () => {
+    try {
+      const response = await api.get("/api/reservations");
+      const backendBookings = response.data.data;
+      const mapped = backendBookings.map(mapBooking);
+      setBookings(mapped);
+      saveState("cargo_bookings", mapped);
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get("/api/reviews");
+      const backendReviews = response.data.data || response.data;
+
+      const mapped = backendReviews.map((r) => ({
+        id: r.id,
+        name: r.user?.firstName
+          ? `${r.user.firstName} ${r.user.lastName || ""}`.trim()
+          : r.user?.name || "Klient",
+        rating: r.rating,
+        text: r.comment,
+        car: r.vehicle?.model || r.booking?.vehicle?.model || "Pojazd",
+        date: new Date(r.createdAt).toLocaleDateString(),
+        approved: r.status === "APPROVED",
+      }));
+
+      setReviews(mapped);
+      saveState("cargo_reviews", mapped);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      setReviews(initialReviews);
+    }
+  };
+  const fetchCmsHero = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/hero");
+      const data = response.data.data;
+      if (data) {
+        setCmsHero(data);
+        updateCmsText("homeHeader", data.titlePl, data.titleEn);
+        updateCmsText("homeSubheader", data.subtitlePl, data.subtitleEn);
+        updateCmsText("tagline", data.taglinePl, data.taglineEn);
+        saveState("cargo_cms_hero", data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch CMS Hero:", error);
+    }
+  };
+
+  const fetchCmsHeroFeatures = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/hero-feature");
+      const data = response.data.data || [];
+      setCmsHeroFeatures(data);
+      saveState("cargo_cms_hero_features", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Hero Features:", error);
+    }
+  };
+
+  const fetchCmsWhyChooseUs = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/why-choose-us");
+      const data = response.data.data;
+      if (data) {
+        setCmsWhyChooseUs(data);
+        updateCmsText("whyChooseUs", data.subtitlePl, data.subtitleEn);
+        saveState("cargo_cms_why_choose_us", data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch CMS Why Choose Us:", error);
+    }
+  };
+
+  const fetchCmsWhyChooseUsFeatures = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/why-choose-us-feature");
+      const data = response.data.data || [];
+      setCmsWhyChooseUsFeatures(data);
+      saveState("cargo_cms_why_choose_us_features", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Why Choose Us Features:", error);
+    }
+  };
+
+  const fetchCmsFaqs = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/faq");
+      const data = response.data.data || [];
+      setCmsFaqs(data);
+      saveState("cargo_cms_faqs", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS FAQs:", error);
+    }
+  };
+
+  const fetchCmsPages = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/page");
+      const data = response.data.data || response.data || [];
+      setCmsPages(data);
+      saveState("cargo_cms_pages", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Pages:", error);
+    }
+  };
+
+  const fetchCmsContacts = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/contact");
+      const data = response.data.data || response.data || [];
+      setCmsContacts(data);
+      saveState("cargo_cms_contacts", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Contacts:", error);
+    }
+  };
+
+  const fetchCmsSocialMedia = async () => {
+    try {
+      const response = await api.get("/api/admin/cms/social-media");
+      const data = response.data.data || response.data || [];
+      setCmsSocialMedia(data);
+      saveState("cargo_cms_social_media", data);
+    } catch (error) {
+      console.error("Failed to fetch CMS Social Media:", error);
+    }
+  };
+
+  const addVehicle = async (vehicleData) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", `${vehicleData.brand} ${vehicleData.model}`);
+      formData.append("brand", vehicleData.brand);
+      formData.append("model", vehicleData.model);
+      formData.append("description", vehicleData.description);
+      formData.append("class", vehicleData.class);
+      formData.append("seats", vehicleData.seats);
+      formData.append("pricePerDay", vehicleData.price);
+      await api.post("/api/vehicle", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      await fetchVehicles();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to add vehicle:", error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed",
+      };
+    }
+  };
+
+  const deleteVehicle = async (vehicleId) => {
+    try {
+      await api.delete(`/api/vehicle/${vehicleId}`);
+      await fetchVehicles();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to delete vehicle:", error);
+      return { success: false };
+    }
+  };
+
+  const addLocation = async (locationData) => {
+    try {
+      await api.post("/api/locations", {
+        name: locationData.name,
+        address: locationData.address,
+        city: locationData.city,
+        country: locationData.country,
+        phone: locationData.phone,
+      });
+      await fetchLocations();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to add location:", error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to add location",
+      };
+    }
+  };
+
+  const deleteLocation = async (locationId) => {
+    try {
+      await api.delete(`/api/locations/${locationId}`);
+      await fetchLocations();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to delete location:", error);
+      return { success: false };
+    }
+  };
+
+  const updatePackagePrice = async (packageId, newPrice) => {
+    try {
+      await api.patch(`/api/packages/${packageId}`, {
+        price: parseFloat(newPrice),
+      });
+    } catch (error) {
+      console.error("Failed to update package price:", error);
+    }
+  };
+
+  const updateAddonPrice = async (addonId, newPrice) => {
+    try {
+      await api.patch(`/api/addons/${addonId}`, {
+        price: parseFloat(newPrice),
+      });
+    } catch (error) {
+      console.error("Failed to update addon price:", error);
+    }
+  };
+
+  const updateBookingStatus = async (bookingId, newStatus, newPrice = null) => {
+    try {
+      if (newPrice !== null)
+        await api.patch(`/api/reservations/${bookingId}`, {
+          totalPrice: parseFloat(newPrice),
+        });
+      await api.patch(`/api/reservations/${bookingId}/status`, {
+        status: newStatus.toUpperCase(),
+      });
+
+      const updated = bookings.map((b) => {
+        if (b.id === bookingId) {
+          let pricing = { ...b.pricing };
+          if (newPrice !== null) {
+            pricing.total = parseFloat(newPrice);
+            pricing.deliveryFee =
+              parseFloat(newPrice) -
+              (b.pricing.days * b.car.price +
+                b.pricing.packageCost +
+                b.pricing.addonsCost);
+          }
+          return { ...b, status: newStatus, pricing };
+        }
+        return b;
+      });
+      setBookings(updated);
+      saveState("cargo_bookings", updated);
+
+      const booking = updated.find((b) => b.id === bookingId);
+      if (!booking) return;
+
+      if (newStatus === "confirmed") {
+        logEmail({
+          id: "email_" + Math.random().toString(36).substr(2, 9),
+          to: booking.customer.email,
+          subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Potwierdzona!`,
+          body: "Confirmed email body...",
+          date: new Date().toLocaleString(),
+        });
+      } else if (newStatus === "cancelled") {
+        logEmail({
+          id: "email_" + Math.random().toString(36).substr(2, 9),
+          to: booking.customer.email,
+          subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Anulowana`,
+          body: "Cancelled email body...",
+          date: new Date().toLocaleString(),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update booking status:", error);
+      alert("Failed to update booking status.");
+    }
+  };
+
+  const updateReview = async (reviewId, approved) => {
+    try {
+      await api.patch(`/api/reviews/${reviewId}/status`, {
+        status: approved ? "APPROVED" : "PENDING",
+      });
+      const updated = reviews.map((r) =>
+        r.id === reviewId ? { ...r, approved } : r,
+      );
+      setReviews(updated);
+      saveState("cargo_reviews", updated);
+    } catch (error) {
+      console.error("Failed to update review:", error);
+    }
+  };
+
+  const deleteReview = async (reviewId) => {
+    try {
+      await api.delete(`/api/reviews/${reviewId}`);
+      const updated = reviews.filter((r) => r.id !== reviewId);
+      setReviews(updated);
+      saveState("cargo_reviews", updated);
+    } catch (error) {
+      console.error("Failed to delete review:", error);
+    }
+  };
+
+  const loginUser = async (email, password) => {
+    try {
+      const response = await api.post("/api/auth/login", { email, password });
+      const responseData = response.data.data || response.data;
+      const user = responseData.user || responseData;
+      const token = responseData.token || response.data.token;
+      if (token) localStorage.setItem("token", token);
+      setUser(user);
+      const userRole = user?.role?.toUpperCase();
+      if (userRole === "ADMIN" || userRole === "EMPLOYEE") {
+        const adminData = {
+          id: user.id,
+          username: user.email,
+          role: userRole === "ADMIN" ? "owner" : "employee",
+        };
+        setAdminUser(adminData);
+        saveState("cargo_admin", adminData);
+      }
+      return { success: true, user };
+    } catch (error) {
+      console.error("Login error:", error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Login failed",
+      };
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      clearUser();
+      setAdminUser(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("cargo_admin");
+        localStorage.removeItem("token");
+      }
+    }
+  };
+
   useEffect(() => {
     const localVehicles = localStorage.getItem("cargo_vehicles");
     const localLocations = localStorage.getItem("cargo_locations");
@@ -519,22 +1121,27 @@ export function AppProvider({ children }) {
     const localBookings = localStorage.getItem("cargo_bookings");
     const localEmails = localStorage.getItem("cargo_emails");
     const localLang = localStorage.getItem("cargo_lang");
-    const localUser = localStorage.getItem("cargo_user");
-    const localAdmin = localStorage.getItem("cargo_admin");
+    // const localUser = localStorage.getItem("user");
+    // const localAdmin = localStorage.getItem("cargo_admin");
     const localTranslations = localStorage.getItem("cargo_translations");
     const localCmsTexts = localStorage.getItem("cargo_cmstexts");
+    const localCmsPages = localStorage.getItem("cargo_cms_pages");
+    const localCmsContacts = localStorage.getItem("cargo_cms_contacts");
+    const localCmsSocialMedia = localStorage.getItem("cargo_cms_social_media");
+    // NEW LOCAL STORAGE LOADS
+    const localCmsHero = localStorage.getItem("cargo_cms_hero");
+    const localCmsHeroFeatures = localStorage.getItem(
+      "cargo_cms_hero_features",
+    );
+    const localCmsWhyChooseUs = localStorage.getItem("cargo_cms_why_choose_us");
+    const localCmsWhyChooseUsFeatures = localStorage.getItem(
+      "cargo_cms_why_choose_us_features",
+    );
+    const localCmsFaqs = localStorage.getItem("cargo_cms_faqs");
 
     if (localVehicles) {
       try {
-        const parsed = JSON.parse(localVehicles);
-        const enriched = parsed.map((v) => {
-          const match = initialVehicles.find((iv) => iv.id === v.id);
-          if (match) {
-            return { ...v, image: match.image || v.image };
-          }
-          return v;
-        });
-        setVehicles(enriched);
+        setVehicles(JSON.parse(localVehicles));
       } catch (e) {
         setVehicles(initialVehicles);
       }
@@ -547,297 +1154,163 @@ export function AppProvider({ children }) {
     if (localBookings) setBookings(JSON.parse(localBookings));
     if (localEmails) setEmails(JSON.parse(localEmails));
     if (localLang) setLang(localLang);
-    if (localUser) setCurrentUser(JSON.parse(localUser));
-    if (localAdmin) setAdminUser(JSON.parse(localAdmin));
+    // if (localUser) setCurrentUser(JSON.parse(localUser));
+    // if (localAdmin) setAdminUser(JSON.parse(localAdmin));
     if (localTranslations) setCmsTranslations(JSON.parse(localTranslations));
     if (localCmsTexts) setCmsTexts(JSON.parse(localCmsTexts));
+
+    // NEW CMS LOCAL STORAGE
+    if (localCmsHero) setCmsHero(JSON.parse(localCmsHero));
+    if (localCmsHeroFeatures)
+      setCmsHeroFeatures(JSON.parse(localCmsHeroFeatures));
+    if (localCmsWhyChooseUs) setCmsWhyChooseUs(JSON.parse(localCmsWhyChooseUs));
+    if (localCmsWhyChooseUsFeatures)
+      setCmsWhyChooseUsFeatures(JSON.parse(localCmsWhyChooseUsFeatures));
+    if (localCmsFaqs) setCmsFaqs(JSON.parse(localCmsFaqs));
+    if (localCmsPages) setCmsPages(JSON.parse(localCmsPages));
+    if (localCmsContacts) setCmsContacts(JSON.parse(localCmsContacts));
+    if (localCmsSocialMedia) setCmsSocialMedia(JSON.parse(localCmsSocialMedia));
+    fetchVehicles();
+    fetchLocations();
+    fetchPackages();
+    fetchAddons();
+    fetchBookings();
+
+    // NEW CMS FETCHES
+    fetchCmsHero();
+    fetchCmsHeroFeatures();
+    fetchCmsWhyChooseUs();
+    fetchCmsWhyChooseUsFeatures();
+    fetchCmsFaqs();
+    fetchReviews();
+    fetchCmsPages();
+    fetchCmsContacts();
+    fetchCmsSocialMedia();
   }, []);
 
-  // Sync state to localStorage helpers
   const saveState = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      if (error.name === "QuotaExceededError" || error.code === 22) {
+        console.warn(`LocalStorage quota exceeded.`);
+        localStorage.removeItem("cargo_emails");
+        localStorage.removeItem("cargo_bookings");
+        localStorage.removeItem("cargo_reviews");
+        try {
+          const trimmed = Array.isArray(value) ? value.slice(0, 10) : value;
+          localStorage.setItem(key, JSON.stringify(trimmed));
+        } catch (e) {}
+      }
+    }
   };
 
   const updateLang = (newLang) => {
     setLang(newLang);
     localStorage.setItem("cargo_lang", newLang);
   };
-
   const addBooking = (newBooking) => {
-    const updated = [newBooking, ...bookings];
+    const updated = [newBooking, ...bookings].slice(0, 50);
     setBookings(updated);
     saveState("cargo_bookings", updated);
-
-    // Push simulated email log (First Email)
-    const emailText = `
-Witaj/Hello ${newBooking.customer.firstName} ${newBooking.customer.lastName},
-
-Dziękujemy za dokonanie rezerwacji pojazdu w wypożyczalni CAR-GO.PL!
-Thank you for booking a vehicle with CAR-GO.PL!
-
-Numer rezerwacji / Booking reference: ${newBooking.id}
-Pojazd / Vehicle: ${newBooking.car.brand} ${newBooking.car.model}
-Okres wynajmu / Rental period: ${newBooking.dates.pickupDate} ${newBooking.dates.pickupTime} - ${newBooking.dates.returnDate} ${newBooking.dates.returnTime}
-Miejsce odbioru / Pickup: ${newBooking.dates.pickupLocation}
-Miejsce zwrotu / Return: ${newBooking.dates.returnLocation}
-
-Koszt całkowity / Total price: ${newBooking.pricing.total === "Individual Price"
-        ? "Cena Indywidualna (Oczekuje na wycenę / Awaiting custom quote)"
-        : `PLN ${newBooking.pricing.total.toFixed(2)}`
-      }
-Kaucja / Deposit: PLN ${newBooking.car.deposit}
-
-Ważne / Important:
-${newBooking.pricing.total === "Individual Price"
-        ? "Oczekuj na kontakt telefoniczny lub e-mail z wyceną dostawy pod wskazany adres."
-        : "Rezerwacja musi zostać zatwierdzona przez administratora w ciągu 24 godzin."
-      }
-We will confirm your booking within 24 hours.
-
-Pozdrawiamy / Best regards,
-Zespół CAR-GO.PL
-    `;
-
     logEmail({
       id: "email_" + Math.random().toString(36).substr(2, 9),
       to: newBooking.customer.email,
-      subject: `[CAR-GO.PL] Rezerwacja/Booking ${newBooking.id} - Oczekuje na potwierdzenie`,
-      body: emailText,
-      date: new Date().toLocaleString()
+      subject: `[CAR-GO.PL] Rezerwacja ${newBooking.id}`,
+      body: "Booking received",
+      date: new Date().toLocaleString(),
     });
   };
-
-  const updateBookingStatus = (bookingId, newStatus, newPrice = null) => {
-    const updated = bookings.map((b) => {
-      if (b.id === bookingId) {
-        let pricing = { ...b.pricing };
-        if (newPrice !== null) {
-          pricing.total = parseFloat(newPrice);
-          pricing.deliveryFee = parseFloat(newPrice) - (b.pricing.days * b.car.price + b.pricing.packageCost + b.pricing.addonsCost);
-        }
-        return { ...b, status: newStatus, pricing };
-      }
-      return b;
-    });
-    setBookings(updated);
-    saveState("cargo_bookings", updated);
-
-    const booking = updated.find((b) => b.id === bookingId);
-    if (!booking) return;
-
-    // Trigger email templates based on status
-    if (newStatus === "confirmed") {
-      const emailText = `
-Witaj/Hello ${booking.customer.firstName} ${booking.customer.lastName},
-
-Twoja rezerwacja ${booking.id} została POTWIERDZONA przez administratora!
-Your booking ${booking.id} has been CONFIRMED by the administrator!
-
-Pojazd / Vehicle: ${booking.car.brand} ${booking.car.model}
-Okres wynajmu / Rental period: ${booking.dates.pickupDate} ${booking.dates.pickupTime} - ${booking.dates.returnDate} ${booking.dates.returnTime}
-Miejsce odbioru / Pickup: ${booking.dates.pickupLocation}
-
-Koszt wynajmu / Rental Cost: PLN ${booking.pricing.total.toFixed(2)}
-Kaucja zabezpieczająca / Security deposit: PLN ${booking.car.deposit}
-
-Aby zarządzać rezerwacjami, pobrać potwierdzenie PDF oraz oceniać pojazdy, aktywuj swoje konto klienta klikając poniższy link:
-To manage bookings, download confirmation PDFs, and submit reviews, please activate your account using the link below:
-
-[AKTYWUJ KONTO / ACTIVATE ACCOUNT]: https://car-go.pl/account/activate?email=${encodeURIComponent(
-        booking.customer.email
-      )}
-
-Płatność online / Online Payment Link (Autopay/Przelewy24):
-https://car-go.pl/checkout/pay?id=${booking.id}
-
-Wymagane dokumenty przy odbiorze: dowód osobisty, prawo jazdy, karta płatnicza.
-Required documents upon pickup: ID card, valid driver's license, credit card.
-
-Pozdrawiamy / Best regards,
-Zespół CAR-GO.PL
-      `;
-      logEmail({
-        id: "email_" + Math.random().toString(36).substr(2, 9),
-        to: booking.customer.email,
-        subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Potwierdzona!`,
-        body: emailText,
-        date: new Date().toLocaleString()
-      });
-    } else if (newStatus === "cancelled") {
-      const emailText = `
-Witaj/Hello ${booking.customer.firstName} ${booking.customer.lastName},
-
-Niestety, Twoja rezerwacja ${booking.id} została anulowana.
-Unfortunately, your booking ${booking.id} has been cancelled.
-
-W razie pytań zapraszamy do kontaktu telefonicznego.
-If you have any questions, please contact us.
-
-Pozdrawiamy / Best regards,
-Zespół CAR-GO.PL
-      `;
-      logEmail({
-        id: "email_" + Math.random().toString(36).substr(2, 9),
-        to: booking.customer.email,
-        subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Anulowana`,
-        body: emailText,
-        date: new Date().toLocaleString()
-      });
-    }
-  };
-
   const logEmail = (emailLog) => {
-    const updated = [emailLog, ...emails];
+    const updated = [emailLog, ...emails].slice(0, 100);
     setEmails(updated);
     saveState("cargo_emails", updated);
   };
-
   const addReview = (newReview) => {
     const updated = [newReview, ...reviews];
     setReviews(updated);
     saveState("cargo_reviews", updated);
   };
-
-  const updateReview = (reviewId, approved, text = null) => {
-    const updated = reviews.map((r) => {
-      if (r.id === reviewId) {
-        return { ...r, approved, text: text !== null ? text : r.text };
-      }
-      return r;
-    });
-    setReviews(updated);
-    saveState("cargo_reviews", updated);
-  };
-
-  const deleteReview = (reviewId) => {
-    const updated = reviews.filter((r) => r.id !== reviewId);
-    setReviews(updated);
-    saveState("cargo_reviews", updated);
-  };
-
-  // CMS Content / Translations Updates
   const updateCmsTranslation = (language, key, text) => {
     const updated = {
       ...cmsTranslations,
-      [language]: {
-        ...cmsTranslations[language],
-        [key]: text
-      }
+      [language]: { ...cmsTranslations[language], [key]: text },
     };
     setCmsTranslations(updated);
     saveState("cargo_translations", updated);
   };
-
   const updateCmsText = (key, textPl, textEn) => {
-    const updated = {
-      ...cmsTexts,
-      [key]: { pl: textPl, en: textEn }
-    };
+    const updated = { ...cmsTexts, [key]: { pl: textPl, en: textEn } };
     setCmsTexts(updated);
     saveState("cargo_cmstexts", updated);
   };
-
-  // Manage System settings (Vehicles, Locations, Packages, Addons)
   const saveVehicles = (updated) => {
     setVehicles(updated);
     saveState("cargo_vehicles", updated);
   };
-
   const saveLocations = (updated) => {
     setLocations(updated);
     saveState("cargo_locations", updated);
   };
-
   const savePackages = (updated) => {
     setPackages(updated);
     saveState("cargo_packages", updated);
   };
-
   const saveAddons = (updated) => {
     setAddons(updated);
     saveState("cargo_addons", updated);
   };
-
   const saveFaqs = (updated) => {
     setFaqs(updated);
     saveState("cargo_faqs", updated);
   };
-
-  // Auth Functions
-  const registerUser = (email, password) => {
-    // Simulated registration
-    const user = { email, phone: "", firstName: "Klient", lastName: "CAR-GO" };
+  const setUser = (user) => {
     setCurrentUser(user);
-    saveState("cargo_user", user);
-
-    // Update customer records in local storage
-    const localUsers = JSON.parse(localStorage.getItem("cargo_users_db") || "[]");
-    if (!localUsers.some((u) => u.email === email)) {
-      localUsers.push({ email, password, firstName: "Klient", lastName: "CAR-GO", phone: "" });
-      localStorage.setItem("cargo_users_db", JSON.stringify(localUsers));
-    }
-    return true;
+    if (typeof window !== "undefined")
+      localStorage.setItem("user", JSON.stringify(user));
   };
-
-  const loginUser = (email, password) => {
-    const localUsers = JSON.parse(localStorage.getItem("cargo_users_db") || "[]");
-    const user = localUsers.find((u) => u.email === email && u.password === password);
-    if (user) {
-      setCurrentUser(user);
-      saveState("cargo_user", user);
-      return true;
-    }
-    // Simple fallback check
-    if (email && password.length >= 4) {
-      const fallbackUser = { email, firstName: "Klient", lastName: "CAR-GO", phone: "" };
-      setCurrentUser(fallbackUser);
-      saveState("cargo_user", fallbackUser);
-      return true;
-    }
-    return false;
-  };
-
-  const logoutUser = () => {
+  const clearUser = () => {
     setCurrentUser(null);
-    localStorage.removeItem("cargo_user");
+    if (typeof window !== "undefined") localStorage.removeItem("user");
   };
-
+  const registerUser = async (userData) => {
+    try {
+      const response = await api.post("/api/auth/register", userData);
+      const { user } = response.data.data;
+      setUser(user);
+      return { success: true, user };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Registration failed",
+      };
+    }
+  };
   const updateProfile = (phone, password = null) => {
     if (!currentUser) return;
     const updatedUser = { ...currentUser, phone };
     setCurrentUser(updatedUser);
     saveState("cargo_user", updatedUser);
-
-    const localUsers = JSON.parse(localStorage.getItem("cargo_users_db") || "[]");
-    const updatedUsers = localUsers.map((u) => {
-      if (u.email === currentUser.email) {
-        return { ...u, phone, ...(password ? { password } : {}) };
-      }
-      return u;
-    });
-    localStorage.setItem("cargo_users_db", JSON.stringify(updatedUsers));
   };
-
   const loginAdmin = (username, password) => {
-    if ((username === "admin" && password === "admin123") || (username === "employee" && password === "employee123")) {
+    if (
+      (username === "admin" && password === "admin123") ||
+      (username === "employee" && password === "employee123")
+    ) {
       const role = username === "admin" ? "owner" : "employee";
-      const admin = { username, role };
+      const admin = { id: "mock-admin-id-123", username, role };
       setAdminUser(admin);
       saveState("cargo_admin", admin);
       return true;
     }
     return false;
   };
-
   const logoutAdmin = () => {
     setAdminUser(null);
-    localStorage.removeItem("cargo_admin");
+    if (typeof window !== "undefined") localStorage.removeItem("cargo_admin");
   };
-
-  // Helper to translate labels
-  const t = (key) => {
-    return cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
-  };
+  const t = (key) =>
+    cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
 
   return (
     <AppContext.Provider
@@ -860,8 +1333,19 @@ Zespół CAR-GO.PL
         currentUser,
         adminUser,
         cmsTexts,
-        searchParams,
+        searchParams: searchParamsState,
         setSearchParams,
+        fetchVehicles,
+        fetchLocations,
+        fetchPackages,
+        fetchAddons,
+        fetchBookings,
+        addVehicle,
+        deleteVehicle,
+        addLocation,
+        deleteLocation,
+        updatePackagePrice,
+        updateAddonPrice,
         t,
         addBooking,
         updateBookingStatus,
@@ -876,7 +1360,26 @@ Zespół CAR-GO.PL
         updateProfile,
         loginAdmin,
         logoutAdmin,
-        logEmail
+        logEmail,
+        isOwner: adminUser?.role === "owner",
+        cmsHero,
+        cmsHeroFeatures,
+        cmsWhyChooseUs,
+        cmsWhyChooseUsFeatures,
+        cmsFaqs,
+        fetchCmsHero,
+        fetchCmsHeroFeatures,
+        fetchCmsWhyChooseUs,
+        fetchCmsWhyChooseUsFeatures,
+        fetchCmsFaqs,
+        fetchReviews,
+        cmsPages,
+        cmsContacts,
+        cmsSocialMedia,
+        fetchCmsPages,
+        fetchCmsContacts,
+        fetchCmsSocialMedia,
+        authInitialized,
       }}
     >
       {children}
@@ -886,8 +1389,6 @@ Zespół CAR-GO.PL
 
 export function useApp() {
   const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useApp must be used within an AppProvider");
-  }
+  if (!context) throw new Error("useApp must be used within an AppProvider");
   return context;
 }

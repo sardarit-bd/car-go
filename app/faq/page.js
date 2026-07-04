@@ -1,90 +1,86 @@
 "use client";
 
-import SidebarCTA from "@/app/components/SidebarCTA";
-import { useApp } from "@/app/context/AppContext";
-import { ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useApp } from "@/app/context/AppContext";
 
-export default function FAQ() {
-  const { lang, faqs, t } = useApp();
-  const [openId, setOpenId] = useState(null);
+export default function FAQSection({ t }) {
+  const [openIndex, setOpenIndex] = useState(null);
+  const { lang, cmsFaqs } = useApp();
 
-  const toggleFAQ = (id) => {
-    setOpenId(openId === id ? null : id);
+  const dynamicFaqs = (cmsFaqs || [])
+    .filter((f) => f.isActive)
+    .sort((a, b) => a.order - b.order)
+    .map((f) => ({
+      question: lang === "pl" ? f.questionPl : f.questionEn,
+      answer: lang === "pl" ? f.answerPl : f.answerEn,
+    }));
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 animate-fade-in">
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="container mx-auto rounded-[3rem] overflow-hidden border border-slate-100/50">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center">
+          <div className="relative h-[500px] lg:h-[650px] overflow-hidden order-2 lg:order-1 bg-gradient-to-br from-brand-red/5 via-white to-slate-100">
+            <img
+              src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=810&w=1970&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Black Sedan"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
 
-      {/* Title */}
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-extrabold text-slate-800 uppercase">{t("faqTitle")}</h1>
-        <p className="text-sm font-semibold text-slate-500">
-          {lang === "pl"
-            ? "Masz pytania dotyczące wynajmu, kaucji lub ubezpieczenia? Sprawdź odpowiedzi na najczęściej zadawane pytania."
-            : "Have questions about rental, deposit or insurance? Read the answers to frequently asked questions."}
-        </p>
-      </div>
+          <div className="p-8 sm:p-12 lg:p-16 order-1 lg:order-2">
+            <div className="mb-10">
+              <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1 mb-3">
+                <span className="text-brand-red">*</span> Frequently Asked
+                Questions
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight">
+                Everything you need to <br className="hidden sm:block" /> know
+                about{" "}
+                <span className="relative inline-block">
+                  our services
+                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-red rounded-full"></span>
+                </span>
+              </h2>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sticky Left Sidebar CTA Panel */}
-        <div className="lg:col-span-4 sticky top-36 hidden lg:block">
-          <SidebarCTA />
-        </div>
-
-        {/* Right Content */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* Accordion list */}
-          <div className="space-y-4">
-            {faqs.map((faq) => {
-              const isOpen = openId === faq.id;
-              const question = lang === "pl" ? faq.questionPl : faq.questionEn;
-              const answer = lang === "pl" ? faq.answerPl : faq.answerEn;
-
-              return (
+            <div className="space-y-0">
+              {dynamicFaqs.map((faq, index) => (
                 <div
-                  key={faq.id}
-                  className="glass-panel rounded-xl overflow-hidden shadow-sm border border-slate-100 transition"
+                  key={index}
+                  className="border-b border-slate-200 last:border-0"
                 >
                   <button
-                    onClick={() => toggleFAQ(faq.id)}
-                    className="w-full p-5 flex justify-between items-center text-left hover:bg-slate-50/70 transition focus:outline-none"
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full py-6 flex items-center justify-between text-left group focus:outline-none"
                   >
-                    <span className="text-sm font-extrabold text-slate-800 flex items-center space-x-3">
-                      <HelpCircle className="w-5 h-5 text-brand-red flex-shrink-0" />
-                      <span>{question}</span>
+                    <span
+                      className={`text-lg font-bold transition-colors duration-300 ${openIndex === index ? "text-brand-red" : "text-slate-900 group-hover:text-brand-red"}`}
+                    >
+                      {faq.question}
                     </span>
-                    {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-brand-red flex-shrink-0 ml-2" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0 ml-2" />
-                    )}
+                    <ChevronDown
+                      className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openIndex === index ? "rotate-180 text-brand-red" : ""}`}
+                    />
                   </button>
 
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1.5 text-xs text-slate-650 leading-relaxed border-t border-slate-100 bg-slate-50/30 animate-fade-in font-medium">
-                      <p>{answer}</p>
-                    </div>
-                  )}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-40 opacity-100 pb-6" : "max-h-0 opacity-0"}`}
+                  >
+                    <p className="text-slate-500 text-sm leading-relaxed pr-8">
+                      {faq.answer}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Footer support prompt */}
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl text-center text-xs text-slate-500 leading-relaxed font-semibold">
-            <p className="font-bold text-slate-800 mb-1">
-              {lang === "pl" ? "Nie znalazłeś odpowiedzi na swoje pytanie?" : "Didn't find what you were looking for?"}
-            </p>
-            {lang === "pl" ? (
-              <span>Skontaktuj się z nami bezpośrednio przez infolinię telefoniczną pod numerem <strong className="text-slate-800">+48 789 200 100</strong> lub napisz za pomocą formularza kontaktowego.</span>
-            ) : (
-              <span>Contact us directly via our phone hotline at <strong className="text-slate-800">+48 789 200 100</strong> or write to us using our contact form.</span>
-            )}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-    </div>
+    </section>
   );
 }
