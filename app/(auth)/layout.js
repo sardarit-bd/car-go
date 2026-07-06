@@ -10,7 +10,6 @@ export default function AuthLayout({ children }) {
   const { currentUser, adminUser, authInitialized } = useApp();
 
   useLayoutEffect(() => {
-    // Wait until AppContext has finished loading from localStorage
     if (!authInitialized) return;
 
     const isLogin = pathname === "/account/login";
@@ -20,9 +19,10 @@ export default function AuthLayout({ children }) {
       pathname.startsWith("/account") && !isLogin && !isSignup;
 
     const hasUser = !!currentUser;
-    const hasAdmin = !!adminUser;
+    const hasAdmin =
+      currentUser?.role === "ADMIN" || currentUser?.role === "EMPLOYEE";
+    console.log("AuthLayout: currentUser", currentUser, "adminUser", hasAdmin);
 
-    // 1. Logged-in user visits Login or Signup -> Redirect to their Dashboard
     if (hasUser && (isLogin || isSignup)) {
       if (hasAdmin) {
         router.replace("/admin");
@@ -32,20 +32,22 @@ export default function AuthLayout({ children }) {
       return;
     }
 
-    // 2. Regular user tries to access Admin dashboard -> Redirect to User dashboard
     if (hasUser && !hasAdmin && isAdminRoute) {
       router.replace("/account");
       return;
     }
 
-    // 3. Unauthenticated user tries to access protected pages -> Redirect to Login
+    if (hasUser && hasAdmin && isAccountRoute) {
+      router.replace("/admin");
+      return;
+    }
+
     if (!hasUser && (isAdminRoute || isAccountRoute)) {
       router.replace("/account/login");
       return;
     }
   }, [currentUser, adminUser, authInitialized, pathname, router]);
 
-  // Prevent ANY UI flash by rendering nothing until auth is fully resolved
   if (!authInitialized) {
     return null;
   }

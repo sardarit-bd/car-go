@@ -48,7 +48,6 @@ export default function AdminDashboard() {
 
   const isOwner = adminUser?.role === "owner";
 
-  // Handlers for booking actions
   const handleBookingConfirm = async (id) => {
     await updateBookingStatus(id, "confirmed");
     alert("Rezerwacja zatwierdzona!");
@@ -94,7 +93,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sidebar Nav */}
         <AdminSidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -103,38 +101,25 @@ export default function AdminDashboard() {
           router={router}
         />
 
-        {/* Content Panel Area */}
         <div className="lg:col-span-9 space-y-6">
-          {/* TAB 1: Bookings */}
           {activeTab === "bookings" && (
             <BookingsTab
               setSelectedBookingDetails={setSelectedBookingDetails}
             />
           )}
 
-          {/* TAB 2: Fleet */}
           {activeTab === "fleet" && <FleetTab />}
-
-          {/* TAB 3: Locations */}
           {activeTab === "locations" && <LocationsTab />}
-
-          {/* TAB 4: Reviews */}
           {activeTab === "reviews" && <ReviewsTab />}
-
-          {/* TAB 5: CMS (Replaces/Supplements ContentTab) */}
           {activeTab === "cms" && <CmsTab />}
-
           {activeTab === "addons" && <AddonsTab />}
-
           {activeTab === "packages" && <PackagesTab />}
           {activeTab === "blog" && <BlogTab />}
           {activeTab === "contact" && <ContactTab />}
-          {/* TAB 7: Emails */}
           {activeTab === "emails" && <EmailsTab />}
         </div>
       </div>
 
-      {/* Booking Management Detail Modal */}
       <BookingDetailsModal
         selectedBookingDetails={selectedBookingDetails}
         setSelectedBookingDetails={setSelectedBookingDetails}
