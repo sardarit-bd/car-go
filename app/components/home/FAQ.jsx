@@ -8,7 +8,6 @@ export default function FAQSection({ t }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { lang, cmsFaqs } = useApp();
 
-  // Map dynamic CMS FAQs to current language
   const dynamicFaqs = (cmsFaqs || [])
     .filter((f) => f.isActive)
     .sort((a, b) => a.order - b.order)

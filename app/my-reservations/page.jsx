@@ -11,7 +11,7 @@ import MyReservationsResultsList from "@/app/components/reservations/MyReservati
 import MyReservationsUserBookings from "@/app/components/reservations/MyReservationsUserBookings";
 import MyReservationsHelpInfo from "@/app/components/reservations/MyReservationsHelpInfo";
 
-const API_BASE = "${process.env.NEXT_PUBLIC_API_URL}";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 function mapApiBookingToVoucherShape(item) {
   const pickupDate = new Date(item.pickupDate);
