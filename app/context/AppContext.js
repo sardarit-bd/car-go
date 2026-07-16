@@ -772,6 +772,7 @@ export function AppProvider({ children }) {
           isPerDay: true,
           descriptionPl: addon.description,
           descriptionEn: addon.description,
+          image: addon.image,
         };
       });
       setAddons(mapped);

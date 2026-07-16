@@ -1,22 +1,20 @@
 "use client";
 
-import { Check, CheckCircle2 } from "lucide-react";
+import { Check, CheckCircle2, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function CheckoutStep2({ 
-  packages, 
-  selectedPackage, 
-  setSelectedPackage, 
-  addons, 
-  selectedAddons, 
+export default function CheckoutStep2({
+  packages,
+  selectedPackage,
+  setSelectedPackage,
+  addons,
+  selectedAddons,
   handleToggleAddon,
-  t 
+  t,
 }) {
   const router = useRouter();
-
   return (
     <div className="space-y-8">
-      {/* Packages Section */}
       <div className="space-y-5">
         <h2 className="text-2xl font-black text-slate-900 pb-3 border-b border-slate-200">
           {t("packageTitle")}
@@ -25,12 +23,12 @@ export default function CheckoutStep2({
           {packages.map((pkg) => {
             const isSelected = selectedPackage?.id === pkg.id;
             return (
-              <div 
-                key={pkg.id} 
-                onClick={() => setSelectedPackage(pkg)} 
+              <div
+                key={pkg.id}
+                onClick={() => setSelectedPackage(pkg)}
                 className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex flex-col justify-between shadow-sm ${
-                  isSelected 
-                    ? "bg-brand-red/5 border-brand-red shadow-lg shadow-brand-red/10" 
+                  isSelected
+                    ? "bg-brand-red/5 border-brand-red shadow-lg shadow-brand-red/10"
                     : "bg-white border-slate-200 hover:border-slate-400 hover:shadow-md"
                 }`}
               >
@@ -47,7 +45,9 @@ export default function CheckoutStep2({
                     <span className="text-3xl font-black text-slate-900">
                       +PLN {pkg.pricePerDay}
                     </span>
-                    <span className="text-xs text-slate-500 font-bold">/doba</span>
+                    <span className="text-xs text-slate-500 font-bold">
+                      /doba
+                    </span>
                   </div>
                   <ul className="space-y-2 text-xs text-slate-600 leading-relaxed font-semibold pt-4 border-t border-slate-100">
                     {(pkg.featuresPl || []).map((f, i) => (
@@ -64,7 +64,6 @@ export default function CheckoutStep2({
         </div>
       </div>
 
-      {/* Addons Section */}
       <div className="space-y-5">
         <h2 className="text-2xl font-black text-slate-900 pb-3 border-b border-slate-200">
           {t("addonsTitle")}
@@ -72,19 +71,40 @@ export default function CheckoutStep2({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {addons.map((add) => {
             const isChecked = selectedAddons.includes(add.id);
+            console.log(add);
+            console.log(
+              `${process.env.NEXT_PUBLIC_API_URL}/uploads/${add.image}`,
+            );
+
             return (
-              <div 
-                key={add.id} 
-                onClick={() => handleToggleAddon(add.id)} 
-                className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between shadow-sm ${
-                  isChecked 
-                    ? "bg-brand-red/5 border-brand-red shadow-md shadow-brand-red/10" 
+              <div
+                key={add.id}
+                onClick={() => handleToggleAddon(add.id)}
+                className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex items-center gap-4 shadow-sm ${
+                  isChecked
+                    ? "bg-brand-red/5 border-brand-red shadow-md shadow-brand-red/10"
                     : "bg-white border-slate-200 hover:border-slate-400 hover:shadow-md"
                 }`}
               >
+                <div className="w-16 h-16 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-200 flex items-center justify-center">
+                  {add.image ? (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${add.image}`}
+                      alt={add.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Package className="w-6 h-6 text-slate-400" />
+                  )}
+                </div>
+
                 <div className="space-y-1 text-left flex-1">
-                  <p className="text-sm font-black text-slate-900">{add.name}</p>
-                  <p className="text-xs text-slate-500 font-medium">{add.descriptionPl || add.description}</p>
+                  <p className="text-sm font-black text-slate-900">
+                    {add.name}
+                  </p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {add.descriptionPl || add.description}
+                  </p>
                   <p className="text-sm text-brand-red font-black pt-2">
                     PLN {add.price}
                     <span className="text-[10px] text-slate-500 font-bold ml-1">
@@ -92,11 +112,14 @@ export default function CheckoutStep2({
                     </span>
                   </p>
                 </div>
-                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
-                  isChecked 
-                    ? "bg-brand-red border-brand-red text-white" 
-                    : "border-slate-300 bg-slate-50"
-                }`}>
+
+                <div
+                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+                    isChecked
+                      ? "bg-brand-red border-brand-red text-white"
+                      : "border-slate-300 bg-slate-50"
+                  }`}
+                >
                   {isChecked && <Check className="w-4 h-4" />}
                 </div>
               </div>
@@ -105,10 +128,9 @@ export default function CheckoutStep2({
         </div>
       </div>
 
-      {/* Continue Button */}
       <div className="flex justify-end pt-4">
-        <button 
-          onClick={() => router.push("/checkout?step=3")} 
+        <button
+          onClick={() => router.push("/checkout?step=3")}
           className="px-8 py-4 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-black rounded-xl shadow-lg shadow-brand-red/20 hover:shadow-brand-red/40 transition-all duration-300 hover:-translate-y-0.5"
         >
           DALEJ / CONTINUE
@@ -116,4 +138,4 @@ export default function CheckoutStep2({
       </div>
     </div>
   );
-}   
+}
