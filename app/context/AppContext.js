@@ -575,7 +575,7 @@ export function AppProvider({ children }) {
   const [cmsPages, setCmsPages] = useState([]);
   const [cmsContacts, setCmsContacts] = useState([]);
   const [cmsSocialMedia, setCmsSocialMedia] = useState([]);
-
+  const [aboutUs, setAboutUs] = useState();
   const [authInitialized, setAuthInitialized] = useState(false);
 
   const [searchParamsState, setSearchParamsState] = useState(() => {
@@ -715,7 +715,18 @@ export function AppProvider({ children }) {
       setLocations(initialLocations);
     }
   };
+  const fetchAbouts = async () => {
+    try {
+      const response = await api.get("api/admin/cms/about-us");
+      const aboutUs = response.data.data || response.data;
 
+      setAboutUs(aboutUs);
+      // saveState("aboutUs", aboutUs);
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+      setLocations(initialLocations);
+    }
+  };
   const fetchPackages = async () => {
     try {
       const response = await api.get("/api/packages");
@@ -1137,6 +1148,7 @@ export function AppProvider({ children }) {
     const localCmsWhyChooseUsFeatures = localStorage.getItem(
       "cargo_cms_why_choose_us_features",
     );
+    const localAboutUs = localStorage.getItem("localAboutUs");
     const localCmsFaqs = localStorage.getItem("cargo_cms_faqs");
 
     if (localVehicles) {
@@ -1186,6 +1198,7 @@ export function AppProvider({ children }) {
     fetchCmsPages();
     fetchCmsContacts();
     fetchCmsSocialMedia();
+    fetchAbouts();
   }, []);
 
   const saveState = (key, value) => {
@@ -1318,6 +1331,7 @@ export function AppProvider({ children }) {
         lang,
         setLang: updateLang,
         vehicles,
+        aboutUs,
         setVehicles: saveVehicles,
         locations,
         setLocations: saveLocations,

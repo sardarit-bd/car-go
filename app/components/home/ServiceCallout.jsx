@@ -16,8 +16,6 @@ export default function ServiceCallout({ t }) {
   return (
     <section className="px-4 sm:px-6 container mx-auto py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-
-        {/* Left: text content */}
         <div className="space-y-6">
           <div className="flex items-center space-x-2 text-teal-700 font-bold text-sm">
             <Phone className="w-4 h-4" />
@@ -26,13 +24,18 @@ export default function ServiceCallout({ t }) {
 
           <div className="flex items-start gap-4">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
-              Any problem with<br />your autos?<br />Just call us!
+              Any problem with
+              <br />
+              your autos?
+              <br />
+              Just call us!
             </h2>
             <div className="hidden sm:block w-12 h-[2px] bg-teal-700 mt-5" />
           </div>
 
           <p className="text-sm text-slate-500 font-medium max-w-sm">
-            We take call services to locations around our auto shop with excellent services and appropriate prices
+            We take call services to locations around our auto shop with
+            excellent services and appropriate prices
           </p>
 
           <div className="flex items-center gap-5 pt-1">
@@ -68,7 +71,6 @@ export default function ServiceCallout({ t }) {
           </div>
         </div>
 
-        {/* Right: 2x2 photo collage */}
         <div className="grid grid-cols-2 gap-4">
           <img
             src="/service-1.jpg"
@@ -91,7 +93,6 @@ export default function ServiceCallout({ t }) {
             className="w-full h-44 sm:h-52 object-cover rounded-xl"
           />
         </div>
-
       </div>
     </section>
   );

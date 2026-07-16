@@ -4,10 +4,8 @@ import { Star, Quote } from "lucide-react";
 import Link from "next/link";
 
 export default function ReviewsSection({ reviews, approvedReviews, t }) {
-
   return (
     <section className="px-4 sm:px-6 container mx-auto py-16 sm:py-24">
-
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
           {t("reviewsTitle")}
@@ -41,7 +39,6 @@ export default function ReviewsSection({ reviews, approvedReviews, t }) {
                 ))}
               </div>
 
-              {/* Render the exact comment submitted by the client */}
               <p className="text-sm text-slate-600 leading-relaxed flex-grow mb-6 relative z-10">
                 "{rev.text}"
               </p>
@@ -69,14 +66,15 @@ export default function ReviewsSection({ reviews, approvedReviews, t }) {
         )}
       </div>
 
-      {/* Footer Link */}
       <div className="text-center mt-12">
         <Link
           href="/reviews"
           className="inline-flex items-center gap-2 text-sm font-bold text-brand-red hover:opacity-80 transition-opacity group"
         >
           Zobacz wszystkie opinie / View all reviews ({reviews.length})
-          <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+          <span className="group-hover:translate-x-1 transition-transform duration-300">
+            →
+          </span>
         </Link>
       </div>
     </section>

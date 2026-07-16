@@ -1,0 +1,47 @@
+select option::-webkit-scrollbar {
+  width: auto !important;
+  background: transparent !important;
+}
+
+select option::-webkit-scrollbar-thumb {
+  background-color: initial !important;
+  border-radius: 0 !important;
+}
+
+select[name="pickupTime"],
+select[name="returnTime"] {
+  max-height: 100px !important;
+  overflow-y: auto !important;
+  font-size: 12px !important;
+  padding: 4px 2px !important;
+}
+
+select option {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  min-height: 24px !important;
+}
+
+select:focus option,
+select:active option {
+  scrollbar-width: auto !important;
+  scrollbar-color: auto !important;
+}
+
+* {
+  scrollbar-color: initial !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: initial !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: initial !important;
+  border: initial !important;
+}

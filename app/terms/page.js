@@ -24,21 +24,17 @@ export default function RentalTerms() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sticky Left Sidebar CTA Panel */}
         <div className="lg:col-span-4 sticky top-36 hidden lg:block">
           <SidebarCTA />
         </div>
 
-        {/* Right Content */}
         <div className="lg:col-span-8">
           <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-            {/* DYNAMIC CONTENT RENDERING */}
             {termsPage && termsPage.content ? (
               <div className="whitespace-pre-wrap text-sm text-slate-600 leading-relaxed font-medium">
                 {termsPage.content}
               </div>
             ) : (
-              /* FALLBACK HARDCODED CONTENT */
               <>
                 {lang === "pl" ? (
                   <>

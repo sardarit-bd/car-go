@@ -7,12 +7,10 @@ import SidebarCTA from "@/app/components/SidebarCTA";
 export default function PrivacyPolicy() {
   const { lang, cmsPages } = useApp();
 
-  // Find the dynamic Privacy Policy from the global CMS state
   const privacyPage = cmsPages?.find((p) => p.type === "PRIVACY_POLICY");
 
   return (
     <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 space-y-8 animate-fade-in text-sm text-slate-650 leading-relaxed font-medium">
-      {/* Title */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-extrabold text-slate-800 uppercase">
           {lang === "pl" ? "Polityka Prywatności" : "Privacy Policy"}
@@ -25,21 +23,17 @@ export default function PrivacyPolicy() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Sticky Left Sidebar CTA Panel */}
         <div className="lg:col-span-4 sticky top-24 hidden lg:block">
           <SidebarCTA />
         </div>
 
-        {/* Right Content */}
         <div className="lg:col-span-8">
           <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-            {/* DYNAMIC CONTENT RENDERING */}
             {privacyPage && privacyPage.content ? (
               <div className="whitespace-pre-wrap text-sm text-slate-600 leading-relaxed font-medium">
                 {privacyPage.content}
               </div>
             ) : (
-              /* FALLBACK HARDCODED CONTENT */
               <>
                 {lang === "pl" ? (
                   <>

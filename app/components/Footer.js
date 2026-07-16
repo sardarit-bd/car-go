@@ -24,13 +24,11 @@ export default function Footer() {
   const [formMsg, setFormMsg] = useState("");
   const [sent, setSent] = useState(false);
 
-  // Helper to get contact info by type
   const getContact = (type) => cmsContacts.find((c) => c.type === type);
   const emailContact = getContact("EMAIL");
   const phoneContact = getContact("PHONE");
   const addressContact = getContact("ADDRESS");
 
-  // Helper to map platform name to Lucide icon
   const getSocialIcon = (platform) => {
     const p = platform.toLowerCase();
     if (p.includes("facebook")) return Facebook;
@@ -38,7 +36,7 @@ export default function Footer() {
     if (p.includes("twitter") || p.includes("x.com")) return Twitter;
     if (p.includes("linkedin")) return Linkedin;
     if (p.includes("youtube")) return Youtube;
-    return Globe; // Fallback icon
+    return Globe;
   };
 
   const handleSubmit = (e) => {
@@ -69,7 +67,6 @@ ${formMsg}
   return (
     <footer className="bg-brand-dark/90 border-t border-brand-accent mt-auto pt-12 pb-6 px-4 sm:px-6">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-        {/* Company & Info Column */}
         <div className="space-y-4">
           <Link href="/" className="flex items-center group">
             <div className="relative flex items-center justify-center">
@@ -137,7 +134,6 @@ ${formMsg}
           </div>
         </div>
 
-        {/* Navigation & Policies Column */}
         <div className="space-y-3">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">
             {t("navTerms")} & Info
@@ -184,7 +180,6 @@ ${formMsg}
           </p>
         </div>
 
-        {/* Payment & Social Media Column */}
         <div className="space-y-4">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">
             {t("payments")}
@@ -292,7 +287,6 @@ ${formMsg}
           </div>
         </div>
 
-        {/* Direct Contact Form Column */}
         <div className="space-y-4">
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">
             {t("contactFormTitle")}
@@ -349,7 +343,6 @@ ${formMsg}
         </div>
       </div>
 
-      {/* Copyright Bar */}
       <div className="border-t border-brand-accent/40 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 container mx-auto space-y-2.5 sm:space-y-0">
         <div>
           © {new Date().getFullYear()} CAR-GO.PL.{" "}

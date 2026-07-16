@@ -20,7 +20,6 @@ export default function Contact() {
       setIsLoading(true);
 
       try {
-        // Use environment variable for API URL, fallback to localhost for dev
         const API_URL =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -33,15 +32,13 @@ export default function Contact() {
             name: name,
             email: email,
             message: msg,
-            captchaToken: "dummy_token_for_testing", // Replace with real ReCaptcha/hCaptcha token if you implement one
+            captchaToken: "dummy_token_for_testing",
           }),
         });
 
         if (!response.ok) {
           throw new Error(`API Error: ${response.status}`);
         }
-
-        // Keep local context logging for UI state/analytics fallback
         logEmail({
           id: "contact_page_" + Math.random().toString(36).substr(2, 9),
           to: "reservations@car-go.pl",
@@ -79,7 +76,6 @@ ${msg}
 
   return (
     <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
-      {/* Title */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-extrabold text-slate-800 uppercase">
           {t("navContact")}
@@ -92,10 +88,8 @@ ${msg}
       </div>
 
       <div className="max-w-5xl mx-auto space-y-12">
-        {/* Contact Page Content */}
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Direct Info & Map */}
             <div className="md:col-span-5 space-y-6">
               <div className="glass-panel p-6 rounded-2xl space-y-6">
                 <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
@@ -157,8 +151,6 @@ ${msg}
                 </div>
               </div>
             </div>
-
-            {/* Right Column: Contact form */}
             <div className="md:col-span-7">
               <div className="glass-panel p-6 rounded-2xl space-y-5">
                 <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2.5">
