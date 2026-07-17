@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, CheckCircle2, Package } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CheckoutStep2({
   packages,
@@ -13,6 +13,11 @@ export default function CheckoutStep2({
   t,
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams(); // Added to preserve existing URL params
+
+  console.log(addons);
+  console.log("this is checked ");
+
   return (
     <div className="space-y-8">
       <div className="space-y-5">
@@ -71,7 +76,7 @@ export default function CheckoutStep2({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {addons.map((add) => {
             const isChecked = selectedAddons.includes(add.id);
-            console.log(add);
+
             console.log(
               `${process.env.NEXT_PUBLIC_API_URL}/uploads/${add.image}`,
             );
@@ -130,7 +135,11 @@ export default function CheckoutStep2({
 
       <div className="flex justify-end pt-4">
         <button
-          onClick={() => router.push("/checkout?step=3")}
+          onClick={() => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("step", "3");
+            router.push(`/checkout?${params.toString()}`);
+          }}
           className="px-8 py-4 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-black rounded-xl shadow-lg shadow-brand-red/20 hover:shadow-brand-red/40 transition-all duration-300 hover:-translate-y-0.5"
         >
           DALEJ / CONTINUE

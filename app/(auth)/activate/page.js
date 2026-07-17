@@ -8,9 +8,10 @@ import { Lock, UserCheck, ShieldCheck } from "lucide-react";
 function AccountActivationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { lang, registerUser, t } = useApp();
-  
+  const { lang, activateUserAccount, t } = useApp();
+
   const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,52 +19,77 @@ function AccountActivationContent() {
 
   useEffect(() => {
     const queryEmail = searchParams.get("email");
-    if (queryEmail) {
-      setEmail(queryEmail);
-    }
+    const queryToken = searchParams.get("token");
+    if (queryEmail) setEmail(queryEmail);
+    if (queryToken) setToken(queryToken);
   }, [searchParams]);
 
   const handleActivate = (e) => {
     e.preventDefault();
     setError("");
 
+    if (!token) {
+      setError(
+        lang === "pl"
+          ? "Brak tokenu aktywacyjnego."
+          : "Activation token is missing.",
+      );
+      return;
+    }
+
     if (password.length < 6) {
-      setError(lang === "pl" ? "Hasło musi mieć co najmniej 6 znaków!" : "Password must be at least 6 characters!");
+      setError(
+        lang === "pl"
+          ? "Hasło musi mieć co najmniej 6 znaków!"
+          : "Password must be at least 6 characters!",
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      setError(lang === "pl" ? "Hasła nie są zgodne!" : "Passwords do not match!");
+      setError(
+        lang === "pl" ? "Hasła nie są zgodne!" : "Passwords do not match!",
+      );
       return;
     }
 
-    registerUser(email, password);
-    setActivated(true);
-
-    setTimeout(() => {
-      router.push("/account");
-    }, 3000);
+    activateUserAccount(email, password, token).then((result) => {
+      if (result.success) {
+        setActivated(true);
+        setTimeout(() => {
+          router.push("/my-reservations");
+        }, 3000);
+      } else {
+        setError(result.message || "Activation failed");
+      }
+    });
   };
 
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12 animate-fade-in">
       <div className="glass-panel p-8 rounded-2xl space-y-6 shadow-sm border border-slate-100">
-        
         {/* Title */}
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-black text-slate-800 uppercase">Aktywacja Konta / Activation</h1>
-          <p className="text-xs text-slate-500">Ustaw hasło do swojego konta przypisanego do adresu e-mail.</p>
+          <h1 className="text-2xl font-black text-slate-800 uppercase">
+            Aktywacja Konta / Activation
+          </h1>
+          <p className="text-xs text-slate-500">
+            Ustaw hasło do swojego konta przypisanego do adresu e-mail.
+          </p>
         </div>
 
         {activated ? (
           <div className="p-8 border border-green-600/30 bg-green-50/50 rounded-xl text-center space-y-3 text-green-700 animate-fade-in">
             <ShieldCheck className="w-12 h-12 mx-auto" />
-            <p className="text-sm font-bold">Konto zostało aktywowane pomyślnie!</p>
-            <p className="text-xs text-slate-500">Przekierowuję do panelu Moje Konto...</p>
+            <p className="text-sm font-bold">
+              Konto zostało aktywowane pomyślnie!
+            </p>
+            <p className="text-xs text-slate-500">
+              Przekierowuję do panelu Moje Konto...
+            </p>
           </div>
         ) : (
           <form onSubmit={handleActivate} className="space-y-4">
-            
             {error && (
               <div className="p-3 bg-brand-red/10 border border-brand-red/30 rounded-lg text-xs text-brand-red">
                 <span>{error}</span>
@@ -71,7 +97,9 @@ function AccountActivationContent() {
             )}
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1">Twój Login (Adres E-mail)</label>
+              <label className="block text-xs font-bold text-slate-500 mb-1">
+                Twój Login (Adres E-mail)
+              </label>
               <input
                 type="text"
                 disabled
@@ -81,7 +109,7 @@ function AccountActivationContent() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
+              <label className=" text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Nowe Hasło / New Password</span>
               </label>
@@ -96,7 +124,7 @@ function AccountActivationContent() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
+              <label className="flex text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Potwierdź Hasło / Confirm Password</span>
               </label>
@@ -119,7 +147,6 @@ function AccountActivationContent() {
             </button>
           </form>
         )}
-
       </div>
     </div>
   );
@@ -127,7 +154,13 @@ function AccountActivationContent() {
 
 export default function AccountActivation() {
   return (
-    <React.Suspense fallback={<div className="text-center py-12 text-slate-500 font-bold">Ładowanie / Loading...</div>}>
+    <React.Suspense
+      fallback={
+        <div className="text-center py-12 text-slate-500 font-bold">
+          Ładowanie / Loading...
+        </div>
+      }
+    >
       <AccountActivationContent />
     </React.Suspense>
   );

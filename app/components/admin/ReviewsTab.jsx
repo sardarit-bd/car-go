@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/app/context/AppContext";
-import { ShieldAlert, Trash2, Star, CheckCircle, XCircle, Clock, Filter } from "lucide-react";
+import {
+  ShieldAlert,
+  Trash2,
+  Star,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Filter,
+} from "lucide-react";
 import api from "@/lib/axios";
 
 export default function ReviewsTab() {
@@ -25,18 +33,19 @@ export default function ReviewsTab() {
       }
 
       const response = await api.get("/api/reviews/admin", { params });
-      
+
       // Handle different backend response structures
       const data = response.data.data || response.data;
-      const reviewList = Array.isArray(data) ? data : (data.reviews || []);
-      
+      const reviewList = Array.isArray(data) ? data : data.reviews || [];
+
       setReviews(reviewList);
-      
+
       // Update pagination if backend returns it
-      if (data.totalPages) setPagination(prev => ({ ...prev, totalPages: data.totalPages }));
+      if (data.totalPages)
+        setPagination((prev) => ({ ...prev, totalPages: data.totalPages }));
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
-      alert("Błąd ładowania opinii");
+      alert("Błąd ładowania opinii", error);
     } finally {
       setLoading(false);
     }
@@ -47,7 +56,12 @@ export default function ReviewsTab() {
   }, [filterStatus, pagination.page]);
 
   const handleStatusUpdate = async (reviewId, newStatus) => {
-    const actionText = newStatus === "APPROVED" ? "zatwierdzić" : newStatus === "REJECTED" ? "odrzucić" : "przywrócić do oczekujących";
+    const actionText =
+      newStatus === "APPROVED"
+        ? "zatwierdzić"
+        : newStatus === "REJECTED"
+          ? "odrzucić"
+          : "przywrócić do oczekujących";
     if (!confirm(`Czy na pewno chcesz ${actionText} tę opinię?`)) {
       return;
     }
@@ -59,7 +73,10 @@ export default function ReviewsTab() {
       await fetchReviews(); // Refresh list
     } catch (error) {
       console.error("Failed to update status:", error);
-      alert("Błąd aktualizacji statusu: " + (error.response?.data?.message || "Spróbuj ponownie"));
+      alert(
+        "Błąd aktualizacji statusu: " +
+          (error.response?.data?.message || "Spróbuj ponownie"),
+      );
     }
   };
 
@@ -79,14 +96,28 @@ export default function ReviewsTab() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      PENDING: { color: "bg-yellow-100 text-yellow-800 border-yellow-300", icon: Clock, label: "Oczekuje" },
-      APPROVED: { color: "bg-green-100 text-green-800 border-green-300", icon: CheckCircle, label: "Zatwierdzona" },
-      REJECTED: { color: "bg-red-100 text-red-800 border-red-300", icon: XCircle, label: "Odrzucona" },
+      PENDING: {
+        color: "bg-yellow-100 text-yellow-800 border-yellow-300",
+        icon: Clock,
+        label: "Oczekuje",
+      },
+      APPROVED: {
+        color: "bg-green-100 text-green-800 border-green-300",
+        icon: CheckCircle,
+        label: "Zatwierdzona",
+      },
+      REJECTED: {
+        color: "bg-red-100 text-red-800 border-red-300",
+        icon: XCircle,
+        label: "Odrzucona",
+      },
     };
     const badge = badges[status] || badges.PENDING;
     const Icon = badge.icon;
     return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${badge.color}`}>
+      <span
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${badge.color}`}
+      >
         <Icon className="w-3 h-3" />
         {badge.label}
       </span>
@@ -136,17 +167,18 @@ export default function ReviewsTab() {
               Moderacja Opinii / Reviews Management
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Zarządzaj opiniami przesłanymi przez klientów. Zatwierdź je, aby wyświetlić na stronie głównej.
+              Zarządzaj opiniami przesłanymi przez klientów. Zatwierdź je, aby
+              wyświetlić na stronie głównej.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200">
             <Filter className="w-4 h-4 text-slate-400" />
             <select
               value={filterStatus}
               onChange={(e) => {
                 setFilterStatus(e.target.value);
-                setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1 on filter change
+                setPagination((prev) => ({ ...prev, page: 1 })); // Reset to page 1 on filter change
               }}
               className="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
             >
@@ -168,7 +200,10 @@ export default function ReviewsTab() {
           ) : reviews.length === 0 ? (
             <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
               <p className="font-bold">Brak opinii w tej kategorii</p>
-              <p className="text-sm mt-1">Opinie klientów pojawią się tutaj po przesłaniu przez formularz na stronie.</p>
+              <p className="text-sm mt-1">
+                Opinie klientów pojawią się tutaj po przesłaniu przez formularz
+                na stronie.
+              </p>
             </div>
           ) : (
             reviews.map((review) => (
@@ -180,23 +215,31 @@ export default function ReviewsTab() {
                   {/* Review Content */}
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-base font-black text-slate-800">{review.name || "Anonim"}</h3>
+                      <h3 className="text-base font-black text-slate-800">
+                        {review.name || "Anonim"}
+                      </h3>
                       {getStatusBadge(review.status || "PENDING")}
-                      <span className="text-[10px] text-slate-400 font-bold">•</span>
-                      <span className="text-[10px] text-slate-500 font-semibold">{formatDate(review.createdAt || review.date)}</span>
+                      <span className="text-[10px] text-slate-400 font-bold">
+                        •
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-semibold">
+                        {formatDate(review.createdAt || review.date)}
+                      </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 text-xs text-slate-600">
                       {renderStars(review.rating)}
                       {review.car && (
                         <>
                           <span className="text-slate-300">|</span>
-                          <span className="font-semibold text-slate-500">Pojazd:</span> 
+                          <span className="font-semibold text-slate-500">
+                            Pojazd:
+                          </span>
                           <span className="text-slate-700">{review.car}</span>
                         </>
                       )}
                     </div>
-                    
+
                     <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
                       "{review.comment || review.text}"
                     </p>
@@ -206,7 +249,9 @@ export default function ReviewsTab() {
                   <div className="flex md:flex-col gap-2 shrink-0">
                     {review.status !== "APPROVED" && (
                       <button
-                        onClick={() => handleStatusUpdate(review.id, "APPROVED")}
+                        onClick={() =>
+                          handleStatusUpdate(review.id, "APPROVED")
+                        }
                         className="flex-1 md:flex-none px-3 py-2 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-lg transition flex items-center justify-center gap-1.5 text-xs font-bold"
                         title="Zatwierdź i opublikuj"
                       >
@@ -216,7 +261,9 @@ export default function ReviewsTab() {
                     )}
                     {review.status !== "REJECTED" && (
                       <button
-                        onClick={() => handleStatusUpdate(review.id, "REJECTED")}
+                        onClick={() =>
+                          handleStatusUpdate(review.id, "REJECTED")
+                        }
                         className="flex-1 md:flex-none px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg transition flex items-center justify-center gap-1.5 text-xs font-bold"
                         title="Odrzuć"
                       >
@@ -243,7 +290,12 @@ export default function ReviewsTab() {
         {pagination.totalPages > 1 && (
           <div className="flex justify-center gap-2 pt-4 border-t border-slate-100">
             <button
-              onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+              onClick={() =>
+                setPagination((prev) => ({
+                  ...prev,
+                  page: Math.max(1, prev.page - 1),
+                }))
+              }
               disabled={pagination.page === 1}
               className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -253,7 +305,12 @@ export default function ReviewsTab() {
               Strona {pagination.page} z {pagination.totalPages}
             </span>
             <button
-              onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
+              onClick={() =>
+                setPagination((prev) => ({
+                  ...prev,
+                  page: Math.min(pagination.totalPages, prev.page + 1),
+                }))
+              }
               disabled={pagination.page === pagination.totalPages}
               className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >

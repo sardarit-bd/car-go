@@ -25,19 +25,16 @@ function CheckoutFlowContent() {
     addBooking,
     t,
   } = useApp();
-  console.log("addons", addons);
+
   const initialStep = parseInt(searchParams.get("step")) || 1;
   const preSelectedCarId = searchParams.get("car") || "";
-
   const [step, setStep] = useState(initialStep);
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedAddons, setSelectedAddons] = useState([]);
-
   const [availableVehicles, setAvailableVehicles] = useState([]);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -47,13 +44,11 @@ function CheckoutFlowContent() {
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [nip, setNip] = useState("");
-
   const [paymentMethod, setPaymentMethod] = useState("online");
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
   const [consentData, setConsentData] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
-
   const [createdBooking, setCreatedBooking] = useState(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
 
@@ -63,11 +58,18 @@ function CheckoutFlowContent() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (preSelectedCarId && vehicles.length > 0) {
-      const match = vehicles.find((v) => v.id === preSelectedCarId);
-      if (match) setSelectedCar(match);
+    if (preSelectedCarId) {
+      const match =
+        vehicles.find((v) => String(v.id) === String(preSelectedCarId)) ||
+        availableVehicles.find(
+          (v) => String(v.id) === String(preSelectedCarId),
+        );
+
+      if (match) {
+        setSelectedCar(match);
+      }
     }
-  }, [preSelectedCarId, vehicles]);
+  }, [preSelectedCarId, vehicles, availableVehicles]);
 
   useEffect(() => {
     if (packages.length > 0 && !selectedPackage) {
@@ -94,7 +96,6 @@ function CheckoutFlowContent() {
           location: activeSearch.pickupLocation,
         };
         const response = await api.get("/api/vehicle", { params });
-
         const fetchedVehicles = response.data.data.vehicles.map((v) => ({
           id: v.id,
           brand: v.brand,
@@ -167,7 +168,8 @@ function CheckoutFlowContent() {
         isCustomPrice: false,
       });
     }
-    router.push("/checkout?step=2");
+    // FIX: Append car ID to URL to persist state across navigation/refreshes
+    router.push(`/checkout?step=2&car=${car.id}`);
   };
 
   const handleToggleAddon = (addonId) => {
@@ -246,7 +248,6 @@ function CheckoutFlowContent() {
     try {
       const response = await api.post("/api/reservations", payload);
       const createdReservation = response.data.data;
-
       const newBooking = {
         id: createdReservation.id,
         car: selectedCar,
@@ -294,7 +295,6 @@ function CheckoutFlowContent() {
 
   const handleSimulatePayment = async () => {
     if (!createdBooking) return;
-
     try {
       const response = await api.post(
         `/api/reservations/${createdBooking.id}/checkout-session`,
@@ -312,18 +312,15 @@ function CheckoutFlowContent() {
       );
     }
   };
-
+  console.log("check", selectedCar);
   return (
     <div className="relative lg:pt-14 ">
-      {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10 animate-fade-in">
-        {/* Steps Indicator */}
         <CheckoutSteps step={step} t={t} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Content */}
           <div className="lg:col-span-8">
             {step === 1 && (
               <CheckoutStep1

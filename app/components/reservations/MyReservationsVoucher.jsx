@@ -10,7 +10,7 @@ import {
   Download,
   ShieldAlert,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
+// REMOVED: import html2pdf from "html2pdf.js"; (This was causing the SSR crash)
 
 export default function MyReservationsVoucher({
   activeBooking,
@@ -48,9 +48,13 @@ export default function MyReservationsVoucher({
         email: maskEmail(activeBooking.customer.email),
       };
 
-  const handleDownloadPdf = () => {
+  // UPDATED: Made async and added dynamic import to prevent SSR errors
+  const handleDownloadPdf = async () => {
     const element = document.getElementById("voucher-pdf-content");
     if (!element) return;
+
+    // Dynamically import html2pdf ONLY when the button is clicked (Client-side only)
+    const html2pdf = (await import("html2pdf.js")).default;
 
     const opt = {
       margin: [5, 5, 5, 5],
@@ -88,17 +92,13 @@ export default function MyReservationsVoucher({
         <div className="flex gap-3">
           <button
             onClick={handleDownloadPdf}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white text-xs font-black tracking-wider uppercase rounded-xl shadow-lg transition-all duration-300"
-          >
-            <Download className="w-4 h-4" />
-            <span>{t("downloadPdf") || "Download PDF"}</span>
-          </button>
-          <button
-            onClick={onPrint}
             className="flex items-center gap-2 px-6 py-3 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-black tracking-wider uppercase rounded-xl shadow-lg transition-all duration-300"
           >
-            <Printer className="w-4 h-4" />
-            <span>{t("printVoucher")}</span>
+            <Download className="w-4 h-4" />
+            <span>
+              {t("downloadPdf") ||
+                (lang === "pl" ? "Pobierz PDF" : "Download PDF")}
+            </span>
           </button>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function MyReservationsVoucher({
           </div>
           <div className="text-right flex-shrink-0">
             <p className="text-[9px] sm:text-[10px] text-slate-500 font-black uppercase tracking-wider">
-              {t("confirmNum")}
+              {lang === "pl" ? "Numer rezerwacji" : "Reservation Number"}
             </p>
             <p className="text-base sm:text-lg font-black font-mono tracking-wider mt-1 break-all">
               {activeBooking.id}
@@ -144,7 +144,7 @@ export default function MyReservationsVoucher({
         <div className="grid grid-cols-3 gap-3 mb-4 break-inside-avoid">
           <div className="border border-slate-200 rounded-lg p-3 bg-slate-50">
             <p className="text-[10px] text-slate-500 font-bold uppercase">
-              Status
+              {lang === "pl" ? "Status" : "Status"}
             </p>
             <p className="text-sm font-black text-slate-900 mt-1 capitalize">
               {activeBooking.status === "confirmed"
@@ -156,15 +156,16 @@ export default function MyReservationsVoucher({
           </div>
           <div className="border border-slate-200 rounded-lg p-3 bg-slate-50">
             <p className="text-[10px] text-slate-500 font-bold uppercase">
-              Payment Method
+              {lang === "pl" ? "Metoda płatności" : "Payment Method"}
             </p>
             <p className="text-sm font-black text-slate-900 mt-1">
-              {activeBooking.paymentMethod || "Upon Pickup"}
+              {activeBooking.paymentMethod ||
+                (lang === "pl" ? "Przy odbiorze" : "Upon Pickup")}
             </p>
           </div>
           <div className="border border-slate-200 rounded-lg p-3 bg-slate-50">
             <p className="text-[10px] text-slate-500 font-bold uppercase">
-              Total Cost
+              {lang === "pl" ? "Całkowity koszt" : "Total Cost"}
             </p>
             <p className="text-lg font-black text-brand-red mt-1">
               PLN {activeBooking.pricing.total.toFixed(2)}
@@ -177,48 +178,61 @@ export default function MyReservationsVoucher({
           {/* Rental Period */}
           <div className="border border-slate-200 rounded-lg p-3">
             <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2 flex items-center gap-2">
-              <Calendar className="w-3 h-3 text-brand-red" /> Rental Period
+              <Calendar className="w-3 h-3 text-brand-red" />{" "}
+              {lang === "pl" ? "Okres wynajmu" : "Rental Period"}
             </h3>
             <div className="space-y-1 text-sm">
               <p>
-                <span className="font-bold text-slate-700">Pickup:</span>{" "}
-                {activeBooking.dates.pickupDate} at{" "}
+                <span className="font-bold text-slate-700">
+                  {lang === "pl" ? "Odbiór:" : "Pickup:"}
+                </span>{" "}
+                {activeBooking.dates.pickupDate} {lang === "pl" ? "o" : "at"}{" "}
                 {activeBooking.dates.pickupTime}
               </p>
               <p>
-                <span className="font-bold text-slate-700">Return:</span>{" "}
-                {activeBooking.dates.returnDate} at{" "}
+                <span className="font-bold text-slate-700">
+                  {lang === "pl" ? "Zwrot:" : "Return:"}
+                </span>{" "}
+                {activeBooking.dates.returnDate} {lang === "pl" ? "o" : "at"}{" "}
                 {activeBooking.dates.returnTime}
               </p>
               <p className="text-brand-red font-black text-xs mt-2">
-                Duration: {activeBooking.pricing.days} days
+                {lang === "pl"
+                  ? `Czas trwania: ${activeBooking.pricing.days} dni`
+                  : `Duration: ${activeBooking.pricing.days} days`}
               </p>
             </div>
           </div>
 
-          {/* Locations - FIX: Now properly displays names */}
+          {/* Locations */}
           <div className="border border-slate-200 rounded-lg p-3">
             <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2 flex items-center gap-2">
-              <MapPin className="w-3 h-3 text-brand-red" /> Locations
+              <MapPin className="w-3 h-3 text-brand-red" />{" "}
+              {lang === "pl" ? "Lokalizacje" : "Locations"}
             </h3>
             <div className="space-y-1 text-sm">
               <p>
-                <span className="font-bold text-slate-700">Pickup:</span>{" "}
+                <span className="font-bold text-slate-700">
+                  {lang === "pl" ? "Odbiór:" : "Pickup:"}
+                </span>{" "}
                 {activeBooking.dates.pickupLocation}
               </p>
               <p>
-                <span className="font-bold text-slate-700">Return:</span>{" "}
+                <span className="font-bold text-slate-700">
+                  {lang === "pl" ? "Zwrot:" : "Return:"}
+                </span>{" "}
                 {activeBooking.dates.returnLocation}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Vehicle & Extras - FIX: ONLY Vehicle Name, no extra specs */}
+        {/* Vehicle & Extras */}
         <div className="grid grid-cols-2 gap-4 mb-4 break-inside-avoid">
           <div className="border border-slate-200 rounded-lg p-3">
             <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2 flex items-center gap-2">
-              <Sparkles className="w-3 h-3 text-brand-red" /> Vehicle
+              <Sparkles className="w-3 h-3 text-brand-red" />{" "}
+              {lang === "pl" ? "Pojazd" : "Vehicle"}
             </h3>
             <p className="text-base font-black text-slate-900">
               {activeBooking.car.name}
@@ -227,14 +241,14 @@ export default function MyReservationsVoucher({
 
           <div className="border border-slate-200 rounded-lg p-3">
             <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2 flex items-center gap-2">
-              <UserCheck className="w-3 h-3 text-brand-red" /> Protection &
-              Extras
+              <UserCheck className="w-3 h-3 text-brand-red" />{" "}
+              {lang === "pl" ? "Ochrona i Dodatki" : "Protection & Extras"}
             </h3>
             <p className="text-sm font-black text-slate-900">
               {activeBooking.package.name.split(" / ")[0]}
             </p>
             <p className="text-xs text-slate-600 mt-2 font-bold uppercase">
-              Extras:
+              {lang === "pl" ? "Dodatki:" : "Extras:"}
             </p>
             <p className="text-xs text-slate-700">{activeBooking.addons}</p>
           </div>
@@ -243,12 +257,13 @@ export default function MyReservationsVoucher({
         {/* Customer Details */}
         <div className="border border-slate-200 rounded-lg p-3 mb-4 break-inside-avoid">
           <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2 flex items-center gap-2">
-            <UserCheck className="w-3 h-3 text-brand-red" /> Renter Details
+            <UserCheck className="w-3 h-3 text-brand-red" />{" "}
+            {lang === "pl" ? "Dane Wynajmującego" : "Renter Details"}
           </h3>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-[10px] text-slate-500 font-bold uppercase">
-                Name
+                {lang === "pl" ? "Imię i nazwisko" : "Name"}
               </p>
               <p className="font-semibold text-slate-900">
                 {customer.firstName} {customer.lastName}
@@ -256,7 +271,7 @@ export default function MyReservationsVoucher({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 font-bold uppercase">
-                Email
+                {lang === "pl" ? "E-mail" : "Email"}
               </p>
               <p className="font-semibold text-slate-900 break-all">
                 {customer.email}
@@ -264,7 +279,7 @@ export default function MyReservationsVoucher({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 font-bold uppercase">
-                Phone
+                {lang === "pl" ? "Telefon" : "Phone"}
               </p>
               <p className="font-semibold text-slate-900">{customer.phone}</p>
             </div>
@@ -280,33 +295,43 @@ export default function MyReservationsVoucher({
         {/* Pricing Summary */}
         <div className="border border-slate-200 rounded-lg p-3 break-inside-avoid">
           <h3 className="text-[11px] font-black uppercase text-slate-500 mb-2">
-            Pricing Summary
+            {lang === "pl" ? "Podsumowanie cenowe" : "Pricing Summary"}
           </h3>
           <table className="w-full text-sm">
             <tbody>
               <tr className="border-b border-slate-100">
                 <td className="py-2 text-slate-600">
-                  Vehicle Rental ({activeBooking.pricing.days} days)
+                  {lang === "pl"
+                    ? `Wynajem pojazdu (${activeBooking.pricing.days} dni)`
+                    : `Vehicle Rental (${activeBooking.pricing.days} days)`}
                 </td>
                 <td className="py-2 text-right font-bold">
                   PLN {activeBooking.pricing.carCost.toFixed(2)}
                 </td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 text-slate-600">Protection Package</td>
+                <td className="py-2 text-slate-600">
+                  {lang === "pl" ? "Pakiet ochronny" : "Protection Package"}
+                </td>
                 <td className="py-2 text-right font-bold">
                   PLN {activeBooking.pricing.packageCost.toFixed(2)}
                 </td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 text-slate-600">Accessories & Extras</td>
+                <td className="py-2 text-slate-600">
+                  {lang === "pl"
+                    ? "Akcesoria i dodatki"
+                    : "Accessories & Extras"}
+                </td>
                 <td className="py-2 text-right font-bold">
                   PLN {activeBooking.pricing.addonsCost.toFixed(2)}
                 </td>
               </tr>
               <tr>
                 <td className="py-3 text-base font-black text-slate-900">
-                  TOTAL GROSS (23% VAT)
+                  {lang === "pl"
+                    ? "RAZEM BRUTTO (23% VAT)"
+                    : "TOTAL GROSS (23% VAT)"}
                 </td>
                 <td className="py-3 text-right text-base font-black text-brand-red">
                   PLN {activeBooking.pricing.total.toFixed(2)}
@@ -319,12 +344,16 @@ export default function MyReservationsVoucher({
         {/* Footer Terms */}
         <div className="mt-4 pt-3 border-t border-slate-200 text-[10px] text-slate-500 leading-tight break-inside-avoid">
           <p>
-            • Vehicle pickup is only possible upon presentation of a valid ID
-            and driving license.
+            •{" "}
+            {lang === "pl"
+              ? "Odbiór pojazdu jest możliwy wyłącznie po okazaniu ważnego dowodu osobistego i prawa jazdy."
+              : "Vehicle pickup is only possible upon presentation of a valid ID and driving license."}
           </p>
           <p>
-            • Unlimited mileage applies only within the territory of the
-            Republic of Poland.
+            •{" "}
+            {lang === "pl"
+              ? "Nielimitowany przebieg obowiązuje wyłącznie na terenie Rzeczypospolitej Polskiej."
+              : "Unlimited mileage applies only within the territory of the Republic of Poland."}
           </p>
         </div>
       </div>
