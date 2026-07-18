@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import { Phone, Eye, Download, CheckCircle } from "lucide-react";
-
+import api from "@/lib/axios";
 export default function CustomerPanel() {
   const router = useRouter();
   const {
@@ -15,8 +15,10 @@ export default function CustomerPanel() {
     addReview,
     logoutUser,
     t,
+    myReservations,
+    fetchReviews,
   } = useApp();
-  console.log(bookings);
+  console.log("page myReservations : ", myReservations);
   const [phone, setPhone] = useState(currentUser?.phone || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -48,7 +50,7 @@ export default function CustomerPanel() {
 
     return isSameUser && isConfirmed;
   });
-
+  console.log("here is the fount ", myBookings);
   // Extract unique cars from confirmed bookings for the review dropdown
   const bookedCars = myBookings.map((b) => `${b.car.brand} ${b.car.model}`);
   const uniqueBookedCars = [...new Set(bookedCars)];
@@ -72,25 +74,37 @@ export default function CustomerPanel() {
     }, 4000);
   };
 
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (reviewText.trim() && reviewCar) {
-      addReview({
-        id: "rev_" + Math.random().toString(36).substr(2, 9),
-        name: currentUser?.firstName || currentUser?.email,
-        rating: reviewRating,
-        car: reviewCar,
-        text: reviewText,
-        date: new Date().toISOString().split("T")[0],
-        approved: false, // awaits admin moderation
-      });
+      try {
+        await api.post("/api/reviews", {
+          rating: reviewRating,
+          comment: reviewText,
+        });
 
-      setReviewSuccess(true);
-      setReviewText("");
-      setReviewCar("");
-      setTimeout(() => {
-        setReviewSuccess(false);
-      }, 4000);
+        await fetchReviews();
+
+        setReviewSuccess(true);
+        setReviewText("");
+        setReviewCar("");
+        setTimeout(() => {
+          setReviewSuccess(false);
+        }, 4000);
+      } catch (error) {
+        console.error("Failed to submit review:", error);
+        if (error.response?.status === 409) {
+          alert(
+            error.response.data.message ||
+              "You have already submitted a review.",
+          );
+        } else {
+          alert(
+            error.response?.data?.message ||
+              "Failed to submit review. Please try again.",
+          );
+        }
+      }
     }
   };
 
@@ -101,7 +115,7 @@ export default function CustomerPanel() {
   if (!currentUser) {
     return null; // Or redirect to login
   }
-
+  console.log("myReservations : ", myReservations);
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in print:bg-white print:text-black">
       {/* Header Info */}
@@ -232,9 +246,9 @@ export default function CustomerPanel() {
               {t("bookingsHistoryTitle")}
             </h2>
 
-            {myBookings.length > 0 ? (
+            {myBookings?.length > 0 ? (
               <div className="space-y-4 print:space-y-6">
-                {myBookings.map((b) => {
+                {myBookings?.map((b) => {
                   const statusColors = {
                     awaiting_confirmation: "bg-yellow-600 text-white",
                     confirmed: "bg-green-700 text-white",
@@ -257,8 +271,12 @@ export default function CustomerPanel() {
                           <span className="font-mono text-sm font-extrabold text-slate-800 print:text-black">
                             {b.id}
                           </span>
+
                           <span
-                            className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${statusColors[b.status] || "bg-slate-400"}`}
+                            className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
+                              statusColors[b.status] ||
+                              "bg-slate-400 text-white"
+                            }`}
                           >
                             {b.status === "confirmed"
                               ? t("statusConfirmed")
@@ -267,14 +285,17 @@ export default function CustomerPanel() {
                                 : t("statusAwaiting")}
                           </span>
                         </div>
+
                         <p className="text-slate-500 print:text-black">
                           {b.dates.pickupDate} - {b.dates.returnDate} |{" "}
                           <strong className="text-slate-800 print:text-black">
                             {b.car.brand} {b.car.model}
                           </strong>
                         </p>
+
                         <p className="text-[10px] text-slate-400 flex items-center space-x-1">
                           <span>{t("paymentStatusLabel")}</span>
+
                           <strong
                             className={
                               payColors[b.paymentStatus] || "text-slate-600"
@@ -293,8 +314,9 @@ export default function CustomerPanel() {
                         <span className="text-slate-800 text-sm font-extrabold">
                           {b.pricing.total === "Individual Price"
                             ? t("individualPriceText")
-                            : `PLN ${b.pricing.total.toFixed(2)}`}
+                            : `PLN ${Number(b.pricing.total).toFixed(2)}`}
                         </span>
+
                         <button
                           onClick={() => setSelectedBooking(b)}
                           className="px-3.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 text-[10px] text-slate-600 rounded transition flex items-center space-x-1"

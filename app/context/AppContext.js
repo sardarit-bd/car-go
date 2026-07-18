@@ -250,6 +250,20 @@ const initialTranslations = {
     individualPriceText: "Individual Price",
     daysUnit: "days",
     printConfirmationBtn: "PRINT CONFIRMATION (PDF)",
+    manageBookingTitle: "Zarządzaj rezerwacją",
+    clientLabel: "Klient:",
+    vehicleLabel: "Pojazd:",
+    datesLabel: "Terminy:",
+    pickupLabel: "Odbiór:",
+    returnLabel: "Zwrot:",
+    rentalDurationLabel: "Czas najmu:",
+    dayUnit: "dzień",
+    daysUnit: "dni",
+    totalCostLabel: "Całkowity koszt:",
+    currentStatusLabel: "Aktualny Status:",
+    confirmBtn: "ZATWIERDŹ",
+    completeBtn: "ZAKOŃCZ",
+    cancelBtn: "ANULUJ",
   },
   en: {
     brandName: "CAR-GO",
@@ -392,6 +406,20 @@ const initialTranslations = {
     technicalSupport: "Technical support",
     domainValidity: "Domain valid until",
     backToVehicles: "Back to vehicles",
+    manageBookingTitle: "Manage Booking",
+    clientLabel: "Client:",
+    vehicleLabel: "Vehicle:",
+    datesLabel: "Dates:",
+    pickupLabel: "Pickup:",
+    returnLabel: "Return:",
+    rentalDurationLabel: "Rental duration:",
+    dayUnit: "day",
+    daysUnit: "days",
+    totalCostLabel: "Total cost:",
+    currentStatusLabel: "Current Status:",
+    confirmBtn: "CONFIRM",
+    completeBtn: "COMPLETE",
+    cancelBtn: "CANCEL",
   },
 };
 
@@ -492,6 +520,7 @@ export function AppProvider({ children }) {
   const [cmsContacts, setCmsContacts] = useState([]);
   const [cmsSocialMedia, setCmsSocialMedia] = useState([]);
   const [aboutUs, setAboutUs] = useState();
+  const [myReservations, setMyReservations] = useState([]);
   const [authInitialized, setAuthInitialized] = useState(false);
 
   const [searchParamsState, setSearchParamsState] = useState(() => {
@@ -641,6 +670,20 @@ export function AppProvider({ children }) {
       console.error("Failed to fetch locations:", error);
     }
   };
+
+  const fetchMyReservations = async () => {
+    try {
+      const response = await api.get("/api/reservations/myrevertion");
+
+      const data = response.data.data || response.data;
+      setMyReservations(data);
+
+      console.log("My Reservations fetched successfully:", data);
+    } catch (error) {
+      console.error("Failed to fetch my reservations:", error);
+    }
+  };
+
   const fetchPackages = async () => {
     try {
       const response = await api.get("/api/packages");
@@ -1114,6 +1157,7 @@ export function AppProvider({ children }) {
     fetchCmsContacts();
     fetchCmsSocialMedia();
     fetchAbouts();
+    fetchMyReservations();
   }, []);
 
   const saveState = (key, value) => {
@@ -1266,7 +1310,7 @@ export function AppProvider({ children }) {
 
   const t = (key) =>
     cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
-
+  console.log("myReservations last", myReservations);
   return (
     <AppContext.Provider
       value={{
@@ -1341,6 +1385,7 @@ export function AppProvider({ children }) {
         loginUser,
         logoutUser,
         bookings,
+        myReservations,
       }}
     >
       {children}
