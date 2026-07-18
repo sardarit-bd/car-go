@@ -18,7 +18,7 @@ export default function CustomerPanel() {
     myReservations,
     fetchReviews,
   } = useApp();
-  console.log("page myReservations : ", myReservations);
+
   const [phone, setPhone] = useState(currentUser?.phone || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,23 +34,13 @@ export default function CustomerPanel() {
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
   const myBookings = bookings.filter((b) => {
-    console.log(b?.customer?.email);
     const isSameUser =
       b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase();
     const isConfirmed = b?.status?.toLowerCase() === "confirmed";
 
-    if (isSameUser) {
-      console.log("Found booking for user:", {
-        id: b.id,
-        status: b.status,
-        isConfirmed: isConfirmed,
-        email: b.customer.email,
-      });
-    }
-
     return isSameUser && isConfirmed;
   });
-  console.log("here is the fount ", myBookings);
+
   // Extract unique cars from confirmed bookings for the review dropdown
   const bookedCars = myBookings.map((b) => `${b.car.brand} ${b.car.model}`);
   const uniqueBookedCars = [...new Set(bookedCars)];
@@ -115,7 +105,7 @@ export default function CustomerPanel() {
   if (!currentUser) {
     return null; // Or redirect to login
   }
-  console.log("myReservations : ", myReservations);
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in print:bg-white print:text-black">
       {/* Header Info */}
