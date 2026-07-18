@@ -15,9 +15,6 @@ export default function CheckoutStep2({
   const router = useRouter();
   const searchParams = useSearchParams(); // Added to preserve existing URL params
 
-  console.log(addons);
-  console.log("this is checked ");
-
   return (
     <div className="space-y-8">
       <div className="space-y-5">
@@ -76,10 +73,6 @@ export default function CheckoutStep2({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {addons.map((add) => {
             const isChecked = selectedAddons.includes(add.id);
-
-            console.log(
-              `${process.env.NEXT_PUBLIC_API_URL}/uploads/${add.image}`,
-            );
 
             return (
               <div

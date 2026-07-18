@@ -138,14 +138,11 @@ function MyReservationsContent() {
 
     const fetchReservation = async () => {
       try {
-        console.log(
-          `${API_BASE}/api/reservations/${encodeURIComponent(urlReservationNumber)}`,
-        );
         const res = await fetch(
           `${API_BASE}/api/reservations/${encodeURIComponent(urlReservationNumber)}`,
         );
         const json = await res.json();
-        console.log(json);
+
         if (!res.ok || !json.success || !json.data) {
           setErrorMsg(t("lookupNotFound"));
           return;
@@ -169,7 +166,6 @@ function MyReservationsContent() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log(queryReservationNumber);
     if (!queryReservationNumber.trim()) return;
     const params = new URLSearchParams();
     params.set("reservationNumber", queryReservationNumber.trim());

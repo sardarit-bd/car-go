@@ -677,8 +677,6 @@ export function AppProvider({ children }) {
 
       const data = response.data.data || response.data;
       setMyReservations(data);
-
-      console.log("My Reservations fetched successfully:", data);
     } catch (error) {
       console.error("Failed to fetch my reservations:", error);
     }
@@ -1310,7 +1308,7 @@ export function AppProvider({ children }) {
 
   const t = (key) =>
     cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
-  console.log("myReservations last", myReservations);
+
   return (
     <AppContext.Provider
       value={{
