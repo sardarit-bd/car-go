@@ -288,7 +288,7 @@ export default function CustomerSignup() {
               </p>
             )}
           </div>
-
+          {/* dfasdfsd */}
           <div>
             <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
               <Lock className="w-3.5 h-3.5 text-slate-400" />
