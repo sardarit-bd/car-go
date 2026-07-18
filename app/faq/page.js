@@ -7,7 +7,6 @@ import { useApp } from "@/app/context/AppContext";
 export default function FAQSection({ t }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { lang, cmsFaqs } = useApp();
-
   const dynamicFaqs = (cmsFaqs || [])
     .filter((f) => f.isActive)
     .sort((a, b) => a.order - b.order)
@@ -35,14 +34,17 @@ export default function FAQSection({ t }) {
           <div className="p-8 sm:p-12 lg:p-16 order-1 lg:order-2">
             <div className="mb-10">
               <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1 mb-3">
-                <span className="text-brand-red">*</span> Frequently Asked
-                Questions
+                <span className="text-brand-red">*</span>
+                {lang === "pl"
+                  ? "Często zadawane pytania"
+                  : "Frequently Asked Questions"}
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight">
-                Everything you need to <br className="hidden sm:block" /> know
-                about{" "}
+              <h2 className="text-2xl sm:text-4xl lg:text-6xl font-extrabold text-slate-900 leading-tight ">
+                {lang === "pl"
+                  ? "Wszystko, czego potrzebujesz, aby"
+                  : "Everything you need to about our services"}
+                <br className="hidden sm:block" />
                 <span className="relative inline-block">
-                  our services
                   <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-red rounded-full"></span>
                 </span>
               </h2>

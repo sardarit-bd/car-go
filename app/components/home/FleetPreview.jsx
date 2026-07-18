@@ -5,14 +5,48 @@ import Link from "next/link";
 
 function renderCarSvg() {
   return (
-    <svg className="w-full max-w-lg mx-auto opacity-80 drop-shadow-[0_10px_20px_rgba(255,0,0,0.1)]" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z" fill="#64748b" stroke="#cbd5e1" strokeWidth="2.5" />
-      <path d="M120 125 C 170 120, 260 120, 280 105 L 340 105 C 375 120, 390 125, 430 125" stroke="#FF0000" strokeWidth="3.5" strokeLinecap="round" />
-      <circle cx="112" cy="175" r="26" fill="#1e293b" stroke="#cbd5e1" strokeWidth="4" />
+    <svg
+      className="w-full max-w-lg mx-auto opacity-80 drop-shadow-[0_10px_20px_rgba(255,0,0,0.1)]"
+      viewBox="0 0 500 220"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M70 120 C 130 115, 230 115, 270 95 C 310 75, 360 70, 390 90 C 420 110, 440 120, 460 120 C 480 120, 490 135, 490 145 L 490 165 C 490 170, 480 175, 470 175 C 450 175, 430 175, 410 175 C 400 160, 375 160, 365 175 C 320 175, 180 175, 135 175 C 125 160, 100 160, 90 175 C 60 175, 30 170, 20 165 C 15 160, 10 145, 10 135 C 10 128, 30 122, 70 120 Z"
+        fill="#64748b"
+        stroke="#cbd5e1"
+        strokeWidth="2.5"
+      />
+      <path
+        d="M120 125 C 170 120, 260 120, 280 105 L 340 105 C 375 120, 390 125, 430 125"
+        stroke="#FF0000"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
+      <circle
+        cx="112"
+        cy="175"
+        r="26"
+        fill="#1e293b"
+        stroke="#cbd5e1"
+        strokeWidth="4"
+      />
       <circle cx="112" cy="175" r="14" fill="#334155" />
-      <circle cx="382" cy="175" r="26" fill="#1e293b" stroke="#cbd5e1" strokeWidth="4" />
+      <circle
+        cx="382"
+        cy="175"
+        r="26"
+        fill="#1e293b"
+        stroke="#cbd5e1"
+        strokeWidth="4"
+      />
       <circle cx="382" cy="175" r="14" fill="#334155" />
-      <path d="M280 102 L 315 72 C 322 65, 335 63, 345 68 L 388 90 C 395 93, 398 100, 395 107 Z" fill="#0f172a" stroke="#cbd5e1" strokeWidth="1.5" />
+      <path
+        d="M280 102 L 315 72 C 322 65, 335 63, 345 68 L 388 90 C 395 93, 398 100, 395 107 Z"
+        fill="#0f172a"
+        stroke="#cbd5e1"
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }
@@ -20,14 +54,13 @@ function renderCarSvg() {
 export default function FleetPreview({ vehicles, t }) {
   return (
     <section className="px-4 sm:px-6 container mx-auto py-16 sm:py-24 relative">
-      {/* Subtle Background Decoration */}
       <div className="absolute top-10 right-10 w-64 h-64 bg-brand-red/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-64 h-64 bg-slate-200/30 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 relative z-10">
         <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
-          <span className="text-brand-red">*</span> {t("fleetSubtitle") || "Our Fleet"}
+          <span className="text-brand-red">*</span>{" "}
+          {t("fleetSubtitle") || "Our Fleet"}
         </span>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
           {t("fleetTitle")}
@@ -37,18 +70,15 @@ export default function FleetPreview({ vehicles, t }) {
         </p>
       </div>
 
-      {/* Vehicle Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
         {vehicles.slice(0, 3).map((car) => (
           <div
             key={car.id}
             className="group bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col"
           >
-            {/* Image Section */}
             <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 h-56 flex justify-center items-center overflow-hidden">
-              {/* Background Pattern */}
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px] opacity-50" />
-              
+
               {car.image ? (
                 <img
                   src={car.image}
@@ -59,7 +89,6 @@ export default function FleetPreview({ vehicles, t }) {
                 renderCarSvg()
               )}
 
-              {/* Floating Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 <span className="px-3 py-1.5 bg-white/90 backdrop-blur-sm text-[11px] text-slate-700 rounded-full font-bold uppercase border border-slate-200/50 shadow-sm">
                   {car.class.split(" ")[0]}
@@ -67,22 +96,21 @@ export default function FleetPreview({ vehicles, t }) {
               </div>
 
               <div className="absolute top-4 right-4">
-                <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold text-white uppercase backdrop-blur-sm shadow-lg ${
-                  car.fuel.toLowerCase() === "petrol" 
-                    ? "bg-green-600/90" 
-                    : "bg-slate-800/90"
-                }`}>
+                <span
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold text-white uppercase backdrop-blur-sm shadow-lg ${
+                    car.fuel.toLowerCase() === "petrol"
+                      ? "bg-green-600/90"
+                      : "bg-slate-800/90"
+                  }`}
+                >
                   {car.fuel === "Petrol" ? t("fuelPetrol") : t("fuelDiesel")}
                 </span>
               </div>
 
-              {/* Bottom Gradient Overlay */}
               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white/80 to-transparent pointer-events-none" />
             </div>
 
-            {/* Content Section */}
             <div className="p-6 flex-1 flex flex-col">
-              {/* Title and Price */}
               <div className="flex justify-between items-start mb-6">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xl font-black text-slate-900 group-hover:text-brand-red transition-colors duration-300 mb-1">
@@ -107,35 +135,44 @@ export default function FleetPreview({ vehicles, t }) {
                 </div>
               </div>
 
-              {/* Specs Grid */}
               <div className="grid grid-cols-3 gap-3 py-4 mb-6 border-t border-slate-100">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-red/10 transition-colors duration-300">
                     <Users className="w-5 h-5 text-slate-600 group-hover:text-brand-red transition-colors duration-300" />
                   </div>
                   <div className="text-center">
-                    <span className="block text-sm font-bold text-slate-900">{car.seats}</span>
-                    <span className="text-[10px] text-slate-500 uppercase">{t("seatsUnit")}</span>
+                    <span className="block text-sm font-bold text-slate-900">
+                      {car.seats}
+                    </span>
+                    <span className="text-[10px] text-slate-500 uppercase">
+                      {t("seatsUnit")}
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-red/10 transition-colors duration-300">
                     <Briefcase className="w-5 h-5 text-slate-600 group-hover:text-brand-red transition-colors duration-300" />
                   </div>
                   <div className="text-center">
-                    <span className="block text-sm font-bold text-slate-900">{car.luggage}</span>
-                    <span className="text-[10px] text-slate-500 uppercase">{t("luggageUnit")}</span>
+                    <span className="block text-sm font-bold text-slate-900">
+                      {car.luggage}
+                    </span>
+                    <span className="text-[10px] text-slate-500 uppercase">
+                      {t("luggageUnit")}
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-red/10 transition-colors duration-300">
                     <Cog className="w-5 h-5 text-slate-600 group-hover:text-brand-red transition-colors duration-300" />
                   </div>
                   <div className="text-center">
                     <span className="block text-sm font-bold text-slate-900">
-                      {car.transmission === "Automatic" ? t("gearAuto").slice(0, 4) : t("gearManual").slice(0, 3)}
+                      {car.transmission === "Automatic"
+                        ? t("gearAuto").slice(0, 4)
+                        : t("gearManual").slice(0, 3)}
                     </span>
                     <span className="text-[10px] text-slate-500 uppercase">
                       {car.transmission}
@@ -144,7 +181,6 @@ export default function FleetPreview({ vehicles, t }) {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 mt-auto">
                 <Link
                   href={`/vehicles/${car.id}`}
@@ -164,14 +200,17 @@ export default function FleetPreview({ vehicles, t }) {
         ))}
       </div>
 
-      {/* View All Button */}
       <div className="text-center mt-12 relative z-10">
         <Link
           href="/vehicles"
           className="group inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 border-2 border-slate-200 text-sm font-bold text-slate-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
         >
-          <span className="uppercase tracking-wider">{t("viewAllVehicles")}</span>
-          <span className="group-hover:translate-x-1 transition-transform duration-300 text-lg">→</span>
+          <span className="uppercase tracking-wider">
+            {t("viewAllVehicles")}
+          </span>
+          <span className="group-hover:translate-x-1 transition-transform duration-300 text-lg">
+            →
+          </span>
         </Link>
       </div>
     </section>

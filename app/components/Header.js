@@ -51,7 +51,6 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop Navigation - only shows on large screens where 7 items fit comfortably */}
           <nav className="hidden lg:flex items-center justify-center gap-3 xl:gap-6 flex-1 px-4 xl:px-8 min-w-0">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
@@ -71,14 +70,11 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right Side Actions */}
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
-            {/* Calling Info - Desktop Only */}
             <div className="hidden xl:block">
               <CallingInfo />
             </div>
 
-            {/* Language Toggle */}
             <button
               onClick={() => setLang(lang === "pl" ? "en" : "pl")}
               className="text-xs font-bold text-slate-500 hover:text-slate-800 transition px-2 py-1 rounded-md hover:bg-slate-50"
@@ -86,7 +82,6 @@ export default function Header() {
               {lang.toUpperCase()}
             </button>
 
-            {/* Search Button */}
             <button
               onClick={() => setSearchOpen(true)}
               className="flex items-center justify-center w-9 h-9 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition"
@@ -95,8 +90,6 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </button>
 
-            {/* User Area - now synced to the same breakpoint (lg) as the nav & hamburger,
-                so it never overlaps with the mobile menu button */}
             <div className="hidden lg:block relative">
               {currentUser ? (
                 <div className="flex items-center">
@@ -147,8 +140,6 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button - now shows below lg (covers phones AND tablets,
-                where the horizontal nav no longer fits) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden flex items-center justify-center w-9 h-9 bg-slate-50 hover:bg-slate-100 rounded-full transition"
@@ -162,7 +153,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile/Tablet Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-100 bg-white animate-slide-down max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="px-4 py-4 space-y-1">
@@ -222,7 +212,6 @@ export default function Header() {
         )}
       </header>
 
-      {/* Search Modal */}
       {searchOpen && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center pt-20 bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl animate-scale-up">

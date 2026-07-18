@@ -21,7 +21,6 @@ export default function AuthLayout({ children }) {
     const hasUser = !!currentUser;
     const hasAdmin =
       currentUser?.role === "ADMIN" || currentUser?.role === "EMPLOYEE";
-    console.log("AuthLayout: currentUser", currentUser, "adminUser", hasAdmin);
 
     if (hasUser && (isLogin || isSignup)) {
       if (hasAdmin) {

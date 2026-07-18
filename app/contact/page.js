@@ -1,12 +1,22 @@
 "use client";
 
-// import SidebarCTA from "@/app/components/SidebarCTA";
 import { useApp } from "@/app/context/AppContext";
-import { Clock, Mail, MapPin, Phone, ShieldCheck, Loader2 } from "lucide-react";
-import { useState } from "react";
+import {
+  Clock,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Loader2,
+  Lock,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Contact() {
-  const { lang, t, logEmail } = useApp();
+  const { lang, t, logEmail, currentUser } = useApp();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,13 +24,47 @@ export default function Contact() {
   const [sent, setSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Pre-fill user data if logged in
+  useEffect(() => {
+    if (currentUser) {
+      setName(
+        `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim(),
+      );
+      setEmail(currentUser.email || "");
+    }
+  }, [currentUser]);
+
+  // AUTHENTICATION GATE: If not logged in, show a prompt to log in
+  if (!currentUser) {
+    return (
+      <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in">
+        <div className="glass-panel p-8 rounded-2xl max-w-md w-full space-y-4">
+          <Lock className="w-12 h-12 text-slate-400 mx-auto" />
+          <h1 className="text-2xl font-extrabold text-slate-800 uppercase">
+            {lang === "pl" ? "Wymagane Zalogowanie" : "Login Required"}
+          </h1>
+          <p className="text-sm font-semibold text-slate-500">
+            {lang === "pl"
+              ? "Aby wysłać wiadomość do naszego zespołu obsługi, musisz być zalogowany na swoje konto."
+              : "To send a message to our support team, you must be logged into your account."}
+          </p>
+          <Link
+            href="/account/login"
+            className="inline-block w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition shadow mt-2"
+          >
+            {lang === "pl" ? "Zaloguj się" : "Log In to Continue"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && email && msg) {
       setIsLoading(true);
 
       try {
-        // Use environment variable for API URL, fallback to localhost for dev
         const API_URL =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -28,20 +72,23 @@ export default function Contact() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            // If your backend requires auth for this route, uncomment the line below:
+            // "Authorization": `Bearer ${typeof window !== 'undefined' ? localStorage.getItem("token") : ""}`
           },
           body: JSON.stringify({
             name: name,
             email: email,
             message: msg,
-            captchaToken: "dummy_token_for_testing", // Replace with real ReCaptcha/hCaptcha token if you implement one
+            // FIX: captchaToken removed as requested to prevent 400 Bad Request
           }),
         });
 
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+          // Try to get specific error message from backend, fallback to status code
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `API Error: ${response.status}`);
         }
 
-        // Keep local context logging for UI state/analytics fallback
         logEmail({
           id: "contact_page_" + Math.random().toString(36).substr(2, 9),
           to: "reservations@car-go.pl",
@@ -68,8 +115,8 @@ ${msg}
         console.error("Error submitting contact form:", error);
         alert(
           lang === "pl"
-            ? "Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie."
-            : "An error occurred while sending the message. Please try again.",
+            ? `Wystąpił błąd: ${error.message}. Spróbuj ponownie.`
+            : `An error occurred: ${error.message}. Please try again.`,
         );
       } finally {
         setIsLoading(false);
@@ -79,7 +126,6 @@ ${msg}
 
   return (
     <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
-      {/* Title */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-extrabold text-slate-800 uppercase">
           {t("navContact")}
@@ -92,10 +138,9 @@ ${msg}
       </div>
 
       <div className="max-w-5xl mx-auto space-y-12">
-        {/* Contact Page Content */}
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Direct Info & Map */}
+            {/* Left Side: Rental Info */}
             <div className="md:col-span-5 space-y-6">
               <div className="glass-panel p-6 rounded-2xl space-y-6">
                 <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
@@ -158,7 +203,7 @@ ${msg}
               </div>
             </div>
 
-            {/* Right Column: Contact form */}
+            {/* Right Side: Contact Form */}
             <div className="md:col-span-7">
               <div className="glass-panel p-6 rounded-2xl space-y-5">
                 <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2.5">
@@ -170,7 +215,9 @@ ${msg}
                     <ShieldCheck className="w-10 h-10 mx-auto" />
                     <p className="text-sm font-bold">{t("contactSuccess")}</p>
                     <p className="text-xs text-slate-500">
-                      Skontaktujemy się z Tobą wkrótce.
+                      {lang === "pl"
+                        ? "Skontaktujemy się z Tobą wkrótce."
+                        : "We will contact you shortly."}
                     </p>
                   </div>
                 ) : (
@@ -192,12 +239,13 @@ ${msg}
                         <label className="block text-xs font-bold text-slate-500 mb-1">
                           {t("contactEmail")} *
                         </label>
+                        {/* Made readOnly to ensure the message is tied to the verified logged-in account */}
                         <input
                           type="email"
                           required
+                          readOnly
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-brand-red"
+                          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 text-sm cursor-not-allowed"
                         />
                       </div>
                     </div>

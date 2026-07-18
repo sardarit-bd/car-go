@@ -1,22 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
-import {
-  User,
-  Calendar,
-  ShieldCheck,
-  Mail,
-  Phone,
-  Lock,
-  Eye,
-  Download,
-  Star,
-  CheckCircle,
-  AlertTriangle,
-} from "lucide-react";
-
+import { Phone, Eye, Download, CheckCircle } from "lucide-react";
+import api from "@/lib/axios";
 export default function CustomerPanel() {
   const router = useRouter();
   const {
@@ -26,11 +14,12 @@ export default function CustomerPanel() {
     updateProfile,
     addReview,
     logoutUser,
-    vehicles,
     t,
+    myReservations,
+    fetchReviews,
   } = useApp();
-
-  const [phone, setPhone] = useState("");
+  console.log("page myReservations : ", myReservations);
+  const [phone, setPhone] = useState(currentUser?.phone || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -44,31 +33,34 @@ export default function CustomerPanel() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  // useEffect(() => {
-  //   if (!currentUser) {
-  //     router.push("/account/login");
-  //   } else if (currentUser.role === "ADMIN" || currentUser.role === "EMPLOYEE") {
-  //     router.push("/admin");
-  //   }
-  // }, [currentUser, router]);
+  const myBookings = bookings.filter((b) => {
+    console.log(b?.customer?.email);
+    const isSameUser =
+      b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase();
+    const isConfirmed = b?.status?.toLowerCase() === "confirmed";
 
-  // if (!currentUser) {
-  //   return null;
-  // }
-  // }
+    if (isSameUser) {
+      console.log("Found booking for user:", {
+        id: b.id,
+        status: b.status,
+        isConfirmed: isConfirmed,
+        email: b.customer.email,
+      });
+    }
 
-  // Find bookings of this client
-  const myBookings = bookings.filter(
-    (b) =>
-      b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase(),
-  );
+    return isSameUser && isConfirmed;
+  });
+  console.log("here is the fount ", myBookings);
+  // Extract unique cars from confirmed bookings for the review dropdown
+  const bookedCars = myBookings.map((b) => `${b.car.brand} ${b.car.model}`);
+  const uniqueBookedCars = [...new Set(bookedCars)];
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
     setSaveSuccess(false);
 
     if (password && password !== confirmPassword) {
-      alert(lang === "pl" ? "Hasła nie pasują!" : "Passwords do not match!");
+      alert(t("passwordsMismatch"));
       return;
     }
 
@@ -82,24 +74,37 @@ export default function CustomerPanel() {
     }, 4000);
   };
 
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
-    if (reviewText.trim()) {
-      addReview({
-        id: "rev_" + Math.random().toString(36).substr(2, 9),
-        name: currentUser.firstName,
-        rating: reviewRating,
-        car: reviewCar,
-        text: reviewText,
-        date: new Date().toISOString().split("T")[0],
-        approved: false, // awaits admin moderation
-      });
+    if (reviewText.trim() && reviewCar) {
+      try {
+        await api.post("/api/reviews", {
+          rating: reviewRating,
+          comment: reviewText,
+        });
 
-      setReviewSuccess(true);
-      setReviewText("");
-      setTimeout(() => {
-        setReviewSuccess(false);
-      }, 4000);
+        await fetchReviews();
+
+        setReviewSuccess(true);
+        setReviewText("");
+        setReviewCar("");
+        setTimeout(() => {
+          setReviewSuccess(false);
+        }, 4000);
+      } catch (error) {
+        console.error("Failed to submit review:", error);
+        if (error.response?.status === 409) {
+          alert(
+            error.response.data.message ||
+              "You have already submitted a review.",
+          );
+        } else {
+          alert(
+            error.response?.data?.message ||
+              "Failed to submit review. Please try again.",
+          );
+        }
+      }
     }
   };
 
@@ -107,6 +112,10 @@ export default function CustomerPanel() {
     window.print();
   };
 
+  if (!currentUser) {
+    return null; // Or redirect to login
+  }
+  console.log("myReservations : ", myReservations);
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in print:bg-white print:text-black">
       {/* Header Info */}
@@ -116,8 +125,9 @@ export default function CustomerPanel() {
             {t("navMyAccount")}
           </h1>
           <p className="text-xs text-slate-500">
-            Zarządzaj swoimi danymi kontaktowymi, historią rezerwacji i dodawaj
-            opinie.
+            {lang === "pl"
+              ? "Zarządzaj swoimi danymi kontaktowymi, historią rezerwacji i dodawaj opinie."
+              : "Manage your contact details, booking history, and submit reviews."}
           </p>
         </div>
         <button
@@ -136,13 +146,13 @@ export default function CustomerPanel() {
         <div className="lg:col-span-5 space-y-6 print:hidden">
           <div className="glass-panel p-6 rounded-2xl space-y-5">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5">
-              Twoje Dane Profilowe / Personal Info:
+              {t("profileInfoTitle")}
             </h2>
 
             {saveSuccess && (
               <div className="p-3 bg-green-950/20 border border-green-800/30 text-green-500 text-xs font-bold rounded-lg flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4" />
-                <span>Dane zostały zaktualizowane! / Profile updated!</span>
+                <span>{t("profileUpdateSuccess")}</span>
               </div>
             )}
 
@@ -156,7 +166,7 @@ export default function CustomerPanel() {
                   <input
                     type="text"
                     disabled
-                    value={currentUser?.firstName}
+                    value={currentUser?.firstName || ""}
                     className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed"
                   />
                 </div>
@@ -165,7 +175,7 @@ export default function CustomerPanel() {
                   <input
                     type="text"
                     disabled
-                    value={currentUser?.lastName}
+                    value={currentUser?.lastName || ""}
                     className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed"
                   />
                 </div>
@@ -176,7 +186,7 @@ export default function CustomerPanel() {
                 <input
                   type="email"
                   disabled
-                  value={currentUser?.email}
+                  value={currentUser?.email || ""}
                   className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed font-mono"
                 />
               </div>
@@ -196,12 +206,12 @@ export default function CustomerPanel() {
 
               <div className="border-t border-slate-100 pt-4 mt-2 space-y-3">
                 <p className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">
-                  Zmień Hasło / Change Password
+                  {t("changePasswordTitle")}
                 </p>
                 <div>
                   <input
                     type="password"
-                    placeholder="Nowe hasło / New password"
+                    placeholder={t("newPasswordPlaceholder")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-brand-red text-slate-800 rounded text-xs focus:outline-none"
@@ -210,7 +220,7 @@ export default function CustomerPanel() {
                 <div>
                   <input
                     type="password"
-                    placeholder="Potwierdź nowe hasło / Confirm password"
+                    placeholder={t("confirmPasswordPlaceholder")}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-brand-red text-slate-800 rounded text-xs focus:outline-none"
@@ -222,7 +232,7 @@ export default function CustomerPanel() {
                 type="submit"
                 className="w-full py-2 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-extrabold rounded transition shadow"
               >
-                ZAPISZ ZMIANY / SAVE CHANGES
+                {t("saveChangesBtn")}
               </button>
             </form>
           </div>
@@ -233,12 +243,12 @@ export default function CustomerPanel() {
           {/* Reservation List */}
           <div className="glass-panel p-6 rounded-2xl space-y-5 print:border-none print:bg-white print:text-black">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5 print:text-black print:border-black">
-              Historia Twoich Rezerwacji / Bookings History:
+              {t("bookingsHistoryTitle")}
             </h2>
 
-            {myBookings.length > 0 ? (
+            {myBookings?.length > 0 ? (
               <div className="space-y-4 print:space-y-6">
-                {myBookings.map((b) => {
+                {myBookings?.map((b) => {
                   const statusColors = {
                     awaiting_confirmation: "bg-yellow-600 text-white",
                     confirmed: "bg-green-700 text-white",
@@ -261,8 +271,12 @@ export default function CustomerPanel() {
                           <span className="font-mono text-sm font-extrabold text-slate-800 print:text-black">
                             {b.id}
                           </span>
+
                           <span
-                            className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${statusColors[b.status]}`}
+                            className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
+                              statusColors[b.status] ||
+                              "bg-slate-400 text-white"
+                            }`}
                           >
                             {b.status === "confirmed"
                               ? t("statusConfirmed")
@@ -271,15 +285,22 @@ export default function CustomerPanel() {
                                 : t("statusAwaiting")}
                           </span>
                         </div>
+
                         <p className="text-slate-500 print:text-black">
                           {b.dates.pickupDate} - {b.dates.returnDate} |{" "}
                           <strong className="text-slate-800 print:text-black">
                             {b.car.brand} {b.car.model}
                           </strong>
                         </p>
+
                         <p className="text-[10px] text-slate-400 flex items-center space-x-1">
-                          <span>Status płatności:</span>
-                          <strong className={payColors[b.paymentStatus]}>
+                          <span>{t("paymentStatusLabel")}</span>
+
+                          <strong
+                            className={
+                              payColors[b.paymentStatus] || "text-slate-600"
+                            }
+                          >
                             {b.paymentStatus === "paid_online"
                               ? t("payStatusPaid")
                               : b.paymentStatus === "payment_upon_pickup"
@@ -292,15 +313,16 @@ export default function CustomerPanel() {
                       <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto text-xs font-bold gap-2 print:hidden">
                         <span className="text-slate-800 text-sm font-extrabold">
                           {b.pricing.total === "Individual Price"
-                            ? "Indywidualna"
-                            : `PLN ${b.pricing.total.toFixed(2)}`}
+                            ? t("individualPriceText")
+                            : `PLN ${Number(b.pricing.total).toFixed(2)}`}
                         </span>
+
                         <button
                           onClick={() => setSelectedBooking(b)}
                           className="px-3.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 text-[10px] text-slate-600 rounded transition flex items-center space-x-1"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>SZCZEGÓŁY / DETAILS</span>
+                          <span>{t("detailsBtn")}</span>
                         </button>
                       </div>
                     </div>
@@ -309,7 +331,7 @@ export default function CustomerPanel() {
               </div>
             ) : (
               <div className="p-8 border border-slate-200 rounded-xl bg-slate-50/50 text-center text-xs text-slate-500">
-                Brak dokonanych rezerwacji pod tym adresem.
+                {t("noBookingsMessage")}
               </div>
             )}
           </div>
@@ -317,16 +339,13 @@ export default function CustomerPanel() {
           {/* Add Review Panel */}
           <div className="glass-panel p-6 rounded-2xl space-y-5 print:hidden">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5">
-              Napisz Opinię / Submit a Review:
+              {t("submitReviewTitle")}
             </h2>
 
             {reviewSuccess && (
               <div className="p-3 bg-green-950/20 border border-green-800/30 text-green-500 text-xs font-bold rounded-lg flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4" />
-                <span>
-                  Opinia została wysłana! Oczekuje na zatwierdzenie przez
-                  administratora.
-                </span>
+                <span>{t("reviewSuccessMessage")}</span>
               </div>
             )}
 
@@ -336,18 +355,28 @@ export default function CustomerPanel() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1.5">Wybierz pojazd *</label>
-                  <select
-                    value={reviewCar}
-                    onChange={(e) => setReviewCar(e.target.value)}
-                    className="w-full bg-white border border-slate-200 text-slate-800 px-3 py-2 rounded focus:outline-none"
-                  >
-                    {vehicles.map((v) => (
-                      <option key={v.id} value={`${v.brand} ${v.model}`}>
-                        {v.brand} {v.model}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block mb-1.5">
+                    {t("selectVehicleLabel")} *
+                  </label>
+                  {uniqueBookedCars.length > 0 ? (
+                    <select
+                      value={reviewCar}
+                      onChange={(e) => setReviewCar(e.target.value)}
+                      className="w-full bg-white border border-slate-200 text-slate-800 px-3 py-2 rounded focus:outline-none"
+                      required
+                    >
+                      <option value="">{t("selectVehiclePlaceholder")}</option>
+                      {uniqueBookedCars.map((carName, idx) => (
+                        <option key={idx} value={carName}>
+                          {carName}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-xs font-semibold">
+                      {t("noVehiclesToReview")}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -356,6 +385,7 @@ export default function CustomerPanel() {
                     value={reviewRating}
                     onChange={(e) => setReviewRating(parseInt(e.target.value))}
                     className="w-full bg-white border border-slate-200 text-slate-800 px-3 py-2 rounded focus:outline-none text-yellow-500"
+                    required
                   >
                     <option value={5}>★★★★★ (5/5)</option>
                     <option value={4}>★★★★☆ (4/5)</option>
@@ -371,7 +401,7 @@ export default function CustomerPanel() {
                 <textarea
                   rows={4}
                   required
-                  placeholder="Napisz kilka zdań o samochodzie i obsłudze..."
+                  placeholder={t("reviewPlaceholder")}
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-brand-red text-slate-800 text-xs rounded focus:outline-none resize-none"
@@ -380,9 +410,10 @@ export default function CustomerPanel() {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-extrabold rounded transition shadow"
+                disabled={uniqueBookedCars.length === 0}
+                className="w-full py-2.5 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-extrabold rounded transition shadow disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                WYŚLIJ OPINIĘ / SUBMIT
+                {t("submitReviewBtn")}
               </button>
             </form>
           </div>
@@ -395,13 +426,13 @@ export default function CustomerPanel() {
           <div className="w-full max-w-2xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto animate-scale-up print:border-none print:bg-white print:text-black print:max-h-full print:shadow-none print:p-0">
             <div className="flex justify-between items-center border-b border-slate-100 pb-4 print:hidden">
               <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
-                Szczegóły rezerwacji
+                {t("bookingDetailsTitle")}
               </h3>
               <button
                 onClick={() => setSelectedBooking(null)}
                 className="px-3 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded text-[10px] text-slate-500 hover:text-slate-800"
               >
-                ZAMKNIJ / CLOSE
+                {t("closeBtn")}
               </button>
             </div>
 
@@ -413,19 +444,19 @@ export default function CustomerPanel() {
                     {selectedBooking.id}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Data rezerwacji: {selectedBooking.date}
+                    {t("bookingDateLabel")} {selectedBooking.date}
                   </p>
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">
-                    Status:
+                    {t("statusLabel")}
                   </span>
                   <p className="font-extrabold text-brand-red print:text-black">
                     {selectedBooking.status === "confirmed"
-                      ? "POTWIERDZONA"
+                      ? t("confirmedStatus")
                       : selectedBooking.status === "cancelled"
-                        ? "ANULOWANA"
-                        : "OCZEKUJE NA POTWIERDZENIE"}
+                        ? t("cancelledStatus")
+                        : t("awaitingStatus")}
                   </p>
                 </div>
               </div>
@@ -434,25 +465,26 @@ export default function CustomerPanel() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl print:border-black">
                   <h5 className="text-xs text-slate-400 uppercase font-bold">
-                    Pojazd / Vehicle
+                    {t("vehicleLabel")}
                   </h5>
                   <p className="font-extrabold text-slate-800 print:text-black">
                     {selectedBooking.car.brand} {selectedBooking.car.model}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Klasa: {selectedBooking.car.class} | Paliwo:{" "}
-                    {selectedBooking.car.fuel}
+                    {t("classLabel")}: {selectedBooking.car.class} |{" "}
+                    {t("fuelLabel")}: {selectedBooking.car.fuel}
                   </p>
                 </div>
                 <div className="space-y-1.5 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl print:border-black">
                   <h5 className="text-xs text-slate-400 uppercase font-bold">
-                    Pakiet ochrony
+                    {t("protectionPackageLabel")}
                   </h5>
                   <p className="font-extrabold text-slate-800 print:text-black">
-                    {selectedBooking.package.name.split(" / ")[0]}
+                    {selectedBooking.package?.name?.split(" / ")[0] || "N/A"}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Cena: +PLN {selectedBooking.pricing.packageCost}
+                    {t("priceLabel")}: +PLN{" "}
+                    {selectedBooking.pricing.packageCost}
                   </p>
                 </div>
               </div>
@@ -461,39 +493,39 @@ export default function CustomerPanel() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                 <div className="space-y-1.5">
                   <h5 className="text-xs text-slate-400 uppercase font-bold">
-                    Termin / Dates
+                    {t("datesLabel")}
                   </h5>
                   <p>
-                    Odbiór:{" "}
+                    {t("pickupLabel")}:{" "}
                     <strong className="text-slate-800 print:text-black">
                       {selectedBooking.dates.pickupDate}
                     </strong>{" "}
-                    godz. {selectedBooking.dates.pickupTime}
+                    {t("timeLabel")} {selectedBooking.dates.pickupTime}
                   </p>
                   <p>
-                    Zwrot:{" "}
+                    {t("returnLabel")}:{" "}
                     <strong className="text-slate-800 print:text-black">
                       {selectedBooking.dates.returnDate}
                     </strong>{" "}
-                    godz. {selectedBooking.dates.returnTime}
+                    {t("timeLabel")} {selectedBooking.dates.returnTime}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Dni najmu: {selectedBooking.pricing.days} d.
+                    {t("rentalDaysLabel")}: {selectedBooking.pricing.days} d.
                   </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <h5 className="text-xs text-slate-400 uppercase font-bold">
-                    Lokalizacja / Locations
+                    {t("locationsLabel")}
                   </h5>
                   <p>
-                    Punkt wydania:{" "}
+                    {t("pickupPointLabel")}:{" "}
                     <strong className="text-slate-800 print:text-black">
                       {selectedBooking.dates.pickupLocation}
                     </strong>
                   </p>
                   <p>
-                    Punkt zwrotu:{" "}
+                    {t("returnPointLabel")}:{" "}
                     <strong className="text-slate-800 print:text-black">
                       {selectedBooking.dates.returnLocation}
                     </strong>
@@ -502,10 +534,10 @@ export default function CustomerPanel() {
               </div>
 
               {/* Addons selected */}
-              {selectedBooking.addons.length > 0 && (
+              {selectedBooking.addons?.length > 0 && (
                 <div className="border-t border-slate-100 pt-4 space-y-1.5">
                   <h5 className="text-xs text-slate-400 uppercase font-bold">
-                    Dodatkowe Akcesoria / Extras
+                    {t("extrasLabel")}
                   </h5>
                   <ul className="list-disc pl-5 text-xs text-slate-600 space-y-0.5 print:text-black">
                     {selectedBooking.addons.map((addName, idx) => (
@@ -518,41 +550,41 @@ export default function CustomerPanel() {
               {/* Pricing overview */}
               <div className="border-t border-slate-100 pt-4 space-y-3.5">
                 <h5 className="text-xs text-slate-400 uppercase font-bold">
-                  Rozliczenie Finansowe / Pricing Breakdown
+                  {t("pricingBreakdownLabel")}
                 </h5>
                 <div className="text-xs font-semibold text-slate-500 space-y-1 text-left">
                   <div className="flex justify-between">
                     <span>
-                      Wynajem pojazdu ({selectedBooking.pricing.days} dni):
+                      {t("carRentalLabel")} ({selectedBooking.pricing.days}{" "}
+                      {t("daysUnit")}):
                     </span>
                     <span className="text-slate-800 print:text-black">
                       PLN {selectedBooking.pricing.carCost.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Pakiet ochrony:</span>
+                    <span>{t("protectionPackageCostLabel")}:</span>
                     <span className="text-slate-800 print:text-black">
                       PLN {selectedBooking.pricing.packageCost.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Dodatki:</span>
+                    <span>{t("addonsCostLabel")}:</span>
                     <span className="text-slate-800 print:text-black">
                       PLN {selectedBooking.pricing.addonsCost.toFixed(2)}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-base font-black text-slate-800 pt-2.5 border-t border-slate-100 print:text-black print:border-black">
-                    <span>KOSZT BRUTTO (23% VAT):</span>
+                    <span>{t("totalGrossCostLabel")}:</span>
                     <span className="text-brand-red print:text-black">
                       {selectedBooking.pricing.total === "Individual Price"
-                        ? "Wycena Indywidualna"
+                        ? t("individualPriceText")
                         : `PLN ${selectedBooking.pricing.total.toFixed(2)}`}
                     </span>
                   </div>
                   <div className="text-right text-[10px] text-slate-400">
-                    Kaucja zwrotna (blokowana przy odbiorze): PLN{" "}
-                    {selectedBooking.car.deposit}
+                    {t("depositLabel")}: PLN {selectedBooking.car.deposit}
                   </div>
                 </div>
               </div>
@@ -565,7 +597,7 @@ export default function CustomerPanel() {
                 className="px-5 py-2 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-bold rounded-lg flex items-center space-x-1.5 shadow"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>DRUKUJ POTWIERDZENIE (DOWNLOAD PDF)</span>
+                <span>{t("printConfirmationBtn")}</span>
               </button>
             </div>
           </div>

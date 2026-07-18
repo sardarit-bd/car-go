@@ -11,7 +11,7 @@ import {
   ArrowRightLeft,
   Compass,
 } from "lucide-react";
-
+import "../../app/style/custom.css";
 export default function SearchForm({ vertical = false, onSearch }) {
   const router = useRouter();
   const { lang, locations, setSearchParams, t } = useApp();
@@ -38,10 +38,32 @@ export default function SearchForm({ vertical = false, onSearch }) {
     setReturnDate(getTomorrowString(4));
   }, []);
 
-  const timeOptions = Array.from({ length: 13 }, (_, i) => {
-    const hour = i + 8;
-    return `${hour.toString().padStart(2, "0")}:00`;
+  const timeOptions = Array.from({ length: 24 }, (_, i) => {
+    return `${i.toString().padStart(2, "0")}:00`;
   });
+
+  useEffect(() => {
+    if (pickupDate && returnDate && pickupDate === returnDate) {
+      if (returnTime <= pickupTime) {
+        const nextValidTime = timeOptions.find((t) => t > pickupTime);
+        if (nextValidTime) {
+          setReturnTime(nextValidTime);
+        } else {
+          const nextDay = new Date(pickupDate);
+          nextDay.setDate(nextDay.getDate() + 1);
+          setReturnDate(nextDay.toISOString().split("T")[0]);
+          setReturnTime("00:00");
+        }
+      }
+    }
+  }, [pickupTime, pickupDate, returnDate, returnTime]);
+
+  const getValidReturnTimeOptions = () => {
+    if (pickupDate && returnDate && pickupDate === returnDate) {
+      return timeOptions.filter((time) => time > pickupTime);
+    }
+    return timeOptions;
+  };
 
   const calculateDays = () => {
     if (!pickupDate || !returnDate) return 0;
@@ -66,7 +88,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
     if (start <= new Date()) {
       setValidationError(
         lang === "pl"
-          ? "Data odbioru must be w przyszłości!"
+          ? "Data odbioru musi być w przyszłości!"
           : "Pickup date must be in the future!",
       );
       return false;
@@ -83,7 +105,6 @@ export default function SearchForm({ vertical = false, onSearch }) {
 
     const diffDays = calculateDays();
 
-    // Enforce minimum rental periods
     const getMinDaysForLocationName = (name) => {
       const loc = locations.find(
         (l) => name.includes(l.name) || l.name.includes(name),
@@ -287,7 +308,8 @@ export default function SearchForm({ vertical = false, onSearch }) {
                 onChange={(e) => setReturnTime(e.target.value)}
                 className="bg-transparent border-l border-slate-200 text-slate-800 px-2 py-3 text-xs font-semibold focus:outline-none cursor-pointer"
               >
-                {timeOptions.map((time) => (
+                {/* UPDATED: Use filtered options for return time */}
+                {getValidReturnTimeOptions().map((time) => (
                   <option key={time} value={time}>
                     {time}
                   </option>

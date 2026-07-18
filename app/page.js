@@ -20,11 +20,15 @@ export default function Home() {
     <div className="space-y-0">
       <Hero lang={lang} getCmsText={getCmsText} t={t} />
       <FleetPreview vehicles={vehicles} t={t} />
-      <AboutCompany t={t} />
-      <LongTermPromo t={t} />
-      <ReviewsSection reviews={reviews} approvedReviews={approvedReviews} t={t} />
-      <Blog />
-      <FAQ />
+      <AboutCompany lang={lang} t={t} />
+      <LongTermPromo lang={lang} getCmsText={getCmsText} t={t} />
+      <ReviewsSection
+        reviews={reviews}
+        approvedReviews={approvedReviews}
+        t={t}
+      />
+      <Blog lang={lang} t={t} />
+      <FAQ lang={lang} t={t} />
     </div>
   );
 }

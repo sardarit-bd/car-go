@@ -3,15 +3,13 @@
 import { Search, ShieldAlert, Loader2 } from "lucide-react";
 
 export default function MyReservationsSearchForm({
-  queryPhone,
-  setQueryPhone,
-  queryEmail,
-  setQueryEmail,
+  queryReservationNumber,
+  setQueryReservationNumber,
   loading,
   errorMsg,
   onSubmit,
   t,
-  lang
+  lang,
 }) {
   return (
     <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6 shadow-sm no-print">
@@ -21,7 +19,7 @@ export default function MyReservationsSearchForm({
           <span>Zweryfikuj szczegóły rezerwacji / Verify Booking</span>
         </h2>
         <p className="text-sm text-slate-500 font-semibold">
-          Wprowadź numer telefonu (oraz opcjonalnie e-mail) podany podczas dokonywania zamówienia, aby przejść do szczegółów.
+          Wprowadź numer rezerwacji, aby przejść do szczegółów.
         </p>
       </div>
 
@@ -29,7 +27,9 @@ export default function MyReservationsSearchForm({
         <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
           <Loader2 className="w-5 h-5 animate-spin text-brand-red" />
           <p className="text-sm text-slate-700 font-semibold">
-            {lang === "pl" ? "Wyszukiwanie rezerwacji..." : "Looking up your reservation..."}
+            {lang === "pl"
+              ? "Wyszukiwanie rezerwacji..."
+              : "Looking up your reservation..."}
           </p>
         </div>
       )}
@@ -42,32 +42,18 @@ export default function MyReservationsSearchForm({
       )}
 
       <form onSubmit={onSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              {lang === "pl" ? "Numer telefonu" : "Phone Number"} *
-            </label>
-            <input
-              type="tel"
-              required
-              placeholder="np. +1 (398) 143-4806"
-              value={queryPhone}
-              onChange={(e) => setQueryPhone(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-semibold focus:outline-none focus:border-brand-red focus:bg-white transition font-mono"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              {t("verifyEmailLabel")} ({lang === "pl" ? "opcjonalnie" : "optional"})
-            </label>
-            <input
-              type="email"
-              placeholder="np. jan.kowalski@email.com"
-              value={queryEmail}
-              onChange={(e) => setQueryEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-semibold focus:outline-none focus:border-brand-red focus:bg-white transition font-mono"
-            />
-          </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            {lang === "pl" ? "Numer rezerwacji" : "Reservation Number"} *
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="np. RES-123456"
+            value={queryReservationNumber}
+            onChange={(e) => setQueryReservationNumber(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-semibold focus:outline-none focus:border-brand-red focus:bg-white transition font-mono uppercase"
+          />
         </div>
 
         <button

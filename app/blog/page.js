@@ -7,8 +7,6 @@ import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 import api from "@/lib/axios";
 
-// NOTE: We keep the original mock data export here.
-// If your blog detail page (app/blog/[id]/page.js) imports this, it will continue to work.
 export const blogPosts = [
   {
     id: "stress-free-rental-tips",
@@ -61,8 +59,6 @@ export const blogPosts = [
 
 export default function Blog() {
   const { lang, t } = useApp();
-
-  // Use a separate state variable for the dynamic API data
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -71,25 +67,20 @@ export default function Blog() {
         const baseUrl =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-        // Fetch blogs from the API
         const response = await api.get("/api/blogs", {
           params: { page: 1, limit: 20 },
         });
 
         if (response.data.success && response.data.data?.data) {
           const mappedPosts = response.data.data.data.map((blog) => {
-            // Calculate read time (approx 200 words per minute)
             const wordCount = blog.content
               ? blog.content.trim().split(/\s+/).length
               : 0;
             const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
-
-            // Extract YYYY-MM-DD from the ISO date string
             const formattedDate = blog.date ? blog.date.split("T")[0] : "";
 
             return {
               id: blog.id,
-              // Map the single title/content to both language fields
               titlePl: blog.title,
               titleEn: blog.title,
               summaryPl: blog.content,
@@ -97,7 +88,7 @@ export default function Blog() {
               date: formattedDate,
               readTimePl: `${readTimeMin} min czytania`,
               readTimeEn: `${readTimeMin} min read`,
-              tag: "Blog", // API doesn't provide tags, using a default
+              tag: "Blog",
               image: `${baseUrl}${blog.image}`,
             };
           });
@@ -114,7 +105,6 @@ export default function Blog() {
 
   return (
     <div className="container mx-auto max-lg:py-20 px-4 sm:px-6 space-y-12">
-      {/* Title Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-800 uppercase">
           {t("blogTitle")}
@@ -125,10 +115,8 @@ export default function Blog() {
       </div>
 
       <div className="max-w-5xl mx-auto space-y-12">
-        {/* Blog Catalogue Content */}
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Map over the dynamic 'posts' state instead of the hardcoded array */}
             {posts.map((post) => {
               const title = lang === "pl" ? post.titlePl : post.titleEn;
               const summary = lang === "pl" ? post.summaryPl : post.summaryEn;
@@ -141,7 +129,6 @@ export default function Blog() {
                   className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-slate-250 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-4">
-                    {/* Cover image */}
                     <div className="h-48 overflow-hidden bg-slate-100 relative">
                       <img
                         src={post.image}
@@ -153,7 +140,6 @@ export default function Blog() {
                       </span>
                     </div>
 
-                    {/* Metadata & Description */}
                     <div className="px-5 space-y-2.5">
                       <div className="flex items-center space-x-3 text-[10px] text-slate-400 font-bold">
                         <span className="flex items-center space-x-1">
@@ -176,7 +162,6 @@ export default function Blog() {
                     </div>
                   </div>
 
-                  {/* Read More button */}
                   <div className="p-5 pt-0 mt-4">
                     <Link
                       href={`/blog/${post.id}`}

@@ -19,6 +19,8 @@ import AddonsTab from "@/app/components/admin/AddonsTab";
 import PackagesTab from "@/app/components/admin/PackagesTab";
 import BlogTab from "@/app/components/admin/BlogTab";
 import ContactTab from "@/app/components/admin/ContactTab";
+import axios from "axios";
+import api from "@/lib/axios";
 export default function AdminDashboard() {
   const router = useRouter();
   const {
@@ -57,7 +59,18 @@ export default function AdminDashboard() {
     await updateBookingStatus(id, "cancelled");
     alert("Rezerwacja anulowana!");
   };
-
+  const handleBookingComplete = async (bookingId) => {
+    try {
+      // axios.patch(`/api/reservations/${bookingId}/status`, {
+      //   status: "COMPLETED",
+      // });
+      http: await api.patch(`/api/reservations/${bookingId}/status`, {
+        status: "COMPLETED",
+      });
+    } catch (error) {
+      console.error("Failed to complete booking:", error);
+    }
+  };
   return (
     <div className="container mx-auto px-4 sm:px-6 space-y-8 animate-fade-in">
       {/* Top Header */}
@@ -125,6 +138,7 @@ export default function AdminDashboard() {
         setSelectedBookingDetails={setSelectedBookingDetails}
         handleBookingConfirm={handleBookingConfirm}
         handleBookingCancel={handleBookingCancel}
+        handleBookingComplete={handleBookingComplete}
       />
     </div>
   );

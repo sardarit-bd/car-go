@@ -154,6 +154,116 @@ const initialTranslations = {
     technicalSupport: "Obsługa techniczna",
     domainValidity: "Domena ważna do",
     backToVehicles: "Powrót do pojazdów",
+    profileInfoTitle: "Twoje Dane Profilowe",
+    profileUpdateSuccess: "Dane zostały zaktualizowane!",
+    changePasswordTitle: "Zmień Hasło",
+    newPasswordPlaceholder: "Nowe hasło",
+    confirmPasswordPlaceholder: "Potwierdź nowe hasło",
+    saveChangesBtn: "ZAPISZ ZMIANY",
+    passwordsMismatch: "Hasła nie pasują!",
+    bookingsHistoryTitle: "Historia Twoich Rezerwacji",
+    noBookingsMessage: "Brak potwierdzonych rezerwacji pod tym adresem.",
+    paymentStatusLabel: "Status płatności:",
+    detailsBtn: "SZCZEGÓŁY",
+    submitReviewTitle: "Napisz Opinię",
+    reviewSuccessMessage: "Opinia została wysłana! Oczekuje na zatwierdzenie.",
+    selectVehicleLabel: "Wybierz pojazd z Twoich rezerwacji",
+    selectVehiclePlaceholder: "-- Wybierz pojazd --",
+    noVehiclesToReview:
+      "Brak pojazdów do oceny (zarezerwuj i odbierz samochód, aby dodać opinię).",
+    reviewPlaceholder: "Napisz kilka zdań o samochodzie i obsłudze...",
+    submitReviewBtn: "WYŚLIJ OPINIĘ",
+    bookingDetailsTitle: "Szczegóły rezerwacji",
+    closeBtn: "ZAMKNIJ",
+    bookingDateLabel: "Data rezerwacji:",
+    statusLabel: "Status:",
+    confirmedStatus: "POTWIERDZONA",
+    cancelledStatus: "ANULOWANA",
+    awaitingStatus: "OCZEKUJE NA POTWIERDZENIE",
+    vehicleLabel: "Pojazd",
+    classLabel: "Klasa",
+    fuelLabel: "Paliwo",
+    protectionPackageLabel: "Pakiet ochrony",
+    priceLabel: "Cena",
+    datesLabel: "Termin",
+    pickupLabel: "Odbiór",
+    returnLabel: "Zwrot",
+    timeLabel: "godz.",
+    rentalDaysLabel: "Dni najmu",
+    locationsLabel: "Lokalizacja",
+    pickupPointLabel: "Punkt wydania",
+    returnPointLabel: "Punkt zwrotu",
+    extrasLabel: "Dodatkowe Akcesoria",
+    pricingBreakdownLabel: "Rozliczenie Finansowe",
+    carRentalLabel: "Wynajem pojazdu",
+    protectionPackageCostLabel: "Pakiet ochrony",
+    addonsCostLabel: "Dodatki",
+    totalGrossCostLabel: "KOSZT BRUTTO (23% VAT)",
+    individualPriceText: "Wycena Indywidualna",
+    daysUnit: "dni",
+    printConfirmationBtn: "DRUKUJ POTWIERDZENIE (PDF)",
+    profileInfoTitle: "Personal Info",
+    profileUpdateSuccess: "Profile updated successfully!",
+    changePasswordTitle: "Change Password",
+    newPasswordPlaceholder: "New password",
+    confirmPasswordPlaceholder: "Confirm new password",
+    saveChangesBtn: "SAVE CHANGES",
+    passwordsMismatch: "Passwords do not match!",
+    bookingsHistoryTitle: "Bookings History",
+    noBookingsMessage: "No confirmed bookings found for this account.",
+    paymentStatusLabel: "Payment status:",
+    detailsBtn: "DETAILS",
+    submitReviewTitle: "Submit a Review",
+    reviewSuccessMessage: "Review submitted! Awaiting admin approval.",
+    selectVehicleLabel: "Select a vehicle from your bookings",
+    selectVehiclePlaceholder: "-- Select a vehicle --",
+    noVehiclesToReview:
+      "No vehicles to review (book and complete a rental to add a review).",
+    reviewPlaceholder: "Write a few words about the car and service...",
+    submitReviewBtn: "SUBMIT REVIEW",
+    bookingDetailsTitle: "Booking Details",
+    closeBtn: "CLOSE",
+    bookingDateLabel: "Booking date:",
+    statusLabel: "Status:",
+    confirmedStatus: "CONFIRMED",
+    cancelledStatus: "CANCELLED",
+    awaitingStatus: "AWAITING CONFIRMATION",
+    vehicleLabel: "Vehicle",
+    classLabel: "Class",
+    fuelLabel: "Fuel",
+    protectionPackageLabel: "Protection package",
+    priceLabel: "Price",
+    datesLabel: "Dates",
+    pickupLabel: "Pickup",
+    returnLabel: "Return",
+    timeLabel: "at",
+    rentalDaysLabel: "Rental days",
+    locationsLabel: "Locations",
+    pickupPointLabel: "Pickup point",
+    returnPointLabel: "Return point",
+    extrasLabel: "Extras",
+    pricingBreakdownLabel: "Pricing Breakdown",
+    carRentalLabel: "Car rental",
+    protectionPackageCostLabel: "Protection package",
+    addonsCostLabel: "Addons",
+    totalGrossCostLabel: "TOTAL GROSS (23% VAT)",
+    individualPriceText: "Individual Price",
+    daysUnit: "days",
+    printConfirmationBtn: "PRINT CONFIRMATION (PDF)",
+    manageBookingTitle: "Zarządzaj rezerwacją",
+    clientLabel: "Klient:",
+    vehicleLabel: "Pojazd:",
+    datesLabel: "Terminy:",
+    pickupLabel: "Odbiór:",
+    returnLabel: "Zwrot:",
+    rentalDurationLabel: "Czas najmu:",
+    dayUnit: "dzień",
+    daysUnit: "dni",
+    totalCostLabel: "Całkowity koszt:",
+    currentStatusLabel: "Aktualny Status:",
+    confirmBtn: "ZATWIERDŹ",
+    completeBtn: "ZAKOŃCZ",
+    cancelBtn: "ANULUJ",
   },
   en: {
     brandName: "CAR-GO",
@@ -296,188 +406,22 @@ const initialTranslations = {
     technicalSupport: "Technical support",
     domainValidity: "Domain valid until",
     backToVehicles: "Back to vehicles",
+    manageBookingTitle: "Manage Booking",
+    clientLabel: "Client:",
+    vehicleLabel: "Vehicle:",
+    datesLabel: "Dates:",
+    pickupLabel: "Pickup:",
+    returnLabel: "Return:",
+    rentalDurationLabel: "Rental duration:",
+    dayUnit: "day",
+    daysUnit: "days",
+    totalCostLabel: "Total cost:",
+    currentStatusLabel: "Current Status:",
+    confirmBtn: "CONFIRM",
+    completeBtn: "COMPLETE",
+    cancelBtn: "CANCEL",
   },
 };
-
-const initialVehicles = [
-  {
-    id: "fiat-500",
-    brand: "Fiat",
-    model: "500",
-    class: "A (Economy)",
-    fuel: "Petrol",
-    seats: 4,
-    luggage: 185,
-    transmission: "Manual",
-    price: 99,
-    deposit: 1000,
-    image: "/fiat500.png",
-    description: "Idealny, kompaktowy i ekonomiczny samochód miejski.",
-    descriptionEn: "Perfect, compact and economic city car.",
-    specs: {
-      engine: "1.0 Hybrid 70 HP",
-      consumption: "4.6 l/100km",
-      aircon: "Yes",
-      year: "2023",
-    },
-  },
-  {
-    id: "skoda-fabia",
-    brand: "Skoda",
-    model: "Fabia",
-    class: "B (Compact)",
-    fuel: "Petrol",
-    seats: 5,
-    luggage: 380,
-    transmission: "Manual",
-    price: 129,
-    deposit: 1200,
-    image: "/skoda-fabia.png",
-    description: "Przestronny i niezawodny hatchback.",
-    descriptionEn: "Spacious and reliable hatchback.",
-    specs: {
-      engine: "1.0 TSI 95 HP",
-      consumption: "5.1 l/100km",
-      aircon: "Yes",
-      year: "2023",
-    },
-  },
-  {
-    id: "toyota-corolla",
-    brand: "Toyota",
-    model: "Corolla",
-    class: "C (Medium/Sedan)",
-    fuel: "Petrol",
-    seats: 5,
-    luggage: 470,
-    transmission: "Automatic",
-    price: 169,
-    deposit: 1500,
-    image: "/toyota-corolla.png",
-    description: "Nowoczesny sedan z napędem hybrydowym.",
-    descriptionEn: "Modern hybrid sedan.",
-    specs: {
-      engine: "1.8 Hybrid 140 HP",
-      consumption: "4.2 l/100km",
-      aircon: "Yes (Dual-zone)",
-      year: "2022",
-    },
-  },
-  {
-    id: "hyundai-tucson",
-    brand: "Hyundai",
-    model: "Tucson",
-    class: "D (SUV)",
-    fuel: "Petrol",
-    seats: 5,
-    luggage: 620,
-    transmission: "Automatic",
-    price: 219,
-    deposit: 2000,
-    image: "/hyundai-tucson.png",
-    description: "Mocny i stylowy SUV.",
-    descriptionEn: "Powerful and stylish SUV.",
-    specs: {
-      engine: "1.6 T-GDI 150 HP",
-      consumption: "6.8 l/100km",
-      aircon: "Yes (Climatronic)",
-      year: "2023",
-    },
-  },
-  {
-    id: "bmw-3",
-    brand: "BMW",
-    model: "3 Series",
-    class: "E (Premium)",
-    fuel: "Diesel",
-    seats: 5,
-    luggage: 480,
-    transmission: "Automatic",
-    price: 299,
-    deposit: 2500,
-    image: "/bmw-3.png",
-    description: "Luksusowy sedan sportowy.",
-    descriptionEn: "Luxury sport sedan.",
-    specs: {
-      engine: "2.0d 190 HP",
-      consumption: "5.3 l/100km",
-      aircon: "Yes (Automatic 3-zone)",
-      year: "2022",
-    },
-  },
-];
-
-const initialLocations = [
-  { id: "skarbimierz", name: "Skarbimierz-Osiedle", minDays: 1 },
-  { id: "brzeg", name: "Brzeg", minDays: 1 },
-  { id: "olawa", name: "Oława", minDays: 5 },
-  { id: "grodkow", name: "Grodków", minDays: 5 },
-  {
-    id: "delivery",
-    name: "Dostawa pod wskazany adres / Custom Address Delivery",
-    minDays: 1,
-    isCustomAddress: true,
-  },
-];
-
-const initialPackages = [
-  {
-    id: "basic",
-    name: "Podstawowy / Basic",
-    pricePerDay: 0,
-    featuresPl: ["Udział własny w szkodzie do 5000 PLN"],
-    featuresEn: ["Deductible in case of damage up to 5000 PLN"],
-  },
-  {
-    id: "gold",
-    name: "Złoty / Gold Protect",
-    pricePerDay: 30,
-    featuresPl: ["Obniżony udział w szkodzie do 1500 PLN"],
-    featuresEn: ["Reduced deductible up to 1500 PLN"],
-  },
-  {
-    id: "platinum",
-    name: "Platynowy / Platinum Protect",
-    pricePerDay: 60,
-    featuresPl: ["Zniesienie udziału własnego (0 PLN)"],
-    featuresEn: ["Zero deductible (0 PLN)"],
-  },
-];
-
-const initialAddons = [
-  {
-    id: "child-seat",
-    name: "Fotelik dla dziecka / Child Seat",
-    price: 15,
-    isPerDay: true,
-    descriptionPl: "Bezpieczny fotelik",
-    descriptionEn: "Safe child seat",
-  },
-  {
-    id: "booster",
-    name: "Podkładka dla dziecka / Booster Seat",
-    price: 8,
-    isPerDay: true,
-    descriptionPl: "Podwyższenie",
-    descriptionEn: "Booster support",
-  },
-  {
-    id: "gps",
-    name: "Nawigacja GPS / GPS Navigation",
-    price: 10,
-    isPerDay: true,
-    descriptionPl: "Mapy Europy",
-    descriptionEn: "Maps of Europe",
-  },
-  {
-    id: "extra-driver",
-    name: "Dodatkowy kierowca / Additional Driver",
-    price: 50,
-    isPerDay: false,
-    descriptionPl: "Drugi kierowca",
-    descriptionEn: "Second driver",
-  },
-];
 
 const initialFAQ = [
   {
@@ -555,10 +499,10 @@ const initialContentTexts = {
 
 export function AppProvider({ children }) {
   const [lang, setLang] = useState("pl");
-  const [vehicles, setVehicles] = useState(initialVehicles);
-  const [locations, setLocations] = useState(initialLocations);
-  const [packages, setPackages] = useState(initialPackages);
-  const [addons, setAddons] = useState(initialAddons);
+  const [vehicles, setVehicles] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [addons, setAddons] = useState([]);
   const [faqs, setFaqs] = useState(initialFAQ);
   const [reviews, setReviews] = useState(initialReviews);
   const [bookings, setBookings] = useState([]);
@@ -575,7 +519,8 @@ export function AppProvider({ children }) {
   const [cmsPages, setCmsPages] = useState([]);
   const [cmsContacts, setCmsContacts] = useState([]);
   const [cmsSocialMedia, setCmsSocialMedia] = useState([]);
-
+  const [aboutUs, setAboutUs] = useState();
+  const [myReservations, setMyReservations] = useState([]);
   const [authInitialized, setAuthInitialized] = useState(false);
 
   const [searchParamsState, setSearchParamsState] = useState(() => {
@@ -712,7 +657,30 @@ export function AppProvider({ children }) {
       saveState("cargo_locations", mapped);
     } catch (error) {
       console.error("Failed to fetch locations:", error);
-      setLocations(initialLocations);
+    }
+  };
+  const fetchAbouts = async () => {
+    try {
+      const response = await api.get("api/admin/cms/about-us");
+      const aboutUs = response.data.data || response.data;
+
+      setAboutUs(aboutUs);
+      // saveState("aboutUs", aboutUs);
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+    }
+  };
+
+  const fetchMyReservations = async () => {
+    try {
+      const response = await api.get("/api/reservations/myrevertion");
+
+      const data = response.data.data || response.data;
+      setMyReservations(data);
+
+      console.log("My Reservations fetched successfully:", data);
+    } catch (error) {
+      console.error("Failed to fetch my reservations:", error);
     }
   };
 
@@ -761,6 +729,7 @@ export function AppProvider({ children }) {
           isPerDay: true,
           descriptionPl: addon.description,
           descriptionEn: addon.description,
+          image: addon.image,
         };
       });
       setAddons(mapped);
@@ -776,7 +745,7 @@ export function AppProvider({ children }) {
       const backendBookings = response.data.data;
       const mapped = backendBookings.map(mapBooking);
       setBookings(mapped);
-      saveState("cargo_bookings", mapped);
+      // saveState("cargo_bookings", mapped);
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
     }
@@ -1014,7 +983,7 @@ export function AppProvider({ children }) {
         return b;
       });
       setBookings(updated);
-      saveState("cargo_bookings", updated);
+      // saveState("cargo_bookings", updated);
 
       const booking = updated.find((b) => b.id === bookingId);
       if (!booking) return;
@@ -1038,7 +1007,7 @@ export function AppProvider({ children }) {
       }
     } catch (error) {
       console.error("Failed to update booking status:", error);
-      alert("Failed to update booking status.");
+      // alert("Failed to update booking status.", error);
     }
   };
 
@@ -1137,6 +1106,7 @@ export function AppProvider({ children }) {
     const localCmsWhyChooseUsFeatures = localStorage.getItem(
       "cargo_cms_why_choose_us_features",
     );
+    const localAboutUs = localStorage.getItem("localAboutUs");
     const localCmsFaqs = localStorage.getItem("cargo_cms_faqs");
 
     if (localVehicles) {
@@ -1186,6 +1156,8 @@ export function AppProvider({ children }) {
     fetchCmsPages();
     fetchCmsContacts();
     fetchCmsSocialMedia();
+    fetchAbouts();
+    fetchMyReservations();
   }, []);
 
   const saveState = (key, value) => {
@@ -1276,7 +1248,11 @@ export function AppProvider({ children }) {
   const registerUser = async (userData) => {
     try {
       const response = await api.post("/api/auth/register", userData);
-      const { user } = response.data.data;
+      const responseData = response.data.data || response.data;
+      const user = responseData.user || responseData;
+      const jwtToken = responseData.token || response.data.token;
+
+      if (jwtToken) localStorage.setItem("token", jwtToken);
       setUser(user);
       return { success: true, user };
     } catch (error) {
@@ -1309,15 +1285,39 @@ export function AppProvider({ children }) {
     setAdminUser(null);
     if (typeof window !== "undefined") localStorage.removeItem("cargo_admin");
   };
+
+  const activateUserAccount = async (email, password, token) => {
+    try {
+      const response = await api.post("/api/auth/activate", {
+        email,
+        password,
+        token,
+      });
+      const responseData = response.data.data || response.data;
+      const user = responseData.user || responseData;
+      const jwtToken = responseData.token || response.data.token;
+
+      if (jwtToken) localStorage.setItem("token", jwtToken);
+      setUser(user);
+      return { success: true, user };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Activation failed",
+      };
+    }
+  };
+
   const t = (key) =>
     cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
-
+  console.log("myReservations last", myReservations);
   return (
     <AppContext.Provider
       value={{
         lang,
         setLang: updateLang,
         vehicles,
+        aboutUs,
         setVehicles: saveVehicles,
         locations,
         setLocations: saveLocations,
@@ -1380,6 +1380,12 @@ export function AppProvider({ children }) {
         fetchCmsContacts,
         fetchCmsSocialMedia,
         authInitialized,
+        registerUser,
+        activateUserAccount,
+        loginUser,
+        logoutUser,
+        bookings,
+        myReservations,
       }}
     >
       {children}

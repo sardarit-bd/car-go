@@ -2,7 +2,15 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/app/context/AppContext";
-import { ShieldAlert, Layout, HelpCircle, FileText, Phone, Share2, Star } from "lucide-react";
+import {
+  ShieldAlert,
+  Layout,
+  HelpCircle,
+  FileText,
+  Phone,
+  Share2,
+  Star,
+} from "lucide-react";
 
 import CmsHero from "./cms/CmsHero";
 import CmsFaq from "./cms/CmsFaq";
@@ -10,7 +18,7 @@ import CmsPages from "./cms/CmsPages";
 import CmsContact from "./cms/CmsContact";
 import CmsSocialMedia from "./cms/CmsSocialMedia";
 import CmsWhyChooseUs from "./cms/CmsWhyChooseUs";
-
+import CmsAboutUs from "./cms/CmsAboutUs";
 export default function CmsTab() {
   const { isOwner } = useApp();
   const [activeSection, setActiveSection] = useState("hero");
@@ -19,13 +27,16 @@ export default function CmsTab() {
     return (
       <div className="p-6 border border-brand-red/30 bg-brand-red/5 text-brand-red rounded-xl flex items-center space-x-2 text-sm font-bold">
         <ShieldAlert className="w-5 h-5 flex-shrink-0" />
-        <span>Brak uprawnień. Sekcja CMS dostępna wyłącznie dla Właściciela (Owner).</span>
+        <span>
+          Brak uprawnień. Sekcja CMS dostępna wyłącznie dla Właściciela (Owner).
+        </span>
       </div>
     );
   }
 
   const sections = [
     { id: "hero", label: "Hero & Features", icon: Layout },
+    { id: "about", label: "About Us", icon: FileText },
     { id: "why", label: "Why Choose Us", icon: Star },
     { id: "faq", label: "FAQ", icon: HelpCircle },
     { id: "pages", label: "Pages (Privacy/Terms)", icon: FileText },
@@ -58,6 +69,7 @@ export default function CmsTab() {
 
       {/* Content Area */}
       {activeSection === "hero" && <CmsHero />}
+      {activeSection === "about" && <CmsAboutUs />}
       {activeSection === "why" && <CmsWhyChooseUs />}
       {activeSection === "faq" && <CmsFaq />}
       {activeSection === "pages" && <CmsPages />}
