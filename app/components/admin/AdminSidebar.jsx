@@ -129,7 +129,7 @@ export default function AdminSidebar({
           )}
         </span>
       </button>
-      <button
+      {/* <button
         onClick={() => setActiveTab("emails")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
           activeTab === "emails"
@@ -138,7 +138,7 @@ export default function AdminSidebar({
         }`}
       >
         <Mail className="w-4 h-4" /> <span>Poczta i Logi / Email logs</span>
-      </button>
+      </button> */}
     </div>
   );
 }
