@@ -2,17 +2,24 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/app/context/AppContext";
-import { ShieldAlert, Trash2, MapPin, Phone, Building2, Globe } from "lucide-react";
+import {
+  ShieldAlert,
+  Trash2,
+  MapPin,
+  Phone,
+  Building2,
+  Globe,
+} from "lucide-react";
 import * as Yup from "yup";
 
 export default function LocationsTab() {
   const { isOwner, locations, addLocation, deleteLocation } = useApp();
-  
+
   const [formValues, setFormValues] = useState({
     name: "",
     address: "",
     city: "",
-    country: "",
+    postalCode: "",
     phone: "",
   });
   const [formErrors, setFormErrors] = useState({});
@@ -23,7 +30,9 @@ export default function LocationsTab() {
     name: Yup.string().required("Nazwa jest wymagana"),
     address: Yup.string().required("Adres jest wymagany"),
     city: Yup.string().required("Miasto jest wymagane"),
-    country: Yup.string().required("Kraj jest wymagany"),
+    postalCode: Yup.string()
+      .matches(/^\d{2}-\d{3}$/, "Format kodu: XX-XXX")
+      .required("Kod pocztowy jest wymagany"),
     phone: Yup.string().required("Telefon jest wymagany"),
   });
 
@@ -44,11 +53,17 @@ export default function LocationsTab() {
     try {
       // Validate with Yup
       await locationSchema.validate(formValues, { abortEarly: false });
-      
+
       // Send to backend
       const result = await addLocation(formValues);
       if (result.success) {
-        setFormValues({ name: "", address: "", city: "", country: "", phone: "" });
+        setFormValues({
+          name: "",
+          address: "",
+          city: "",
+          country: "",
+          phone: "",
+        });
         alert("Lokalizacja dodana pomyślnie!");
       } else {
         alert("Błąd dodawania: " + (result.message || "Spróbuj ponownie"));
@@ -109,9 +124,11 @@ export default function LocationsTab() {
               placeholder="np. JFK Airport Branch"
               value={formValues.name}
               onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.name ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.name ? "border-red-500" : "border-slate-200"}`}
             />
-            {formErrors.name && <p className="text-red-500 text-[10px] mt-1">{formErrors.name}</p>}
+            {formErrors.name && (
+              <p className="text-red-500 text-[10px] mt-1">{formErrors.name}</p>
+            )}
           </div>
 
           <div>
@@ -122,9 +139,13 @@ export default function LocationsTab() {
               placeholder="np. Terminal 4"
               value={formValues.address}
               onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.address ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.address ? "border-red-500" : "border-slate-200"}`}
             />
-            {formErrors.address && <p className="text-red-500 text-[10px] mt-1">{formErrors.address}</p>}
+            {formErrors.address && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.address}
+              </p>
+            )}
           </div>
 
           <div>
@@ -135,22 +156,28 @@ export default function LocationsTab() {
               placeholder="np. Skarbimierz-Osiedle"
               value={formValues.city}
               onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.city ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.city ? "border-red-500" : "border-slate-200"}`}
             />
-            {formErrors.city && <p className="text-red-500 text-[10px] mt-1">{formErrors.city}</p>}
+            {formErrors.city && (
+              <p className="text-red-500 text-[10px] mt-1">{formErrors.city}</p>
+            )}
           </div>
 
           <div>
-            <label className="block mb-1.5">Kraj / Country *</label>
+            <label className="block mb-1.5">Kod pocztowy / Postal Code *</label>
             <input
               type="text"
-              name="country"
-              placeholder="np. Polska"
-              value={formValues.country}
+              name="postalCode"
+              placeholder="np. 49-300"
+              value={formValues.postalCode}
               onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.country ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.postalCode ? "border-red-500" : "border-slate-200"}`}
             />
-            {formErrors.country && <p className="text-red-500 text-[10px] mt-1">{formErrors.country}</p>}
+            {formErrors.postalCode && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.postalCode}
+              </p>
+            )}
           </div>
 
           <div className="md:col-span-2">
@@ -161,16 +188,20 @@ export default function LocationsTab() {
               placeholder="np. +48 123 456 789"
               value={formValues.phone}
               onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.phone ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.phone ? "border-red-500" : "border-slate-200"}`}
             />
-            {formErrors.phone && <p className="text-red-500 text-[10px] mt-1">{formErrors.phone}</p>}
+            {formErrors.phone && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.phone}
+              </p>
+            )}
           </div>
 
           <div className="md:col-span-2 pt-2">
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2.5 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-2.5 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded transition ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {loading ? "DODAWANIE..." : "DODAJ PUNKT / ADD LOCATION"}
             </button>
@@ -197,15 +228,24 @@ export default function LocationsTab() {
                 <div className="grid grid-cols-1 gap-1.5 text-xs text-slate-600">
                   <p className="flex items-center gap-2">
                     <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="font-semibold text-slate-500">Adres:</span> {loc.address || "Brak danych"}
+                    <span className="font-semibold text-slate-500">
+                      Adres:
+                    </span>{" "}
+                    {loc.address || "Brak danych"}
                   </p>
                   <p className="flex items-center gap-2">
                     <Globe className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="font-semibold text-slate-500">Miasto / Kraj:</span> {loc.city || "-"}, {loc.country || "-"}
+                    <span className="font-semibold text-slate-500">
+                      Miasto / Kod pocztowy:
+                    </span>{" "}
+                    {loc.city || "-"}, {loc.postalCode || "-"}
                   </p>
                   <p className="flex items-center gap-2">
                     <Phone className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="font-semibold text-slate-500">Telefon:</span> {loc.phone || "Brak danych"}
+                    <span className="font-semibold text-slate-500">
+                      Telefon:
+                    </span>{" "}
+                    {loc.phone || "Brak danych"}
                   </p>
                 </div>
               </div>

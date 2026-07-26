@@ -125,9 +125,9 @@ export default function MyReservationsVoucher({
               <h1 className="text-lg sm:text-xl font-black uppercase tracking-tight whitespace-nowrap">
                 CAR<span className="text-brand-red">-GO</span>.PL
               </h1>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold truncate">
+              {/* <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold truncate">
                 Skarbimierz-Osiedle, Polska
-              </p>
+              </p> */}
             </div>
           </div>
           <div className="text-right flex-shrink-0">

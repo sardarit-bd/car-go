@@ -97,12 +97,12 @@ export default function Header() {
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                     className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 rounded-lg transition text-sm font-medium text-slate-700"
                   >
-                    <div className="w-7 h-7 rounded-full bg-brand-red/10 flex items-center justify-center">
-                      <User className="w-3.5 h-3.5 text-brand-red" />
+                    <div className="w-10 h-10 rounded-full bg-brand-red/10 flex items-center justify-center">
+                      <User className="w-5.5 h-5.5 text-brand-red" />
                     </div>
-                    <span className="max-w-[100px] truncate">
+                    {/* <span className="max-w-[100px] truncate">
                       {currentUser.firstName}
-                    </span>
+                    </span> */}
                   </button>
                   {userDropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-lg py-1 animate-slide-up text-sm font-medium z-10">

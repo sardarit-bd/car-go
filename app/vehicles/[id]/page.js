@@ -56,6 +56,16 @@ export default function VehicleDetails() {
           <div className="lg:col-span-7 space-y-6">
             <VehicleDetailsHero car={car} t={t} />
             <VehicleDetailsSpecs car={car} lang={lang} t={t} />
+            {car.description && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider mb-3">
+                  {lang === "pl" ? "Opis pojazdu" : "Vehicle Description"}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                  {car.description}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Search Form & Actions (Sticky on Desktop) */}
