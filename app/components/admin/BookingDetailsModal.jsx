@@ -86,7 +86,6 @@ export default function BookingDetailsModal({
               {days === 1 ? t("dayUnit") : t("daysUnit")}
             </p>
           </div>
-
           <div className="p-3 bg-slate-50 rounded border border-slate-100 flex justify-between items-center text-sm">
             <span className="text-slate-500 font-bold">
               {t("totalCostLabel")}
@@ -95,6 +94,15 @@ export default function BookingDetailsModal({
               PLN {selectedBookingDetails.totalPrice}
             </strong>
           </div>
+
+          {selectedBookingDetails.customerNotes && (
+            <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
+              <p className="text-slate-400">{t("Customer Note")}</p>
+              <p className="text-slate-700 whitespace-pre-wrap">
+                {selectedBookingDetails.customerNotes}
+              </p>
+            </div>
+          )}
 
           <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
             <div className="flex items-center space-x-1">

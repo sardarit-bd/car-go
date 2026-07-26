@@ -507,6 +507,7 @@ export function AppProvider({ children }) {
   const [reviews, setReviews] = useState(initialReviews);
   const [bookings, setBookings] = useState([]);
   const [emails, setEmails] = useState([]);
+  const [unreadContactCount, setUnreadContactCount] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [adminUser, setAdminUser] = useState(null);
   const [cmsTranslations, setCmsTranslations] = useState(initialTranslations);
@@ -599,16 +600,23 @@ export function AppProvider({ children }) {
         brand: v.brand,
         model: v.model,
         class: v.class || "Standard",
-        fuel: "Petrol",
+        fuel: v.fuelType || "Petrol",
         seats: v.seats,
-        luggage: 0,
-        transmission: "Manual",
+        luggage: v.trunkCapacity || 0,
+        transmission: v.transmissionType || "Manual",
         price: parseFloat(v.pricePerDay) || 0,
         deposit: 0,
         image:
           v.images && v.images.length > 0
-            ? `${process.env.NEXT_PUBLIC_API_URL}${v.images[0].imageUrl}`
+            ? `${process.env.NEXT_PUBLIC_API_URL}${
+                (v.images.find((img) => img.isPrimary) || v.images[0]).imageUrl
+              }`
             : "/fallback-car.png",
+        gallery: v.images
+          ? v.images
+              .filter((img) => !img.isPrimary)
+              .map((img) => `${process.env.NEXT_PUBLIC_API_URL}${img.imageUrl}`)
+          : [],
         description: v.description,
         descriptionEn: v.description,
         specs: {
@@ -647,7 +655,7 @@ export function AppProvider({ children }) {
           name: l.name,
           address: l.address || "",
           city: l.city || "",
-          country: l.country || "",
+          postalCode: l.postalCode || "",
           phone: l.phone || "",
           minDays: 1,
           isCustomAddress: frontendId === "delivery",
@@ -771,6 +779,18 @@ export function AppProvider({ children }) {
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
       setReviews(initialReviews);
+    }
+  };
+
+  const fetchUnreadContactCount = async () => {
+    try {
+      const response = await api.get("/api/contacts", {
+        params: { status: "PENDING", limit: 1 },
+      });
+      const result = response.data.data || response.data;
+      setUnreadContactCount(result.total || 0);
+    } catch (error) {
+      console.error("Failed to fetch unread contact count:", error);
     }
   };
   const fetchCmsHero = async () => {
@@ -910,7 +930,7 @@ export function AppProvider({ children }) {
         name: locationData.name,
         address: locationData.address,
         city: locationData.city,
-        country: locationData.country,
+        postalCode: locationData.postalCode,
         phone: locationData.phone,
       });
       await fetchLocations();
@@ -1143,8 +1163,6 @@ export function AppProvider({ children }) {
     fetchPackages();
     fetchAddons();
     fetchBookings();
-
-    // NEW CMS FETCHES
     fetchCmsHero();
     fetchCmsHeroFeatures();
     fetchCmsWhyChooseUs();
@@ -1156,6 +1174,7 @@ export function AppProvider({ children }) {
     fetchCmsSocialMedia();
     fetchAbouts();
     fetchMyReservations();
+    fetchUnreadContactCount();
   }, []);
 
   const saveState = (key, value) => {
@@ -1328,6 +1347,8 @@ export function AppProvider({ children }) {
         reviews,
         bookings,
         emails,
+        unreadContactCount,
+        fetchUnreadContactCount,
         currentUser,
         adminUser,
         cmsTexts,

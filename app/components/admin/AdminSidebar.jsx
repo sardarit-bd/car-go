@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useApp } from "@/app/context/AppContext";
 import {
   BookOpen,
   Car,
@@ -15,10 +16,18 @@ import {
   Blocks,
   Boxes,
   PanelTop,
-  Contact,  
+  Contact,
 } from "lucide-react";
 
-export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logoutAdmin, router }) {
+export default function AdminSidebar({
+  activeTab,
+  setActiveTab,
+  adminUser,
+  logoutAdmin,
+  router,
+}) {
+  const { unreadContactCount } = useApp();
+
   return (
     <div className="lg:col-span-3 glass-panel rounded-xl p-3 flex flex-col space-y-1.5 text-xs font-bold text-slate-500">
       <button
@@ -49,8 +58,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
             : "hover:bg-slate-50 hover:text-slate-800"
         }`}
       >
-        <MapPin className="w-4 h-4" />{" "}
-        <span>Punkty Odbioru / Locations</span>
+        <MapPin className="w-4 h-4" /> <span>Punkty Odbioru / Locations</span>
       </button>
       <button
         onClick={() => setActiveTab("reviews")}
@@ -66,10 +74,13 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
       <button
         onClick={() => setActiveTab("cms")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
-          activeTab === "cms" ? "bg-brand-red text-white" : "hover:bg-slate-50 hover:text-slate-800"
+          activeTab === "cms"
+            ? "bg-brand-red text-white"
+            : "hover:bg-slate-50 hover:text-slate-800"
         }`}
       >
-        <Layout className="w-4 h-4" /> <span>Zarządzanie CMS / CMS Manager</span>
+        <Layout className="w-4 h-4" />{" "}
+        <span>Zarządzanie CMS / CMS Manager</span>
       </button>
 
       <button
@@ -82,7 +93,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
       >
         <Blocks className="w-4 h-4" /> <span>Dodatki / Add-ons</span>
       </button>
-            <button
+      <button
         onClick={() => setActiveTab("packages")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
           activeTab === "packages"
@@ -92,7 +103,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
       >
         <Boxes className="w-4 h-4" /> <span>Pakiety Ochrony / Packages</span>
       </button>
-                  <button
+      <button
         onClick={() => setActiveTab("blog")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
           activeTab === "blog"
@@ -102,7 +113,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
       >
         <PanelTop className="w-4 h-4" /> <span>Blog / Artykuły</span>
       </button>
-                  <button
+      <button
         onClick={() => setActiveTab("contact")}
         className={`w-full text-left px-4 py-2.5 rounded-lg transition flex items-center space-x-2.5 ${
           activeTab === "contact"
@@ -110,7 +121,13 @@ export default function AdminSidebar({ activeTab, setActiveTab, adminUser, logou
             : "hover:bg-slate-50 hover:text-slate-800"
         }`}
       >
-        <Contact className="w-4 h-4" /> <span>Wiadomości / Contact</span>
+        <Contact className="w-4 h-4" />{" "}
+        <span>
+          Wiadomości / Contact
+          {unreadContactCount > 0 && (
+            <span className="font-black"> ({unreadContactCount})</span>
+          )}
+        </span>
       </button>
       <button
         onClick={() => setActiveTab("emails")}

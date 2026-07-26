@@ -250,6 +250,7 @@ function CheckoutFlowContent() {
       const createdReservation = response.data.data;
       const newBooking = {
         id: createdReservation.id,
+        bookingReference: createdReservation.bookingReference,
         car: selectedCar,
         dates: activeSearch,
         pricing: {

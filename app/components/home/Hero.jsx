@@ -9,9 +9,17 @@ export default function Hero({ lang, getCmsText, t }) {
   const router = useRouter();
   const { setSearchParams, cmsHero, cmsHeroFeatures } = useApp();
 
-  const displayTagline = (lang === "pl" ? cmsHero?.taglinePl : cmsHero?.taglineEn) || t("tagline");
-  const displayTitle = (lang === "pl" ? cmsHero?.titlePl : cmsHero?.titleEn) || getCmsText("homeHeader");
-  const displaySubtitle = (lang === "pl" ? cmsHero?.subtitlePl : cmsHero?.subtitleEn) || getCmsText("homeSubheader", "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.");
+  const displayTagline =
+    (lang === "pl" ? cmsHero?.taglinePl : cmsHero?.taglineEn) || t("tagline");
+  const displayTitle =
+    (lang === "pl" ? cmsHero?.titlePl : cmsHero?.titleEn) ||
+    getCmsText("homeHeader");
+  const displaySubtitle =
+    (lang === "pl" ? cmsHero?.subtitlePl : cmsHero?.subtitleEn) ||
+    getCmsText(
+      "homeSubheader",
+      "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.",
+    );
   const displayFeatures = (cmsHeroFeatures || []).map((feature) => ({
     title: lang === "pl" ? feature.titlePl : feature.titleEn,
     description: lang === "pl" ? feature.descriptionPl : feature.descriptionEn,
@@ -42,9 +50,9 @@ export default function Hero({ lang, getCmsText, t }) {
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-slate-900">
               {displayTitle}
-              {lang !== "pl" && (
+              {/* {lang !== "pl" && (
                 <span className="block text-brand-red mt-2">CAR GO</span>
-              )}
+              )} */}
             </h1>
 
             <p className="text-base sm:text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
@@ -53,11 +61,16 @@ export default function Hero({ lang, getCmsText, t }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto lg:mx-0 pt-2">
               {cmsHeroFeatures.map((data, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-white/60 backdrop-blur-sm border border-slate-100 rounded-xl shadow-sm hover:shadow-md hover:border-brand-red/20 transition-all duration-300">
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 bg-white/60 backdrop-blur-sm border border-slate-100 rounded-xl shadow-sm hover:shadow-md hover:border-brand-red/20 transition-all duration-300"
+                >
                   <div className="w-8 h-8 rounded-full bg-brand-red/10 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-4 h-4 text-brand-red" /> 
+                    <CheckCircle2 className="w-4 h-4 text-brand-red" />
                   </div>
-                  <span className="text-sm font-bold text-slate-700 leading-tight">{lang === "pl" ? data.textPl : data.textEn }</span>
+                  <span className="text-sm font-bold text-slate-700 leading-tight">
+                    {lang === "pl" ? data.textPl : data.textEn}
+                  </span>
                 </div>
               ))}
             </div>
