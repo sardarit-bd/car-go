@@ -3,7 +3,6 @@
 import React, { useRef } from "react";
 import { X, MapPin, ShieldCheck, Sparkles, Download } from "lucide-react";
 import { useApp } from "@/app/context/AppContext";
-import html2pdf from "html2pdf.js";
 
 export default function BookingDetailsModal({
   selectedBookingDetails,
@@ -50,8 +49,11 @@ export default function BookingDetailsModal({
   const packageData = selectedBookingDetails.packageData;
   const addonsData = selectedBookingDetails.addonsData;
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     const element = contentRef.current;
+    if (!element) return;
+    const html2pdf = (await import("html2pdf.js")).default;
+
     const opt = {
       margin: 10,
       filename: `Rezerwacja_${selectedBookingDetails.bookingReference || selectedBookingDetails.id}.pdf`,
