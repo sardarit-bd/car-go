@@ -1,22 +1,29 @@
 "use client";
 
-import React from "react";
-import { X } from "lucide-react";
+import React, { useRef } from "react";
+import { X, MapPin, ShieldCheck, Sparkles, Download } from "lucide-react";
 import { useApp } from "@/app/context/AppContext";
+import html2pdf from "html2pdf.js";
 
 export default function BookingDetailsModal({
   selectedBookingDetails,
   setSelectedBookingDetails,
   handleBookingConfirm,
   handleBookingCancel,
-  handleBookingComplete, // Added: New prop for completing a booking
+  handleBookingComplete,
 }) {
-  const { t, lang } = useApp();
+  const { t, lang, locations } = useApp();
+  const contentRef = useRef(null);
 
   if (!selectedBookingDetails) return null;
 
   const formatDate = (dateString) => {
     return new Date(dateString).toISOString().split("T")[0];
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    return new Date(dateString).toISOString().split("T")[1].substring(0, 5);
   };
 
   const calculateDays = (pickup, returnD) => {
@@ -27,17 +34,43 @@ export default function BookingDetailsModal({
     return Math.max(1, diffDays);
   };
 
+  // ROBUST LOCATION RESOLUTION: Checks both backendId and id, falls back to the ID string
+  const resolveLocationName = (locationId) => {
+    if (!locationId) return "N/A";
+    const match = locations.find(
+      (l) => l.backendId === locationId || l.id === locationId,
+    );
+    return match ? match.name : locationId;
+  };
+
   const days = calculateDays(
     selectedBookingDetails.pickupDate,
     selectedBookingDetails.returnDate,
   );
+
+  const packageData = selectedBookingDetails.packageData;
+  const addonsData = selectedBookingDetails.addonsData;
+
+  const handleDownloadPDF = () => {
+    const element = contentRef.current;
+    const opt = {
+      margin: 10,
+      filename: `Rezerwacja_${selectedBookingDetails.bookingReference || selectedBookingDetails.id}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+    html2pdf().set(opt).from(element).save();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4">
       <div className="w-full max-w-xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-scale-up">
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
-            {t("manageBookingTitle")} {selectedBookingDetails.id}
+            {t("manageBookingTitle")}{" "}
+            {selectedBookingDetails.bookingReference ||
+              selectedBookingDetails.id}
           </h3>
           <button
             onClick={() => setSelectedBookingDetails(null)}
@@ -47,7 +80,8 @@ export default function BookingDetailsModal({
           </button>
         </div>
 
-        <div className="space-y-4 text-xs">
+        {/* Wrapped in ref for PDF generation */}
+        <div ref={contentRef} className="space-y-4 text-xs">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
               <p className="text-slate-400">{t("clientLabel")}</p>
@@ -75,17 +109,87 @@ export default function BookingDetailsModal({
             <p className="text-slate-400">{t("datesLabel")}</p>
             <p>
               {t("pickupLabel")}:{" "}
-              <strong>{formatDate(selectedBookingDetails.pickupDate)}</strong>
+              <strong>
+                {formatDate(selectedBookingDetails.pickupDate)} {t("timeLabel")}{" "}
+                {formatTime(selectedBookingDetails.pickupDate)}
+              </strong>
             </p>
             <p>
               {t("returnLabel")}:{" "}
-              <strong>{formatDate(selectedBookingDetails.returnDate)}</strong>
+              <strong>
+                {formatDate(selectedBookingDetails.returnDate)} {t("timeLabel")}{" "}
+                {formatTime(selectedBookingDetails.returnDate)}
+              </strong>
             </p>
             <p className="text-brand-red font-bold">
               {t("rentalDurationLabel")} {days}{" "}
               {days === 1 ? t("dayUnit") : t("daysUnit")}
             </p>
           </div>
+
+          <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
+            <p className="text-slate-400 flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-brand-red" />
+              {t("locationsLabel")}
+            </p>
+            <p>
+              {t("pickupPointLabel")}:{" "}
+              <strong>
+                {resolveLocationName(selectedBookingDetails.pickupLocationId)}
+              </strong>
+            </p>
+            <p>
+              {t("returnPointLabel")}:{" "}
+              <strong>
+                {resolveLocationName(selectedBookingDetails.returnLocationId)}
+              </strong>
+            </p>
+            {selectedBookingDetails.customPickupAddress && (
+              <p className="text-slate-600">
+                {lang === "pl" ? "Adres dostawy:" : "Delivery address:"}{" "}
+                <strong>{selectedBookingDetails.customPickupAddress}</strong>
+              </p>
+            )}
+            {selectedBookingDetails.customReturnAddress && (
+              <p className="text-slate-600">
+                {lang === "pl" ? "Adres zwrotu:" : "Return address:"}{" "}
+                <strong>{selectedBookingDetails.customReturnAddress}</strong>
+              </p>
+            )}
+          </div>
+
+          {(packageData || (addonsData && addonsData.length > 0)) && (
+            <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-2">
+              {packageData && (
+                <div>
+                  <p className="text-slate-400 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-brand-red" />
+                    {t("protectionPackageLabel")}
+                  </p>
+                  <p className="font-bold text-slate-800 mt-0.5">
+                    {packageData.name}{" "}
+                    {packageData.price != null && (
+                      <span className="text-slate-500 font-semibold">
+                        (PLN {packageData.price})
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+              {addonsData && addonsData.length > 0 && (
+                <div>
+                  <p className="text-slate-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-brand-red" />
+                    {t("extrasLabel")}
+                  </p>
+                  <p className="font-bold text-slate-800 mt-0.5">
+                    {addonsData.map((a) => a.name).join(", ")}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="p-3 bg-slate-50 rounded border border-slate-100 flex justify-between items-center text-sm">
             <span className="text-slate-500 font-bold">
               {t("totalCostLabel")}
@@ -103,55 +207,64 @@ export default function BookingDetailsModal({
               </p>
             </div>
           )}
+        </div>
 
-          <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div className="flex items-center space-x-1">
-              <span>{t("currentStatusLabel")}</span>
-              <span className="font-extrabold text-slate-800 uppercase">
-                {selectedBookingDetails.status}
-              </span>
-            </div>
+        <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="flex items-center space-x-1">
+            <span>{t("currentStatusLabel")}</span>
+            <span className="font-extrabold text-slate-800 uppercase">
+              {selectedBookingDetails.status}
+            </span>
+          </div>
 
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-              {selectedBookingDetails.status !== "CONFIRMED" &&
-                selectedBookingDetails.status !== "COMPLETED" &&
-                selectedBookingDetails.status !== "CANCELLED" && (
-                  <button
-                    onClick={() => {
-                      handleBookingConfirm(selectedBookingDetails.id);
-                      setSelectedBookingDetails(null);
-                    }}
-                    className="flex-1 px-4 py-2 bg-green-700 hover:bg-green-600 text-white text-xs font-bold rounded transition"
-                  >
-                    {t("confirmBtn")}
-                  </button>
-                )}
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            {/* NEW: Download PDF Button */}
+            <button
+              onClick={handleDownloadPDF}
+              className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded transition flex items-center justify-center gap-2"
+            >
+              <Download className="w-3.5 h-3.5" />
+              {t("downloadPdfBtn") || "Pobierz PDF"}
+            </button>
 
-              {selectedBookingDetails.status === "CONFIRMED" && (
+            {selectedBookingDetails.status !== "CONFIRMED" &&
+              selectedBookingDetails.status !== "COMPLETED" &&
+              selectedBookingDetails.status !== "CANCELLED" && (
                 <button
                   onClick={() => {
-                    handleBookingComplete(selectedBookingDetails.id);
+                    handleBookingConfirm(selectedBookingDetails.id);
                     setSelectedBookingDetails(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold rounded transition"
+                  className="flex-1 px-4 py-2 bg-green-700 hover:bg-green-600 text-white text-xs font-bold rounded transition"
                 >
-                  {t("completeBtn")}
+                  {t("confirmBtn")}
                 </button>
               )}
 
-              {selectedBookingDetails.status !== "CANCELLED" &&
-                selectedBookingDetails.status !== "COMPLETED" && (
-                  <button
-                    onClick={() => {
-                      handleBookingCancel(selectedBookingDetails.id);
-                      setSelectedBookingDetails(null);
-                    }}
-                    className="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-xs font-bold rounded transition"
-                  >
-                    {t("cancelBtn")}
-                  </button>
-                )}
-            </div>
+            {selectedBookingDetails.status === "CONFIRMED" && (
+              <button
+                onClick={() => {
+                  handleBookingComplete(selectedBookingDetails.id);
+                  setSelectedBookingDetails(null);
+                }}
+                className="flex-1 px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold rounded transition"
+              >
+                {t("completeBtn")}
+              </button>
+            )}
+
+            {selectedBookingDetails.status !== "CANCELLED" &&
+              selectedBookingDetails.status !== "COMPLETED" && (
+                <button
+                  onClick={() => {
+                    handleBookingCancel(selectedBookingDetails.id);
+                    setSelectedBookingDetails(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-xs font-bold rounded transition"
+                >
+                  {t("cancelBtn")}
+                </button>
+              )}
           </div>
         </div>
       </div>

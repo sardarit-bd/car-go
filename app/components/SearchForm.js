@@ -21,9 +21,9 @@ export default function SearchForm({ vertical = false, onSearch }) {
     today.setDate(today.getDate() + offsetDays);
     return today.toISOString().split("T")[0];
   };
-
-  const [pickupLocation, setPickupLocation] = useState("Skarbimierz-Osiedle");
-  const [returnLocation, setReturnLocation] = useState("Skarbimierz-Osiedle");
+  console.log(locations[0]);
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [returnLocation, setReturnLocation] = useState("");
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [pickupTime, setPickupTime] = useState("08:00");
@@ -143,6 +143,10 @@ export default function SearchForm({ vertical = false, onSearch }) {
         returnLocation: isCustomReturn
           ? `Odbiór: ${customAddressReturn || customAddress}`
           : returnLocation,
+        customPickupAddress: isCustomPickup ? customAddress : null,
+        customReturnAddress: isCustomReturn
+          ? customAddressReturn || customAddress
+          : null,
         pickupDate,
         returnDate,
         pickupTime,
@@ -172,7 +176,12 @@ export default function SearchForm({ vertical = false, onSearch }) {
   const isCustomReturn =
     returnLocation.toLowerCase().includes("dostawa") ||
     returnLocation.toLowerCase().includes("address");
-
+  useEffect(() => {
+    if (locations.length > 0) {
+      if (!pickupLocation) setPickupLocation(locations[0].name);
+      if (!returnLocation) setReturnLocation(locations[0].name);
+    }
+  }, [locations]);
   return (
     <div
       className={`glass-panel border-slate-100 ${vertical ? "p-5" : "p-6 sm:p-8"} rounded-2xl glow-red shadow-xl bg-white/95 w-full`}

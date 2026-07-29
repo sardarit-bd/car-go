@@ -524,13 +524,16 @@ export function AppProvider({ children }) {
   const [myReservations, setMyReservations] = useState([]);
   const [authInitialized, setAuthInitialized] = useState(false);
 
-  const [searchParamsState, setSearchParamsState] = useState(() => {
+  const [searchParamsState, setSearchParamsState] = useState(null);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("cargo_search_params");
-      return saved ? JSON.parse(saved) : null;
+      if (saved) {
+        setSearchParamsState(JSON.parse(saved));
+      }
     }
-    return null;
-  });
+  }, []);
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -560,6 +563,7 @@ export function AppProvider({ children }) {
     );
     return {
       id: b.id,
+      bookingReference: b.bookingReference || null,
       customer: {
         firstName: b.customerFirstName || "Unknown",
         lastName: b.customerLastName || "",
@@ -630,7 +634,7 @@ export function AppProvider({ children }) {
       saveState("cargo_vehicles", mappedVehicles);
     } catch (error) {
       console.error("Failed to fetch vehicles:", error);
-      setVehicles(initialVehicles);
+      setVehicles([]); // ✅ Safe fallback
     }
   };
 
@@ -748,10 +752,10 @@ export function AppProvider({ children }) {
   const fetchBookings = async () => {
     try {
       const response = await api.get("/api/reservations");
-      const backendBookings = response.data.data;
+      const result = response.data.data;
+      const backendBookings = result?.data || [];
       const mapped = backendBookings.map(mapBooking);
       setBookings(mapped);
-      // saveState("cargo_bookings", mapped);
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
     }
@@ -1010,7 +1014,7 @@ export function AppProvider({ children }) {
         logEmail({
           id: "email_" + Math.random().toString(36).substr(2, 9),
           to: booking.customer.email,
-          subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Potwierdzona!`,
+          subject: `[CAR-GO.PL] Rezerwacja ${booking.bookingReference || booking.id} Została Potwierdzona!`,
           body: "Confirmed email body...",
           date: new Date().toLocaleString(),
         });
@@ -1018,7 +1022,7 @@ export function AppProvider({ children }) {
         logEmail({
           id: "email_" + Math.random().toString(36).substr(2, 9),
           to: booking.customer.email,
-          subject: `[CAR-GO.PL] Rezerwacja ${booking.id} Została Anulowana`,
+          subject: `[CAR-GO.PL] Rezerwacja ${booking.bookingReference || booking.id} Została Anulowana`,
           body: "Cancelled email body...",
           date: new Date().toLocaleString(),
         });
@@ -1205,7 +1209,7 @@ export function AppProvider({ children }) {
     logEmail({
       id: "email_" + Math.random().toString(36).substr(2, 9),
       to: newBooking.customer.email,
-      subject: `[CAR-GO.PL] Rezerwacja ${newBooking.id}`,
+      subject: `[CAR-GO.PL] Rezerwacja ${newBooking.bookingReference || newBooking.id}`,
       body: "Booking received",
       date: new Date().toLocaleString(),
     });

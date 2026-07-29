@@ -58,7 +58,7 @@ export default function MyReservationsVoucher({
 
     const opt = {
       margin: [5, 5, 5, 5],
-      filename: `Rezerwacja_${activeBooking.id}.pdf`,
+      filename: `Rezerwacja_${activeBooking.bookingReference || activeBooking.id}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: {
         scale: 2,
@@ -135,7 +135,7 @@ export default function MyReservationsVoucher({
               {lang === "pl" ? "Numer rezerwacji" : "Reservation Number"}
             </p>
             <p className="text-base sm:text-lg font-black font-mono tracking-wider mt-1 break-all">
-              {activeBooking.id}
+              {activeBooking.bookingReference || activeBooking.id}
             </p>
           </div>
         </div>

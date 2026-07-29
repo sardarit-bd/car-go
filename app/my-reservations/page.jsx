@@ -82,6 +82,7 @@ function mapApiBookingToVoucherShape(item) {
 
   return {
     id: item.id,
+    bookingReference: item.bookingReference || null,
     status: item.status ? item.status.toLowerCase() : "pending",
     paymentMethod: paymentMethod,
     customer: {

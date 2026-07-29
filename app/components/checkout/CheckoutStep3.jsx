@@ -61,6 +61,7 @@ export default function CheckoutStep3({
 
   // Added: Wrapped submit handler for frontend validation
   const onFormSubmit = (e) => {
+    console.log(e.target.value);
     if (!consentPrivacy || !consentTerms || !consentData) {
       setConsentError(
         "Proszę zaakceptować wszystkie wymagane zgody / Please accept all required consents *",
