@@ -34,7 +34,6 @@ export default function BookingDetailsModal({
     return Math.max(1, diffDays);
   };
 
-  // ROBUST LOCATION RESOLUTION: Checks both backendId and id, falls back to the ID string
   const resolveLocationName = (locationId) => {
     if (!locationId) return "N/A";
     const match = locations.find(
@@ -68,7 +67,7 @@ export default function BookingDetailsModal({
       <div className="w-full max-w-xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-scale-up">
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
-            {t("manageBookingTitle")}{" "}
+            {t("manageBookingTitle")}
             {selectedBookingDetails.bookingReference ||
               selectedBookingDetails.id}
           </h3>
@@ -80,7 +79,6 @@ export default function BookingDetailsModal({
           </button>
         </div>
 
-        {/* Wrapped in ref for PDF generation */}
         <div ref={contentRef} className="space-y-4 text-xs">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
@@ -99,63 +97,67 @@ export default function BookingDetailsModal({
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
               <p className="text-slate-400">{t("vehicleLabel")}</p>
               <p className="font-bold text-slate-800 mt-0.5">
-                {selectedBookingDetails.vehicle?.brand || "N/A"}{" "}
+                {selectedBookingDetails.vehicle?.brand || "N/A"}
                 {selectedBookingDetails.vehicle?.model || ""}
               </p>
             </div>
           </div>
 
-          <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
-            <p className="text-slate-400">{t("datesLabel")}</p>
-            <p>
-              {t("pickupLabel")}:{" "}
-              <strong>
-                {formatDate(selectedBookingDetails.pickupDate)} {t("timeLabel")}{" "}
-                {formatTime(selectedBookingDetails.pickupDate)}
-              </strong>
-            </p>
-            <p>
-              {t("returnLabel")}:{" "}
-              <strong>
-                {formatDate(selectedBookingDetails.returnDate)} {t("timeLabel")}{" "}
-                {formatTime(selectedBookingDetails.returnDate)}
-              </strong>
-            </p>
-            <p className="text-brand-red font-bold">
-              {t("rentalDurationLabel")} {days}{" "}
-              {days === 1 ? t("dayUnit") : t("daysUnit")}
-            </p>
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
+              <p className="text-slate-400">{t("datesLabel")}</p>
+              <p>
+                {t("pickupLabel")}:{" "}
+                <strong>
+                  {formatDate(selectedBookingDetails.pickupDate)}{" "}
+                  {t("timeLabel")}{" "}
+                  {formatTime(selectedBookingDetails.pickupDate)}
+                </strong>
+              </p>
+              <p>
+                {t("returnLabel")}:{" "}
+                <strong>
+                  {formatDate(selectedBookingDetails.returnDate)}{" "}
+                  {t("timeLabel")}{" "}
+                  {formatTime(selectedBookingDetails.returnDate)}
+                </strong>
+              </p>
+              <p className="text-brand-red font-bold">
+                {t("rentalDurationLabel")} {days}{" "}
+                {days === 1 ? t("dayUnit") : t("daysUnit")}
+              </p>
+            </div>
 
-          <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
-            <p className="text-slate-400 flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-brand-red" />
-              {t("locationsLabel")}
-            </p>
-            <p>
-              {t("pickupPointLabel")}:{" "}
-              <strong>
-                {resolveLocationName(selectedBookingDetails.pickupLocationId)}
-              </strong>
-            </p>
-            <p>
-              {t("returnPointLabel")}:{" "}
-              <strong>
-                {resolveLocationName(selectedBookingDetails.returnLocationId)}
-              </strong>
-            </p>
-            {selectedBookingDetails.customPickupAddress && (
-              <p className="text-slate-600">
-                {lang === "pl" ? "Adres dostawy:" : "Delivery address:"}{" "}
-                <strong>{selectedBookingDetails.customPickupAddress}</strong>
+            <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
+              <p className="text-slate-400 flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-brand-red" />
+                {t("locationsLabel")}
               </p>
-            )}
-            {selectedBookingDetails.customReturnAddress && (
-              <p className="text-slate-600">
-                {lang === "pl" ? "Adres zwrotu:" : "Return address:"}{" "}
-                <strong>{selectedBookingDetails.customReturnAddress}</strong>
+              <p>
+                {t("pickupPointLabel")}:{" "}
+                <strong>
+                  {resolveLocationName(selectedBookingDetails.pickupLocationId)}
+                </strong>
               </p>
-            )}
+              <p>
+                {t("returnPointLabel")}:{" "}
+                <strong>
+                  {resolveLocationName(selectedBookingDetails.returnLocationId)}
+                </strong>
+              </p>
+              {selectedBookingDetails.customPickupAddress && (
+                <p className="text-slate-600">
+                  {lang === "pl" ? "Adres dostawy:" : "Delivery address:"}{" "}
+                  <strong>{selectedBookingDetails.customPickupAddress}</strong>
+                </p>
+              )}
+              {selectedBookingDetails.customReturnAddress && (
+                <p className="text-slate-600">
+                  {lang === "pl" ? "Adres zwrotu:" : "Return address:"}{" "}
+                  <strong>{selectedBookingDetails.customReturnAddress}</strong>
+                </p>
+              )}
+            </div>
           </div>
 
           {(packageData || (addonsData && addonsData.length > 0)) && (
