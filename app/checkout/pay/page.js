@@ -149,7 +149,7 @@ function OnlinePaymentSimulatorContent() {
             <p className="text-[11px] text-slate-400 font-medium mt-1">
               CAR-GO Secure Checkout |{" "}
               {lang === "pl" ? "ID transakcji:" : "Transaction ID:"}{" "}
-              {activeBooking.id}
+              {activeBooking.bookingReference || activeBooking.id}
             </p>
           </div>
         </div>

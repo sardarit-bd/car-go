@@ -38,27 +38,27 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
-        <div className="flex justify-between items-center h-16 lg:h-20 px-3 sm:px-6 container mx-auto">
+        <div className="container mx-auto flex h-20 xl:h-24 items-center justify-between px-4 lg:px-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center shrink-0">
+          <Link
+            href="/"
+            className="flex w-[180px] xl:w-[220px] items-center justify-start shrink-0"
+          >
             <img
               src="/logo.png"
               alt="CAR-GO.PL"
-              className="h-7 sm:h-8 lg:h-10 w-auto object-contain"
-              onError={(e) => {
-                e.target.style.display = "none";
-              }}
+              className="h-10 xl:h-12 w-auto object-contain"
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center justify-center gap-3 xl:gap-6 flex-1 px-4 xl:px-8 min-w-0">
+          <nav className="hidden lg:flex flex-1 items-center justify-center px-6 xl:px-10 min-w-0">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-[13px] xl:text-[15px] font-medium whitespace-nowrap transition duration-200 px-2 xl:px-3 py-2 rounded-lg ${
+                  className={`px-3 py-2 whitespace-nowrap rounded-lg text-sm xl:text-[15px] font-medium transition ${
                     isActive
                       ? "text-brand-red bg-brand-red/5"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"

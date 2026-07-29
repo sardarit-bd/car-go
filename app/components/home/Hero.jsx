@@ -37,7 +37,7 @@ export default function Hero({ lang, getCmsText, t }) {
 
       <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          <div className="lg:col-span-5 space-y-8 text-center lg:text-left animate-slide-up">
+          <div className="lg:col-span-5 space-y-8 text-center animate-slide-up flex flex-col items-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>

@@ -168,7 +168,6 @@ function CheckoutFlowContent() {
         isCustomPrice: false,
       });
     }
-    // FIX: Append car ID to URL to persist state across navigation/refreshes
     router.push(`/checkout?step=2&car=${car.id}`);
   };
 
@@ -201,11 +200,47 @@ function CheckoutFlowContent() {
       return;
     }
 
-    const pickupLoc = locations.find(
-      (l) => l.name === activeSearch?.pickupLocation,
+    const findLocationBackendId = (searchValue) => {
+      if (!searchValue) return null;
+
+      // 1. Direct match (id, backendId, or exact name)
+      let loc = locations.find(
+        (l) =>
+          String(l.id) === String(searchValue) ||
+          String(l.backendId) === String(searchValue) ||
+          l.name === searchValue,
+      );
+
+      // 2. Case-insensitive name match
+      if (!loc) {
+        loc = locations.find(
+          (l) => l.name.toLowerCase() === String(searchValue).toLowerCase(),
+        );
+      }
+
+      // 3. Custom address fallback: if the search value indicates custom delivery, find the delivery location
+      if (
+        !loc &&
+        (String(searchValue).toLowerCase().includes("dostawa") ||
+          String(searchValue).toLowerCase().includes("address") ||
+          String(searchValue).toLowerCase().includes("odbior"))
+      ) {
+        loc = locations.find(
+          (l) =>
+            l.isCustomAddress ||
+            l.id === "delivery" ||
+            String(l.name).toLowerCase().includes("dostawa"),
+        );
+      }
+
+      return loc ? loc.backendId : null;
+    };
+
+    const pickupLocationId = findLocationBackendId(
+      activeSearch?.pickupLocation,
     );
-    const returnLoc = locations.find(
-      (l) => l.name === activeSearch?.returnLocation,
+    const returnLocationId = findLocationBackendId(
+      activeSearch?.returnLocation,
     );
 
     const payload = {
@@ -217,8 +252,10 @@ function CheckoutFlowContent() {
       returnDate: new Date(
         `${activeSearch.returnDate}T${activeSearch.returnTime}:00`,
       ).toISOString(),
-      pickupLocationId: pickupLoc?.id || null,
-      returnLocationId: returnLoc?.id || null,
+      pickupLocationId: pickupLocationId,
+      returnLocationId: returnLocationId,
+      customPickupAddress: activeSearch?.customPickupAddress || null,
+      customReturnAddress: activeSearch?.customReturnAddress || null,
       totalPrice: getTotalGross() === "Individual Price" ? 0 : getTotalGross(),
       customerFirstName: firstName,
       customerLastName: lastName,
@@ -313,14 +350,21 @@ function CheckoutFlowContent() {
       );
     }
   };
+  useEffect(() => {
+    let pickupLoc = locations.find(
+      (l) =>
+        l.id === activeSearch?.pickupLocation ||
+        l.name === activeSearch?.pickupLocation ||
+        l.backendId === activeSearch?.pickupLocation,
+    );
+    console.log("pickupLoc", activeSearch);
+  });
 
   return (
     <div className="relative lg:pt-14 ">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
-
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10 animate-fade-in">
         <CheckoutSteps step={step} t={t} />
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8">
             {step === 1 && (
@@ -333,7 +377,6 @@ function CheckoutFlowContent() {
                 t={t}
               />
             )}
-
             {step === 2 && selectedCar && (
               <CheckoutStep2
                 packages={packages}
@@ -345,7 +388,6 @@ function CheckoutFlowContent() {
                 t={t}
               />
             )}
-
             {step === 3 && selectedCar && (
               <CheckoutStep3
                 firstName={firstName}
@@ -381,7 +423,6 @@ function CheckoutFlowContent() {
                 t={t}
               />
             )}
-
             {step === 4 && createdBooking && (
               <CheckoutStep4
                 createdBooking={createdBooking}
@@ -391,8 +432,6 @@ function CheckoutFlowContent() {
               />
             )}
           </div>
-
-          {/* Sidebar Summary */}
           <div className="lg:col-span-4 lg:sticky lg:top-24">
             <CheckoutSummary
               activeSearch={activeSearch}
