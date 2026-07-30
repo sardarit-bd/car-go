@@ -36,7 +36,7 @@ function ReservationLookupContent() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (queryId.trim()) {
-      router.push(`/lookup?id=${queryId.trim()}`);
+      router.push(`/my-reservations`);
     }
   };
 
@@ -100,7 +100,7 @@ function ReservationLookupContent() {
             className="px-6 py-3 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded-xl transition duration-200 shadow-md flex items-center justify-center space-x-2 text-sm"
           >
             <Search className="w-4 h-4" />
-            <span>{t("lookupBtn")}</span>
+            <span>{t("lookup button")}</span>
           </button>
         </form>
       </div>

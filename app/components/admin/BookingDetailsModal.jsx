@@ -69,7 +69,7 @@ export default function BookingDetailsModal({
       <div className="w-full max-w-xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-scale-up">
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
-            {t("manageBookingTitle")}
+            {t("manage Booking: ")}
             {selectedBookingDetails.bookingReference ||
               selectedBookingDetails.id}
           </h3>
@@ -225,10 +225,10 @@ export default function BookingDetailsModal({
             {/* NEW: Download PDF Button */}
             <button
               onClick={handleDownloadPDF}
-              className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded transition flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition flex items-center justify-center gap-2"
             >
               <Download className="w-3.5 h-3.5" />
-              {t("downloadPdfBtn") || "Pobierz PDF"}
+              {t("Download") || "Pobierz PDF"}
             </button>
 
             {selectedBookingDetails.status !== "CONFIRMED" &&

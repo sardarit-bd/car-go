@@ -13,7 +13,7 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
     totalPages: 0,
   });
   const [loading, setLoading] = useState(true);
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     status: "",
@@ -27,7 +27,7 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
   const fetchBookings = async (page = 1, limit = 10, filterParams = {}) => {
     try {
       setLoading(true);
-      
+
       // Build query params
       const params = new URLSearchParams({
         page: page.toString(),
@@ -43,7 +43,7 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
 
       const response = await api.get(`/api/reservations?${params.toString()}`);
       const backendData = response.data.data;
-      
+
       setBookings(backendData.data);
       setPagination(backendData.pagination);
     } catch (error) {
@@ -253,10 +253,11 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-600 font-semibold">
+                {console.log(bookings)}
                 {bookings.map((b) => (
                   <tr key={b.id} className="hover:bg-slate-50/50 transition">
                     <td className="py-3.5 font-mono text-slate-800 font-extrabold">
-                      {b.id}
+                      {b.bookingReference}
                     </td>
                     <td className="py-3.5">
                       {b.customerFirstName} {b.customerLastName}
@@ -273,7 +274,7 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
                     <td className="py-3.5">
                       <span
                         className={`px-2 py-0.5 rounded text-[9px] uppercase text-white font-bold ${getStatusColor(
-                          b.status
+                          b.status,
                         )}`}
                       >
                         {b.status}
