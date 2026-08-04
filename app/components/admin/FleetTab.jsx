@@ -8,10 +8,11 @@ import api from "@/lib/axios";
 export default function FleetTab() {
   const {
     isOwner,
-    vehicles,
+    adminVehicles,
     addVehicle,
     deleteVehicle,
-    fetchVehicles,
+    fetchAdminVehicles,
+    toggleVehicleActive,
     adminUser,
   } = useApp();
 
@@ -28,7 +29,7 @@ export default function FleetTab() {
   const [imagePreview, setImagePreview] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryPreviews, setGalleryPreviews] = useState([]);
-
+  console.log("adminVehicles in FleetTab:", adminVehicles);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [vehicleClasses, setVehicleClasses] = useState([]);
@@ -55,6 +56,7 @@ export default function FleetTab() {
     };
     fetchLocations();
     fetchVehicleClasses();
+    fetchAdminVehicles();
   }, []);
 
   const fetchVehicleClasses = async () => {
@@ -277,7 +279,7 @@ export default function FleetTab() {
         setSelectedLocation(locations.length > 0 ? locations[0].id : "");
 
         // Refresh vehicles list
-        await fetchVehicles();
+        await fetchAdminVehicles();
 
         alert("Pojazd został dodany pomyślnie!");
       }
@@ -297,6 +299,13 @@ export default function FleetTab() {
       } catch (err) {
         alert("Błąd usuwania pojazdu.");
       }
+    }
+  };
+
+  const handleToggleActive = async (carId, currentlyActive) => {
+    const result = await toggleVehicleActive(carId, !currentlyActive);
+    if (!result.success) {
+      alert("Błąd zmiany statusu dostępności pojazdu.");
     }
   };
 
@@ -560,10 +569,10 @@ export default function FleetTab() {
       {/* Active Fleet List */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
-          Aktualna Flota Pojazdów / Active Fleet ({vehicles.length})
+          Aktualna Flota Pojazdów / Active Fleet ({adminVehicles.length})
         </h2>
 
-        {vehicles.length === 0 ? (
+        {adminVehicles.length === 0 ? (
           <div className="text-center py-12 text-slate-400">
             <p className="font-bold">Brak pojazdów we flocie</p>
             <p className="text-sm mt-1">
@@ -572,7 +581,7 @@ export default function FleetTab() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {vehicles.map((v) => (
+            {adminVehicles.map((v) => (
               <div
                 key={v.id}
                 className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group"
@@ -594,10 +603,15 @@ export default function FleetTab() {
                       <span className="text-4xl">🚗</span>
                     </div>
                   )}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-3 left-3 flex gap-1">
                     <span className="px-2 py-1 bg-brand-red/90 text-white text-[10px] font-bold uppercase rounded">
                       {getClassLabel(v.class)}
                     </span>
+                    {!v.isActive && (
+                      <span className="px-2 py-1 bg-slate-700/90 text-white text-[10px] font-bold uppercase rounded">
+                        Wyłączony
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -653,6 +667,16 @@ export default function FleetTab() {
                   )}
 
                   <div className="pt-3 flex gap-2">
+                    <button
+                      onClick={() => handleToggleActive(v.id, v.isActive)}
+                      className={`flex-1 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 border ${
+                        v.isActive
+                          ? "border-slate-200 text-slate-600 bg-slate-50 hover:bg-slate-100"
+                          : "border-green-200 text-green-700 bg-green-50 hover:bg-green-100"
+                      }`}
+                    >
+                      {v.isActive ? "Wyłącz" : "Włącz"}
+                    </button>
                     <button
                       onClick={() => handleDeleteVehicle(v.id)}
                       className="flex-1 py-2 border border-brand-red/30 hover:border-brand-red text-brand-red bg-brand-red/5 hover:bg-brand-red/10 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1"

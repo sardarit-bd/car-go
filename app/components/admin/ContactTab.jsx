@@ -2,14 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/app/context/AppContext";
-import {
-  ShieldAlert,
-  Mail,
-  CheckCircle,
-  Clock,
-  Search,
-  Filter,
-} from "lucide-react";
+import { Mail, CheckCircle, Search } from "lucide-react";
 import api from "@/lib/axios";
 
 export default function ContactTab() {

@@ -285,7 +285,7 @@ const initialTranslations = {
     returnDate: "Return date",
     pickupTime: "Pickup time",
     returnTime: "Return time",
-    searchBtn: "SEARCH VEHICLE",
+    searchBtn: "BOOK VEHICLE",
     minDaysWarning:
       "For this location, the minimum rental period is {days} days!",
     requiredFields: "Please fill in all search fields.",
@@ -500,6 +500,7 @@ const initialContentTexts = {
 export function AppProvider({ children }) {
   const [lang, setLang] = useState("pl");
   const [vehicles, setVehicles] = useState([]);
+  const [adminVehicles, setAdminVehicles] = useState([]);
   const [locations, setLocations] = useState([]);
   const [packages, setPackages] = useState([]);
   const [addons, setAddons] = useState([]);
@@ -634,7 +635,57 @@ export function AppProvider({ children }) {
       saveState("cargo_vehicles", mappedVehicles);
     } catch (error) {
       console.error("Failed to fetch vehicles:", error);
-      setVehicles([]); // ✅ Safe fallback
+      setVehicles([]);
+    }
+  };
+
+  const fetchAdminVehicles = async () => {
+    try {
+      const response = await api.get("/api/vehicle", {
+        params: { includeInactive: true, limit: 10 },
+      });
+      const backendVehicles = response.data.data.vehicles;
+      const mappedVehicles = backendVehicles.map((v) => ({
+        id: v.id,
+        brand: v.brand,
+        model: v.model,
+        class: v.class || "Standard",
+        fuel: v.fuelType || "Petrol",
+        seats: v.seats,
+        luggage: v.trunkCapacity || 0,
+        transmission: v.transmissionType || "Manual",
+        price: parseFloat(v.pricePerDay) || 0,
+        isActive: v.isActive !== false,
+        deposit: 0,
+        image:
+          v.images && v.images.length > 0
+            ? `${process.env.NEXT_PUBLIC_API_URL}${
+                (v.images.find((img) => img.isPrimary) || v.images[0]).imageUrl
+              }`
+            : "/fallback-car.png",
+        gallery: v.images
+          ? v.images
+              .filter((img) => !img.isPrimary)
+              .map((img) => `${process.env.NEXT_PUBLIC_API_URL}${img.imageUrl}`)
+          : [],
+        description: v.description,
+        locations: v.locations || [],
+      }));
+      setAdminVehicles(mappedVehicles);
+    } catch (error) {
+      console.error("Failed to fetch admin vehicles:", error);
+      setAdminVehicles([]);
+    }
+  };
+
+  const toggleVehicleActive = async (vehicleId, isActive) => {
+    try {
+      await api.patch(`/api/vehicle/${vehicleId}`, { isActive });
+      await fetchAdminVehicles();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to toggle vehicle status:", error);
+      return { success: false };
     }
   };
 
@@ -921,6 +972,7 @@ export function AppProvider({ children }) {
     try {
       await api.delete(`/api/vehicle/${vehicleId}`);
       await fetchVehicles();
+      await fetchAdminVehicles();
       return { success: true };
     } catch (error) {
       console.error("Failed to delete vehicle:", error);
@@ -1359,6 +1411,9 @@ export function AppProvider({ children }) {
         searchParams: searchParamsState,
         setSearchParams,
         fetchVehicles,
+        adminVehicles,
+        fetchAdminVehicles,
+        toggleVehicleActive,
         fetchLocations,
         fetchPackages,
         fetchAddons,

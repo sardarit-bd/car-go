@@ -162,7 +162,7 @@ export default function CustomerLogin() {
             )}
           </button>
 
-          <div className="text-center text-xs text-slate-500">
+          {/* <div className="text-center text-xs text-slate-500">
             {lang === "en"
               ? "Don't have an account yet? "
               : "Nie masz jeszcze konta? "}
@@ -172,7 +172,7 @@ export default function CustomerLogin() {
             >
               {lang === "en" ? "Sign up" : "Zarejestruj się"}
             </Link>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

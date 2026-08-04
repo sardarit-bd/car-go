@@ -67,7 +67,7 @@ function OnlinePaymentSimulatorContent() {
 
   if (loading) {
     return (
-      <div className="max-w-xl mx-auto text-center py-20 px-4 text-slate-500">
+      <div className="max-w-xl mx-auto text-center py-20  px-4 text-slate-500">
         <span className="animate-pulse font-semibold">
           {lang === "pl"
             ? "Ładowanie bramki płatniczej..."
@@ -79,8 +79,8 @@ function OnlinePaymentSimulatorContent() {
 
   if (!activeBooking) {
     return (
-      <div className="max-w-xl mx-auto text-center py-20 px-4 space-y-4">
-        <h2 className="text-xl font-bold text-slate-800">
+      <div className="max-w-xl min-h-screen mx-auto text-center py-20 pt-40 px-4 ">
+        <h2 className="text-xl font-bold text-slate-800 ">
           {lang === "pl" ? "Brak aktywnej transakcji" : "No active transaction"}
         </h2>
         <p className="text-sm text-slate-500">
@@ -135,7 +135,7 @@ function OnlinePaymentSimulatorContent() {
   ];
   console.log("activeBooking : ", activeBooking);
   return (
-    <div className="max-w-lg mx-auto px-4 sm:px-6 py-12 animate-fade-in">
+    <div className="max-w-lg mx-auto px-4 sm:px-6 py-12 pt-40! animate-fade-in">
       <div className="bg-white p-8 rounded-3xl space-y-6 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
         {/* Top Header */}
         <div className="text-center space-y-3 pb-6 border-b border-slate-100">
