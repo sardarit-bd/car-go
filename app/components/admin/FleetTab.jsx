@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/app/context/AppContext";
-import { ShieldAlert, Trash2, Upload, MapPin, Calendar } from "lucide-react";
+import { ShieldAlert, Trash2, Upload } from "lucide-react";
 import api from "@/lib/axios";
+
+const MAX_HIGHLIGHTS = 3;
 
 export default function FleetTab() {
   const {
     isOwner,
     adminVehicles,
-    addVehicle,
     deleteVehicle,
     fetchAdminVehicles,
     toggleVehicleActive,
@@ -29,6 +30,7 @@ export default function FleetTab() {
   const [imagePreview, setImagePreview] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryPreviews, setGalleryPreviews] = useState([]);
+  const [highlights, setHighlights] = useState([]);
   console.log("adminVehicles in FleetTab:", adminVehicles);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -139,7 +141,7 @@ export default function FleetTab() {
 
   const handleGalleryChange = (e) => {
     const incomingFiles = Array.from(e.target.files);
-    e.target.value = ""; // allow re-selecting from the same dialog next time
+    e.target.value = "";
 
     const validNewFiles = [];
     for (const file of incomingFiles) {
@@ -187,6 +189,20 @@ export default function FleetTab() {
   const handleRemoveGalleryImage = (index) => {
     setGalleryImages((prev) => prev.filter((_, i) => i !== index));
     setGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddHighlight = () => {
+    setHighlights((prev) =>
+      prev.length >= MAX_HIGHLIGHTS ? prev : [...prev, ""],
+    );
+  };
+
+  const handleHighlightChange = (index, value) => {
+    setHighlights((prev) => prev.map((h, i) => (i === index ? value : h)));
+  };
+
+  const handleRemoveHighlight = (index) => {
+    setHighlights((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleAddVehicle = async (e) => {
@@ -246,6 +262,11 @@ export default function FleetTab() {
       ];
       formData.append("availabilities", JSON.stringify(availabilitiesArray));
 
+      const cleanHighlights = highlights.map((h) => h.trim()).filter(Boolean);
+      if (cleanHighlights.length > 0) {
+        formData.append("highlights", JSON.stringify(cleanHighlights));
+      }
+
       if (newImage) {
         formData.append("mainImage", newImage);
       }
@@ -276,9 +297,9 @@ export default function FleetTab() {
         setImagePreview(null);
         setGalleryImages([]);
         setGalleryPreviews([]);
+        setHighlights([]);
         setSelectedLocation(locations.length > 0 ? locations[0].id : "");
 
-        // Refresh vehicles list
         await fetchAdminVehicles();
 
         alert("Pojazd został dodany pomyślnie!");
@@ -338,7 +359,6 @@ export default function FleetTab() {
 
   return (
     <div className="space-y-6">
-      {/* Add Vehicle Form */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
           Dodaj Nowy Pojazd / Add Vehicle
@@ -354,7 +374,6 @@ export default function FleetTab() {
           onSubmit={handleAddVehicle}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-slate-500"
         >
-          {/* Brand & Model */}
           <div>
             <label className="block mb-1">Marka / Brand *</label>
             <input
@@ -378,7 +397,6 @@ export default function FleetTab() {
             />
           </div>
 
-          {/* Class & Seats */}
           <div>
             <label className="block mb-1">Klasa pojazdu / Class</label>
             <select
@@ -443,7 +461,6 @@ export default function FleetTab() {
             />
           </div>
 
-          {/* Price & Description */}
           <div>
             <label className="block mb-1">Stawka dobowa (PLN) *</label>
             <input
@@ -467,7 +484,43 @@ export default function FleetTab() {
             />
           </div>
 
-          {/* Main Image Upload */}
+          <div className="md:col-span-2">
+            <label className="block mb-1">
+              Punkty wyróżniające / Highlights (max {MAX_HIGHLIGHTS})
+            </label>
+            <div className="space-y-2">
+              {highlights.map((h, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={h}
+                    onChange={(e) => handleHighlightChange(idx, e.target.value)}
+                    maxLength={80}
+                    className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red"
+                    placeholder="np. Unlimited mileage"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveHighlight(idx)}
+                    className="px-2 py-2 text-brand-red hover:bg-brand-red/5 rounded"
+                    title="Usuń"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              {highlights.length < MAX_HIGHLIGHTS && (
+                <button
+                  type="button"
+                  onClick={handleAddHighlight}
+                  className="text-xs font-bold text-brand-red hover:underline"
+                >
+                  + Dodaj punkt / Add point
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="md:col-span-2">
             <label className="block mb-1">
               Zdjęcie główne / Main Image (widoczne na liście pojazdów)
@@ -497,7 +550,6 @@ export default function FleetTab() {
             </div>
           </div>
 
-          {/* Gallery Images Upload */}
           <div className="md:col-span-2">
             <label className="block mb-1">
               Dodatkowe zdjęcia / Additional Images (widoczne na stronie
@@ -544,7 +596,6 @@ export default function FleetTab() {
             )}
           </div>
 
-          {/* Submit Button */}
           <div className="md:col-span-2 pt-2">
             <button
               type="submit"
@@ -566,7 +617,6 @@ export default function FleetTab() {
         </form>
       </div>
 
-      {/* Active Fleet List */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
           Aktualna Flota Pojazdów / Active Fleet ({adminVehicles.length})
@@ -586,7 +636,6 @@ export default function FleetTab() {
                 key={v.id}
                 className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group"
               >
-                {/* Card Header with Image */}
                 <div className="relative h-40 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
                   {v.image ? (
                     <img
@@ -615,7 +664,6 @@ export default function FleetTab() {
                   </div>
                 </div>
 
-                {/* Card Content */}
                 <div className="p-4 space-y-3">
                   <div>
                     <h3 className="text-lg font-black text-slate-800">
@@ -642,6 +690,24 @@ export default function FleetTab() {
                       </span>
                     </div>
                   </div>
+
+                  {v.highlights && v.highlights.length > 0 && (
+                    <div className="pt-2 border-t border-slate-100">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
+                        Highlights:
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {v.highlights.slice(0, 3).map((point, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded"
+                          >
+                            {point}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {v.locations && v.locations.length > 0 && (
                     <div className="pt-2 border-t border-slate-100">
@@ -692,7 +758,6 @@ export default function FleetTab() {
         )}
       </div>
 
-      {/* Vehicle Class Management */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
           Klasy Pojazdów / Vehicle Classes

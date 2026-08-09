@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Settings, Users, Fuel, Cog } from "lucide-react";
+import { Briefcase, Users, Fuel, Cog, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useApp } from "@/app/context/AppContext";
 
@@ -187,6 +187,20 @@ export default function VehicleCard({ car, lang, t }) {
             </div>
           </div>
         </div>
+
+        {/* Highlights (max 3, admin-defined) */}
+        {car.highlights && car.highlights.length > 0 && (
+          <div className="flex flex-col gap-2 mb-6">
+            {car.highlights.slice(0, 3).map((point, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <span className="text-xs font-bold text-slate-700">
+                  {point}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-3 mt-auto">

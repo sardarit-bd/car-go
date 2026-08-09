@@ -175,8 +175,9 @@ ${formMsg}
             {t("locationsTitle")}
           </h4>
           <p className="text-[11px] text-gray-400 leading-relaxed">
-            Skarbimierz-Osiedle, Brzeg, Oława, Grodków, Dostawa pod wskazany
-            adres (Custom Address).
+            {addressContact
+              ? addressContact.value
+              : "Skarbimierz-Osiedle, Polska"}
           </p>
         </div>
 

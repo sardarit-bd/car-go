@@ -32,7 +32,7 @@ const initialTranslations = {
     returnDate: "Data zwrotu",
     pickupTime: "Godzina odbioru",
     returnTime: "Godzina zwrotu",
-    searchBtn: "SZUKAJ POJAZDU",
+    searchBtn: "REZERWACJA AUTA",
     minDaysWarning:
       "Dla tej lokalizacji minimalny okres wynajmu to {days} dni!",
     requiredFields: "Proszę uzupełnić wszystkie pola wyszukiwania.",

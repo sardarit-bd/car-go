@@ -66,7 +66,7 @@ function AccountActivationContent() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 animate-fade-in">
+    <div className="max-w-md mx-auto px-4 sm:px-6 py-28 animate-fade-in ">
       <div className="glass-panel p-8 rounded-2xl space-y-6 shadow-sm border border-slate-100">
         {/* Title */}
         <div className="text-center space-y-2">
@@ -124,7 +124,7 @@ function AccountActivationContent() {
             </div>
 
             <div>
-              <label className="flex text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
+              <label className="flex text-xs font-bold text-slate-500 mb-1.5 items-center space-x-1">
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Potwierdź Hasło / Confirm Password</span>
               </label>
