@@ -102,6 +102,7 @@ export default function BookingsTab({ setSelectedBookingDetails }) {
     const statusLower = status.toLowerCase();
     if (statusLower === "confirmed") return "bg-green-700";
     if (statusLower === "cancelled") return "bg-red-700";
+    if (statusLower === "completed") return "bg-blue-700";
     return "bg-yellow-600";
   };
 

@@ -21,7 +21,7 @@ function mapApiBookingToVoucherShape(item) {
       (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24),
     ),
   );
-
+  console.log("Mapping booking:", item);
   const carCost = item.vehicle?.pricePerDay
     ? parseFloat(item.vehicle.pricePerDay) * days
     : 0;

@@ -40,6 +40,7 @@ export default function useVehicles(initialParams = {}) {
         seats: car.seats || 0,
         luggage: car.luggage || 0,
         transmission: car.transmission || "Automatic",
+        highlights: car.highlights || [],
       }));
 
       setVehicles(mappedData);

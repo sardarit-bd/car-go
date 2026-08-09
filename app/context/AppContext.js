@@ -32,7 +32,7 @@ const initialTranslations = {
     returnDate: "Data zwrotu",
     pickupTime: "Godzina odbioru",
     returnTime: "Godzina zwrotu",
-    searchBtn: "SZUKAJ POJAZDU",
+    searchBtn: "REZERWACJA AUTA",
     minDaysWarning:
       "Dla tej lokalizacji minimalny okres wynajmu to {days} dni!",
     requiredFields: "Proszę uzupełnić wszystkie pola wyszukiwania.",
@@ -610,7 +610,9 @@ export function AppProvider({ children }) {
         luggage: v.trunkCapacity || 0,
         transmission: v.transmissionType || "Manual",
         price: parseFloat(v.pricePerDay) || 0,
+        isActive: v.isActive !== false,
         deposit: 0,
+        highlights: v.highlights || [],
         image:
           v.images && v.images.length > 0
             ? `${process.env.NEXT_PUBLIC_API_URL}${

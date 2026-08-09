@@ -10,12 +10,14 @@ import {
   Phone,
   Share2,
   Star,
+  Clock,
 } from "lucide-react";
 
 import CmsHero from "./cms/CmsHero";
 import CmsFaq from "./cms/CmsFaq";
 import CmsPages from "./cms/CmsPages";
 import CmsContact from "./cms/CmsContact";
+import CmsWorkingHours from "./cms/CmsWorkingHours";
 import CmsSocialMedia from "./cms/CmsSocialMedia";
 import CmsWhyChooseUs from "./cms/CmsWhyChooseUs";
 import CmsAboutUs from "./cms/CmsAboutUs";
@@ -41,6 +43,7 @@ export default function CmsTab() {
     { id: "faq", label: "FAQ", icon: HelpCircle },
     { id: "pages", label: "Pages (Privacy/Terms)", icon: FileText },
     { id: "contact", label: "Contact Info", icon: Phone },
+    { id: "hours", label: "Working Hours", icon: Clock },
     { id: "social", label: "Social Media", icon: Share2 },
   ];
 
@@ -67,13 +70,13 @@ export default function CmsTab() {
         })}
       </div>
 
-      {/* Content Area */}
       {activeSection === "hero" && <CmsHero />}
       {activeSection === "about" && <CmsAboutUs />}
       {activeSection === "why" && <CmsWhyChooseUs />}
       {activeSection === "faq" && <CmsFaq />}
       {activeSection === "pages" && <CmsPages />}
       {activeSection === "contact" && <CmsContact />}
+      {activeSection === "hours" && <CmsWorkingHours />}
       {activeSection === "social" && <CmsSocialMedia />}
     </div>
   );
