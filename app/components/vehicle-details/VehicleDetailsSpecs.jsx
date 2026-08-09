@@ -96,7 +96,7 @@ export default function VehicleDetailsSpecs({ car, lang, t }) {
       </div>
 
       {/* Highlights (max 3, admin-defined) */}
-      {car.highlights && car.highlights.length > 0 && (
+      {/* {car.highlights && car.highlights.length > 0 && (
         <div className="mt-4 space-y-2">
           {car.highlights.slice(0, 3).map((point, idx) => (
             <div
@@ -108,7 +108,7 @@ export default function VehicleDetailsSpecs({ car, lang, t }) {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </>
   );
 }

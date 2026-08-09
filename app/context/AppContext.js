@@ -610,7 +610,9 @@ export function AppProvider({ children }) {
         luggage: v.trunkCapacity || 0,
         transmission: v.transmissionType || "Manual",
         price: parseFloat(v.pricePerDay) || 0,
+        isActive: v.isActive !== false,
         deposit: 0,
+        highlights: v.highlights || [],
         image:
           v.images && v.images.length > 0
             ? `${process.env.NEXT_PUBLIC_API_URL}${

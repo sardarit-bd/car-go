@@ -1,21 +1,23 @@
 "use client";
 
 import { useApp } from "@/app/context/AppContext";
-import {
-  Clock,
-  Mail,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  Loader2,
-  Lock,
-} from "lucide-react";
+import { Clock, Mail, MapPin, Phone, ShieldCheck, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
+const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+const DAY_LABELS = {
+  mon: { pl: "Pon", en: "Mon" },
+  tue: { pl: "Wt", en: "Tue" },
+  wed: { pl: "Śr", en: "Wed" },
+  thu: { pl: "Czw", en: "Thu" },
+  fri: { pl: "Pt", en: "Fri" },
+  sat: { pl: "Sob", en: "Sat" },
+  sun: { pl: "Ndz", en: "Sun" },
+};
 
 export default function Contact() {
-  const { lang, t, logEmail, currentUser } = useApp();
+  const { lang, t, logEmail, currentUser, cmsContacts } = useApp();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -24,7 +26,6 @@ export default function Contact() {
   const [sent, setSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Pre-fill user data if logged in
   useEffect(() => {
     if (currentUser) {
       setName(
@@ -34,29 +35,19 @@ export default function Contact() {
     }
   }, [currentUser]);
 
-  // AUTHENTICATION GATE: If not logged in, show a prompt to log in
-  if (!currentUser) {
-    return (
-      <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in">
-        <div className="glass-panel p-8 rounded-2xl max-w-md w-full space-y-4">
-          <Lock className="w-12 h-12 text-slate-400 mx-auto" />
-          <h1 className="text-2xl font-extrabold text-slate-800 uppercase">
-            {lang === "pl" ? "Wymagane Zalogowanie" : "Login Required"}
-          </h1>
-          <p className="text-sm font-semibold text-slate-500">
-            {lang === "pl"
-              ? "Aby wysłać wiadomość do naszego zespołu obsługi, musisz być zalogowany na swoje konto."
-              : "To send a message to our support team, you must be logged into your account."}
-          </p>
-          <Link
-            href="/account/login"
-            className="inline-block w-full py-3 bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold rounded-lg transition shadow mt-2"
-          >
-            {lang === "pl" ? "Zaloguj się" : "Log In to Continue"}
-          </Link>
-        </div>
-      </div>
-    );
+  const getContact = (type) => cmsContacts.find((c) => c.type === type);
+  const emailContact = getContact("EMAIL");
+  const phoneContact = getContact("PHONE");
+  const addressContact = getContact("ADDRESS");
+  const hoursContact = getContact("HOURS");
+
+  let parsedHours = null;
+  if (hoursContact) {
+    try {
+      parsedHours = JSON.parse(hoursContact.value);
+    } catch (e) {
+      console.error("Failed to parse working hours:", e);
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -72,26 +63,22 @@ export default function Contact() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // If your backend requires auth for this route, uncomment the line below:
-            // "Authorization": `Bearer ${typeof window !== 'undefined' ? localStorage.getItem("token") : ""}`
           },
           body: JSON.stringify({
             name: name,
             email: email,
             message: msg,
-            // FIX: captchaToken removed as requested to prevent 400 Bad Request
           }),
         });
 
         if (!response.ok) {
-          // Try to get specific error message from backend, fallback to status code
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || `API Error: ${response.status}`);
         }
 
         logEmail({
           id: "contact_page_" + Math.random().toString(36).substr(2, 9),
-          to: "reservations@car-go.pl",
+          to: emailContact ? emailContact.value : "reservations@car-go.pl",
           subject: `[CAR-GO.PL Contact Page] Message from ${name}`,
           body: `
 Sender Name: ${name}
@@ -104,8 +91,8 @@ ${msg}
         });
 
         setSent(true);
-        setName("");
-        setEmail("");
+        setName(currentUser ? name : "");
+        setEmail(currentUser ? email : "");
         setMsg("");
 
         setTimeout(() => {
@@ -125,7 +112,7 @@ ${msg}
   };
 
   return (
-    <div className="container max-lg:py-20 mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
+    <div className="container max-lg:py-20 min-h-screen flex justify-center items-center flex-col mx-auto px-4 sm:px-6 space-y-12 animate-fade-in">
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-extrabold text-slate-800 uppercase">
           {t("navContact")}
@@ -140,7 +127,6 @@ ${msg}
       <div className="max-w-5xl mx-auto space-y-12">
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Left Side: Rental Info */}
             <div className="md:col-span-5 space-y-6">
               <div className="glass-panel p-6 rounded-2xl space-y-6">
                 <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
@@ -155,13 +141,9 @@ ${msg}
                         Siedziba i Baza Floty / Base Address:
                       </p>
                       <p className="text-slate-800 font-extrabold mt-0.5">
-                        CAR-GO.PL Adam Rybiński
-                      </p>
-                      <p className="mt-0.5">
-                        ul. Smaków 12, 49-318 Skarbimierz-Osiedle
-                      </p>
-                      <p className="text-[10px] text-slate-400">
-                        Woj. opolskie, Polska
+                        {addressContact
+                          ? addressContact.value
+                          : "Skarbimierz-Osiedle, Polska"}
                       </p>
                     </div>
                   </div>
@@ -173,7 +155,7 @@ ${msg}
                         Infolinia rezerwacji / Phone hotline:
                       </p>
                       <p className="text-slate-800 font-extrabold mt-0.5">
-                        +48 789 200 100
+                        {phoneContact ? phoneContact.value : "+48 789 200 100"}
                       </p>
                     </div>
                   </div>
@@ -185,25 +167,58 @@ ${msg}
                         Kontakt e-mail / Email support:
                       </p>
                       <p className="text-slate-800 font-extrabold mt-0.5">
-                        reservations@car-go.pl
+                        {emailContact
+                          ? emailContact.value
+                          : "reservations@car-go.pl"}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3.5">
                     <Clock className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                    <div>
-                      <p className="text-slate-400 font-normal">
+                    <div className="w-full">
+                      <p className="text-slate-400 font-normal mb-1">
                         Godziny obsługi / Working Hours:
                       </p>
-                      <p className="text-slate-800 mt-0.5">{t("phoneHours")}</p>
+                      {parsedHours ? (
+                        <div className="space-y-0.5">
+                          {DAY_ORDER.map((dayKey) => {
+                            const d = parsedHours[dayKey];
+                            if (!d) return null;
+                            return (
+                              <div
+                                key={dayKey}
+                                className="flex justify-between text-slate-800"
+                              >
+                                <span className="text-slate-500">
+                                  {
+                                    DAY_LABELS[dayKey][
+                                      lang === "pl" ? "pl" : "en"
+                                    ]
+                                  }
+                                </span>
+                                <span className="font-bold">
+                                  {d.closed
+                                    ? lang === "pl"
+                                      ? "Zamknięte"
+                                      : "Closed"
+                                    : `${d.open} - ${d.close}`}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-slate-800 mt-0.5">
+                          {t("phoneHours")}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Side: Contact Form */}
             <div className="md:col-span-7">
               <div className="glass-panel p-6 rounded-2xl space-y-5">
                 <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2.5">
@@ -239,13 +254,17 @@ ${msg}
                         <label className="block text-xs font-bold text-slate-500 mb-1">
                           {t("contactEmail")} *
                         </label>
-                        {/* Made readOnly to ensure the message is tied to the verified logged-in account */}
                         <input
                           type="email"
                           required
-                          readOnly
+                          readOnly={!!currentUser}
                           value={email}
-                          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 text-sm cursor-not-allowed"
+                          onChange={(e) => setEmail(e.target.value)}
+                          className={`w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-red ${
+                            currentUser
+                              ? "bg-slate-50 text-slate-600 cursor-not-allowed"
+                              : "bg-white text-slate-800"
+                          }`}
                         />
                       </div>
                     </div>

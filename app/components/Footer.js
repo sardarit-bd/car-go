@@ -13,6 +13,8 @@ import {
   Phone,
   Send,
   Globe,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -23,6 +25,9 @@ export default function Footer() {
   const [formEmail, setFormEmail] = useState("");
   const [formMsg, setFormMsg] = useState("");
   const [sent, setSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState("");
 
   const getContact = (type) => cmsContacts.find((c) => c.type === type);
   const emailContact = getContact("EMAIL");
@@ -39,9 +44,63 @@ export default function Footer() {
     return Globe;
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formName.trim()) {
+      newErrors.name =
+        lang === "pl" ? "Imię jest wymagane" : "Name is required";
+    }
+
+    if (!formEmail.trim()) {
+      newErrors.email =
+        lang === "pl" ? "Adres e-mail jest wymagany" : "Email is required";
+    } else if (!emailPattern.test(formEmail.trim())) {
+      newErrors.email =
+        lang === "pl"
+          ? "Podaj prawidłowy adres e-mail"
+          : "Enter a valid email address";
+    }
+
+    if (!formMsg.trim()) {
+      newErrors.message =
+        lang === "pl" ? "Wiadomość jest wymagana" : "Message is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formName && formEmail && formMsg) {
+    setFormError("");
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+      const response = await fetch(`${API_URL}/api/contacts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formName,
+          email: formEmail,
+          message: formMsg,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API Error: ${response.status}`);
+      }
+
       logEmail({
         id: "contact_" + Math.random().toString(36).substr(2, 9),
         to: emailContact ? emailContact.value : "reservations@car-go.pl",
@@ -60,7 +119,17 @@ ${formMsg}
       setFormName("");
       setFormEmail("");
       setFormMsg("");
+      setErrors({});
       setTimeout(() => setSent(false), 5000);
+    } catch (error) {
+      console.error("Error submitting footer contact form:", error);
+      setFormError(
+        lang === "pl"
+          ? `Wystąpił błąd: ${error.message}. Spróbuj ponownie.`
+          : `An error occurred: ${error.message}. Please try again.`,
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -292,47 +361,96 @@ ${formMsg}
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">
             {t("contactFormTitle")}
           </h4>
-          <form onSubmit={handleSubmit} className="space-y-2.5">
+
+          {formError && (
+            <div className="flex items-start gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded text-[11px] text-red-400 font-semibold">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              <span>{formError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} noValidate className="space-y-2.5">
             <div>
               <input
                 type="text"
-                required
                 placeholder={t("contactName")}
                 value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
+                onChange={(e) => {
+                  setFormName(e.target.value);
+                  if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+                }}
+                className={`w-full px-3 py-1.5 bg-brand-accent/30 border rounded focus:outline-none text-xs text-white placeholder-gray-500 ${
+                  errors.name
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-600 focus:border-brand-red"
+                }`}
               />
+              {errors.name && (
+                <p className="mt-1 text-[10px] text-red-400 font-semibold">
+                  {errors.name}
+                </p>
+              )}
             </div>
             <div>
               <input
                 type="email"
-                required
                 placeholder={t("contactEmail")}
                 value={formEmail}
-                onChange={(e) => setFormEmail(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500"
+                onChange={(e) => {
+                  setFormEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                }}
+                className={`w-full px-3 py-1.5 bg-brand-accent/30 border rounded focus:outline-none text-xs text-white placeholder-gray-500 ${
+                  errors.email
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-600 focus:border-brand-red"
+                }`}
               />
+              {errors.email && (
+                <p className="mt-1 text-[10px] text-red-400 font-semibold">
+                  {errors.email}
+                </p>
+              )}
             </div>
             <div>
               <textarea
                 rows={3}
-                required
                 placeholder={t("contactMessage")}
                 value={formMsg}
-                onChange={(e) => setFormMsg(e.target.value)}
-                className="w-full px-3 py-1.5 bg-brand-accent/30 border border-gray-600 focus:border-brand-red rounded focus:outline-none text-xs text-white placeholder-gray-500 resize-none"
+                onChange={(e) => {
+                  setFormMsg(e.target.value);
+                  if (errors.message)
+                    setErrors((prev) => ({ ...prev, message: "" }));
+                }}
+                className={`w-full px-3 py-1.5 bg-brand-accent/30 border rounded focus:outline-none text-xs text-white placeholder-gray-500 resize-none ${
+                  errors.message
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-600 focus:border-brand-red"
+                }`}
               />
+              {errors.message && (
+                <p className="mt-1 text-[10px] text-red-400 font-semibold">
+                  {errors.message}
+                </p>
+              )}
             </div>
             <button
               type="submit"
-              disabled={sent}
-              className={`w-full py-2 flex items-center justify-center space-x-1.5 text-xs font-bold rounded transition text-white ${sent ? "bg-green-600 cursor-default" : "bg-brand-red hover:bg-brand-red-hover"}`}
+              disabled={sent || isLoading}
+              className={`w-full py-2 flex items-center justify-center space-x-1.5 text-xs font-bold rounded transition text-white ${
+                sent
+                  ? "bg-green-600 cursor-default"
+                  : "bg-brand-red hover:bg-brand-red-hover disabled:opacity-70 disabled:cursor-not-allowed"
+              }`}
             >
               {sent ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
                   <span>{t("sentSuccess")}</span>
                 </>
+              ) : isLoading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <>
                   <Send className="w-3 h-3" />
@@ -346,7 +464,7 @@ ${formMsg}
 
       <div className="border-t border-brand-accent/40 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 container mx-auto space-y-2.5 sm:space-y-0">
         <div>
-          © {new Date().getFullYear()} CAR-GO.PL.{" "}
+          © {new Date().getFullYear()} CAR-GO.PL.
           {lang === "pl"
             ? "Wszelkie prawa zastrzeżone."
             : "All rights reserved."}
