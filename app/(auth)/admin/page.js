@@ -11,9 +11,7 @@ import BookingsTab from "@/app/components/admin/BookingsTab";
 import FleetTab from "@/app/components/admin/FleetTab";
 import LocationsTab from "@/app/components/admin/LocationsTab";
 import ReviewsTab from "@/app/components/admin/ReviewsTab";
-import ContentTab from "@/app/components/admin/ContentTab";
 import CmsTab from "@/app/components/admin/CmsTab"; //
-// import EmailsTab from "@/app/components/admin/EmailsTab";
 import BookingDetailsModal from "@/app/components/admin/BookingDetailsModal";
 import AddonsTab from "@/app/components/admin/AddonsTab";
 import PackagesTab from "@/app/components/admin/PackagesTab";

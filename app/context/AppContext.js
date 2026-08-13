@@ -714,7 +714,7 @@ export function AppProvider({ children }) {
           city: l.city || "",
           postalCode: l.postalCode || "",
           phone: l.phone || "",
-          minDays: 1,
+          minDays: l.minDays || 1,
           isCustomAddress: frontendId === "delivery",
         };
       });
@@ -990,6 +990,7 @@ export function AppProvider({ children }) {
         city: locationData.city,
         postalCode: locationData.postalCode,
         phone: locationData.phone,
+        minDays: locationData.minDays ? Number(locationData.minDays) : 1,
       });
       await fetchLocations();
       return { success: true };
@@ -1009,6 +1010,19 @@ export function AppProvider({ children }) {
       return { success: true };
     } catch (error) {
       console.error("Failed to delete location:", error);
+      return { success: false };
+    }
+  };
+
+  const updateLocationMinDays = async (locationId, minDays) => {
+    try {
+      await api.put(`/api/locations/${locationId}`, {
+        minDays: Number(minDays),
+      });
+      await fetchLocations();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to update location minimum days:", error);
       return { success: false };
     }
   };
@@ -1059,8 +1073,6 @@ export function AppProvider({ children }) {
         return b;
       });
       setBookings(updated);
-      // saveState("cargo_bookings", updated);
-
       const booking = updated.find((b) => b.id === bookingId);
       if (!booking) return;
 
@@ -1083,7 +1095,6 @@ export function AppProvider({ children }) {
       }
     } catch (error) {
       console.error("Failed to update booking status:", error);
-      // alert("Failed to update booking status.", error);
     }
   };
 
@@ -1166,14 +1177,11 @@ export function AppProvider({ children }) {
     const localBookings = localStorage.getItem("cargo_bookings");
     const localEmails = localStorage.getItem("cargo_emails");
     const localLang = localStorage.getItem("cargo_lang");
-    // const localUser = localStorage.getItem("user");
-    // const localAdmin = localStorage.getItem("cargo_admin");
     const localTranslations = localStorage.getItem("cargo_translations");
     const localCmsTexts = localStorage.getItem("cargo_cmstexts");
     const localCmsPages = localStorage.getItem("cargo_cms_pages");
     const localCmsContacts = localStorage.getItem("cargo_cms_contacts");
     const localCmsSocialMedia = localStorage.getItem("cargo_cms_social_media");
-    // NEW LOCAL STORAGE LOADS
     const localCmsHero = localStorage.getItem("cargo_cms_hero");
     const localCmsHeroFeatures = localStorage.getItem(
       "cargo_cms_hero_features",
@@ -1200,12 +1208,8 @@ export function AppProvider({ children }) {
     if (localBookings) setBookings(JSON.parse(localBookings));
     if (localEmails) setEmails(JSON.parse(localEmails));
     if (localLang) setLang(localLang);
-    // if (localUser) setCurrentUser(JSON.parse(localUser));
-    // if (localAdmin) setAdminUser(JSON.parse(localAdmin));
     if (localTranslations) setCmsTranslations(JSON.parse(localTranslations));
     if (localCmsTexts) setCmsTexts(JSON.parse(localCmsTexts));
-
-    // NEW CMS LOCAL STORAGE
     if (localCmsHero) setCmsHero(JSON.parse(localCmsHero));
     if (localCmsHeroFeatures)
       setCmsHeroFeatures(JSON.parse(localCmsHeroFeatures));
@@ -1424,6 +1428,7 @@ export function AppProvider({ children }) {
         deleteVehicle,
         addLocation,
         deleteLocation,
+        updateLocationMinDays,
         updatePackagePrice,
         updateAddonPrice,
         t,

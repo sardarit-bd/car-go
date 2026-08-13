@@ -30,9 +30,10 @@ export default function RentalTerms() {
 
         <div className="lg:col-span-8">
           <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-            {termsPage && termsPage.content ? (
+            {termsPage &&
+            (lang === "pl" ? termsPage.contentPl : termsPage.contentEn) ? (
               <div className="whitespace-pre-wrap text-sm text-slate-600 leading-relaxed font-medium">
-                {termsPage.content}
+                {lang === "pl" ? termsPage.contentPl : termsPage.contentEn}
               </div>
             ) : (
               <>

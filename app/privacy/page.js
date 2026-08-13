@@ -29,9 +29,10 @@ export default function PrivacyPolicy() {
 
         <div className="lg:col-span-8">
           <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-            {privacyPage && privacyPage.content ? (
+            {privacyPage &&
+            (lang === "pl" ? privacyPage.contentPl : privacyPage.contentEn) ? (
               <div className="whitespace-pre-wrap text-sm text-slate-600 leading-relaxed font-medium">
-                {privacyPage.content}
+                {lang === "pl" ? privacyPage.contentPl : privacyPage.contentEn}
               </div>
             ) : (
               <>

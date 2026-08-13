@@ -13,7 +13,13 @@ import {
 import * as Yup from "yup";
 
 export default function LocationsTab() {
-  const { isOwner, locations, addLocation, deleteLocation } = useApp();
+  const {
+    isOwner,
+    locations,
+    addLocation,
+    deleteLocation,
+    updateLocationMinDays,
+  } = useApp();
 
   const [formValues, setFormValues] = useState({
     name: "",
@@ -21,11 +27,12 @@ export default function LocationsTab() {
     city: "",
     postalCode: "",
     phone: "",
+    minDays: "1",
   });
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  // Yup Validation Schema
+  const [editingMinDays, setEditingMinDays] = useState({});
+  const [savingMinDays, setSavingMinDays] = useState(null);
   const locationSchema = Yup.object().shape({
     name: Yup.string().required("Nazwa jest wymagana"),
     address: Yup.string().required("Adres jest wymagany"),
@@ -34,12 +41,16 @@ export default function LocationsTab() {
       .matches(/^\d{2}-\d{3}$/, "Format kodu: XX-XXX")
       .required("Kod pocztowy jest wymagany"),
     phone: Yup.string().required("Telefon jest wymagany"),
+    minDays: Yup.number()
+      .typeError("Musi być liczbą")
+      .integer("Musi być liczbą całkowitą")
+      .min(1, "Minimum 1 dzień")
+      .required("Minimalna liczba dni jest wymagana"),
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
-    // Clear error on change
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -51,18 +62,16 @@ export default function LocationsTab() {
     setFormErrors({});
 
     try {
-      // Validate with Yup
       await locationSchema.validate(formValues, { abortEarly: false });
-
-      // Send to backend
       const result = await addLocation(formValues);
       if (result.success) {
         setFormValues({
           name: "",
           address: "",
           city: "",
-          country: "",
+          postalCode: "",
           phone: "",
+          minDays: "1",
         });
         alert("Lokalizacja dodana pomyślnie!");
       } else {
@@ -70,7 +79,6 @@ export default function LocationsTab() {
       }
     } catch (err) {
       if (err.inner) {
-        // Map Yup errors to state
         const errors = {};
         err.inner.forEach((e) => {
           errors[e.path] = e.message;
@@ -107,7 +115,6 @@ export default function LocationsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Add Location Form */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
           Dodaj Nowy Punkt Odbioru / Add Location
@@ -197,6 +204,29 @@ export default function LocationsTab() {
             )}
           </div>
 
+          <div className="md:col-span-2">
+            <label className="block mb-1.5">
+              Minimalny okres najmu (dni) / Min Rental Days *
+            </label>
+            <input
+              type="number"
+              name="minDays"
+              min="1"
+              placeholder="np. 3"
+              value={formValues.minDays}
+              onChange={handleChange}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.minDays ? "border-red-500" : "border-slate-200"}`}
+            />
+            {formErrors.minDays && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.minDays}
+              </p>
+            )}
+            <p className="text-[10px] text-slate-400 mt-1">
+              Ustaw 1, jeśli brak minimalnego okresu najmu.
+            </p>
+          </div>
+
           <div className="md:col-span-2 pt-2">
             <button
               type="submit"
@@ -209,7 +239,6 @@ export default function LocationsTab() {
         </form>
       </div>
 
-      {/* Locations List */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
           Zdefiniowane Lokalizacje ({locations.length})
@@ -247,6 +276,80 @@ export default function LocationsTab() {
                     </span>{" "}
                     {loc.phone || "Brak danych"}
                   </p>
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="font-semibold text-slate-500">
+                      Min. dni najmu:
+                    </span>
+                    {editingMinDays[loc.id] !== undefined ? (
+                      <>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editingMinDays[loc.id]}
+                          onChange={(e) =>
+                            setEditingMinDays((prev) => ({
+                              ...prev,
+                              [loc.id]: e.target.value,
+                            }))
+                          }
+                          className="w-16 px-2 py-1 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red text-xs"
+                        />
+                        <button
+                          type="button"
+                          disabled={savingMinDays === loc.id}
+                          onClick={async () => {
+                            setSavingMinDays(loc.id);
+                            const result = await updateLocationMinDays(
+                              loc.backendId || loc.id,
+                              editingMinDays[loc.id],
+                            );
+                            setSavingMinDays(null);
+                            if (result.success) {
+                              setEditingMinDays((prev) => {
+                                const next = { ...prev };
+                                delete next[loc.id];
+                                return next;
+                              });
+                            } else {
+                              alert("Błąd zapisu minimalnej liczby dni.");
+                            }
+                          }}
+                          className="text-[10px] font-bold text-brand-red hover:underline disabled:opacity-50"
+                        >
+                          {savingMinDays === loc.id ? "..." : "Zapisz"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingMinDays((prev) => {
+                              const next = { ...prev };
+                              delete next[loc.id];
+                              return next;
+                            })
+                          }
+                          className="text-[10px] font-bold text-slate-400 hover:underline"
+                        >
+                          Anuluj
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span>{loc.minDays || 1}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingMinDays((prev) => ({
+                              ...prev,
+                              [loc.id]: loc.minDays || 1,
+                            }))
+                          }
+                          className="text-[10px] font-bold text-brand-red hover:underline"
+                        >
+                          Edytuj
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 

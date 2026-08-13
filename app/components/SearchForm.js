@@ -6,7 +6,6 @@ import { useApp } from "@/app/context/AppContext";
 import {
   Calendar,
   MapPin,
-  Clock,
   AlertTriangle,
   ArrowRightLeft,
   Compass,
@@ -159,7 +158,6 @@ export default function SearchForm({ vertical = false, onSearch }) {
         onSearch(searchData);
       } else {
         setSearchParams(searchData);
-        // router.push("/checkout?step=1");
       }
     }
   };
@@ -208,7 +206,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           className={`relative grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16"}`}
         >
           <div className="relative">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className=" text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Compass className="w-4 h-4 text-brand-red" />
               <span>{t("pickupLocation")}</span>
             </label>
@@ -245,7 +243,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <MapPin className="w-4 h-4 text-slate-400" />
               <span>{t("returnLocation")}</span>
             </label>
@@ -273,7 +271,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           className={`grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-5"}`}
         >
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
               <span>{t("pickupDate")}</span>
             </label>
@@ -300,7 +298,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
               <span>{t("returnDate")}</span>
             </label>
@@ -317,7 +315,6 @@ export default function SearchForm({ vertical = false, onSearch }) {
                 onChange={(e) => setReturnTime(e.target.value)}
                 className="bg-transparent border-l border-slate-200 text-slate-800 px-2 py-3 text-xs font-semibold focus:outline-none cursor-pointer"
               >
-                {/* UPDATED: Use filtered options for return time */}
                 {getValidReturnTimeOptions().map((time) => (
                   <option key={time} value={time}>
                     {time}

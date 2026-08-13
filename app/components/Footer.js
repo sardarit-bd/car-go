@@ -11,6 +11,7 @@ import {
   Mail,
   MapPin,
   Phone,
+  Clock,
   Send,
   Globe,
   Loader2,
@@ -18,6 +19,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import {
+  parseHoursFromContacts,
+  formatPrimaryHours,
+} from "@/app/lib/workingHours";
 
 export default function Footer() {
   const { lang, t, logEmail, cmsContacts, cmsSocialMedia } = useApp();
@@ -33,6 +38,13 @@ export default function Footer() {
   const emailContact = getContact("EMAIL");
   const phoneContact = getContact("PHONE");
   const addressContact = getContact("ADDRESS");
+
+  const workingHours = parseHoursFromContacts(cmsContacts);
+  const hoursLabel = workingHours
+    ? formatPrimaryHours(workingHours, lang)
+    : lang === "pl"
+      ? "Pon-Pt: 8:00-22:00"
+      : "Mon-Fri: 8:00-22:00";
 
   const getSocialIcon = (platform) => {
     const p = platform.toLowerCase();
@@ -193,6 +205,10 @@ ${formMsg}
               <span>
                 {phoneContact ? phoneContact.value : "+48 789 200 100"}
               </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Clock className="w-4 h-4 text-gray-500" />
+              <span>{hoursLabel}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="w-4 h-4 text-gray-500" />
