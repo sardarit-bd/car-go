@@ -59,13 +59,24 @@ function CheckoutFlowContent() {
 
   useEffect(() => {
     if (preSelectedCarId) {
-      const match =
-        vehicles.find((v) => String(v.id) === String(preSelectedCarId)) ||
-        availableVehicles.find(
-          (v) => String(v.id) === String(preSelectedCarId),
-        );
+      // Try to find in available vehicles first
+      let match = availableVehicles.find(
+        (v) => String(v.id) === String(preSelectedCarId),
+      );
 
-      if (match) {
+      // If not found in available, try all vehicles
+      if (!match) {
+        match = vehicles.find((v) => String(v.id) === String(preSelectedCarId));
+      }
+
+      // If still not found, try to fetch it
+      if (!match) {
+        console.warn(
+          "Selected car not found in available or all vehicles:",
+          preSelectedCarId,
+        );
+        // You could fetch the car here if needed
+      } else {
         setSelectedCar(match);
       }
     }
