@@ -3,26 +3,26 @@
 import React, { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import { Save, Clock } from "lucide-react";
+import {
+  DAYS,
+  formatCompactHours,
+  hoursToSingleRange,
+  singleRangeToHours,
+} from "@/app/lib/workingHours";
+import { useApp } from "@/app/context/AppContext";
 
-const DAYS = [
-  { key: "mon", labelPl: "Poniedziałek", labelEn: "Monday" },
-  { key: "tue", labelPl: "Wtorek", labelEn: "Tuesday" },
-  { key: "wed", labelPl: "Środa", labelEn: "Wednesday" },
-  { key: "thu", labelPl: "Czwartek", labelEn: "Thursday" },
-  { key: "fri", labelPl: "Piątek", labelEn: "Friday" },
-  { key: "sat", labelPl: "Sobota", labelEn: "Saturday" },
-  { key: "sun", labelPl: "Niedziela", labelEn: "Sunday" },
-];
-
-const defaultHours = () =>
-  DAYS.reduce((acc, day) => {
-    acc[day.key] = { open: "08:00", close: "22:00", closed: false };
-    return acc;
-  }, {});
+const defaultRange = () => ({
+  startIdx: 0,
+  endIdx: 4,
+  open: "08:00",
+  close: "22:00",
+  closed: false,
+});
 
 export default function CmsWorkingHours() {
+  const { fetchCmsContacts } = useApp();
   const [contactId, setContactId] = useState(null);
-  const [hours, setHours] = useState(defaultHours());
+  const [range, setRange] = useState(defaultRange());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -40,10 +40,10 @@ export default function CmsWorkingHours() {
         setContactId(hoursEntry.id);
         try {
           const parsed = JSON.parse(hoursEntry.value);
-          setHours({ ...defaultHours(), ...parsed });
+          setRange(hoursToSingleRange(parsed));
         } catch (e) {
           console.error("Failed to parse working hours JSON:", e);
-          setHours(defaultHours());
+          setRange(defaultRange());
         }
       }
     } catch (err) {
@@ -51,43 +51,33 @@ export default function CmsWorkingHours() {
     }
   };
 
-  const handleTimeChange = (dayKey, field, val) => {
-    setHours((prev) => ({
-      ...prev,
-      [dayKey]: { ...prev[dayKey], [field]: val },
-    }));
+  const updateRange = (field, value) => {
+    setRange((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleClosedToggle = (dayKey) => {
-    setHours((prev) => ({
-      ...prev,
-      [dayKey]: { ...prev[dayKey], closed: !prev[dayKey].closed },
-    }));
-  };
+  const previewHours = singleRangeToHours(range);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    for (const day of DAYS) {
-      const d = hours[day.key];
-      if (!d.closed && d.open >= d.close) {
-        setError(
-          `Invalid hours for ${day.labelEn}: opening time must be before closing time.`,
-        );
-        return;
-      }
+    if (!range.closed && range.open >= range.close) {
+      setError("Opening time must be before closing time.");
+      return;
     }
 
     try {
       setLoading(true);
+      const hours = singleRangeToHours(range);
       await api.post("/api/admin/cms/contact", {
         type: "HOURS",
         value: JSON.stringify(hours),
       });
       setSuccess("Working hours updated!");
       fetchHours();
+
+      fetchCmsContacts();
     } catch (err) {
       console.error(err);
       setError("Failed to save working hours.");
@@ -115,60 +105,93 @@ export default function CmsWorkingHours() {
           Working Hours
         </h2>
 
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 text-[11px] font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <span className="text-slate-400 uppercase tracking-wider">
+            Preview:
+          </span>
+          <span>PL: {formatCompactHours(previewHours, "pl")}</span>
+          <span>EN: {formatCompactHours(previewHours, "en")}</span>
+        </div>
+
         <form onSubmit={handleSave} className="space-y-3">
-          {DAYS.map((day) => {
-            const d = hours[day.key];
-            return (
-              <div
-                key={day.key}
-                className="grid grid-cols-1 sm:grid-cols-[140px_1fr_1fr_auto] gap-3 items-center p-3 bg-white border border-slate-200 rounded-lg"
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-3 items-center p-3 bg-white border border-slate-200 rounded-lg">
+            <div>
+              <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
+                From Day
+              </label>
+              <select
+                value={range.startIdx}
+                onChange={(e) =>
+                  updateRange("startIdx", Number(e.target.value))
+                }
+                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red"
               >
-                <span className="text-xs font-bold text-slate-700">
-                  {day.labelPl} / {day.labelEn}
-                </span>
+                {DAYS.map((d, idx) => (
+                  <option key={d.key} value={idx}>
+                    {d.labelEn}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                <div>
-                  <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
-                    Open
-                  </label>
-                  <input
-                    type="time"
-                    value={d.open}
-                    disabled={d.closed}
-                    onChange={(e) =>
-                      handleTimeChange(day.key, "open", e.target.value)
-                    }
-                    className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red disabled:bg-slate-50 disabled:text-slate-300"
-                  />
-                </div>
+            <div>
+              <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
+                To Day
+              </label>
+              <select
+                value={range.endIdx}
+                onChange={(e) => updateRange("endIdx", Number(e.target.value))}
+                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red"
+              >
+                {DAYS.map((d, idx) => (
+                  <option key={d.key} value={idx}>
+                    {d.labelEn}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                <div>
-                  <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
-                    Close
-                  </label>
-                  <input
-                    type="time"
-                    value={d.close}
-                    disabled={d.closed}
-                    onChange={(e) =>
-                      handleTimeChange(day.key, "close", e.target.value)
-                    }
-                    className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red disabled:bg-slate-50 disabled:text-slate-300"
-                  />
-                </div>
+            <div>
+              <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
+                Open
+              </label>
+              <input
+                type="time"
+                value={range.open}
+                disabled={range.closed}
+                onChange={(e) => updateRange("open", e.target.value)}
+                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red disabled:bg-slate-50 disabled:text-slate-300"
+              />
+            </div>
 
-                <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={d.closed}
-                    onChange={() => handleClosedToggle(day.key)}
-                    className="w-3.5 h-3.5"
-                  />
-                  Closed
-                </label>
-              </div>
-            );
-          })}
+            <div>
+              <label className="block mb-1 text-[10px] font-bold text-slate-400 uppercase">
+                Close
+              </label>
+              <input
+                type="time"
+                value={range.close}
+                disabled={range.closed}
+                onChange={(e) => updateRange("close", e.target.value)}
+                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 focus:outline-none focus:border-brand-red disabled:bg-slate-50 disabled:text-slate-300"
+              />
+            </div>
+
+            <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 cursor-pointer whitespace-nowrap">
+              <input
+                type="checkbox"
+                checked={range.closed}
+                onChange={(e) => updateRange("closed", e.target.checked)}
+                className="w-3.5 h-3.5"
+              />
+              Closed all week
+            </label>
+          </div>
+
+          <p className="text-[11px] text-slate-400 font-medium px-1">
+            Days outside this range are automatically shown as closed. Ranges
+            that wrap past Sunday (e.g. Friday to Monday) are supported.
+          </p>
 
           <div className="pt-2">
             <button

@@ -6,7 +6,6 @@ import { useApp } from "@/app/context/AppContext";
 import {
   Calendar,
   MapPin,
-  Clock,
   AlertTriangle,
   ArrowRightLeft,
   Compass,
@@ -21,6 +20,15 @@ export default function SearchForm({ vertical = false, onSearch }) {
     today.setDate(today.getDate() + offsetDays);
     return today.toISOString().split("T")[0];
   };
+
+  const getMinReturnDate = () => {
+    if (!pickupDate) return getTomorrowString(2);
+
+    const pickup = new Date(pickupDate);
+    pickup.setDate(pickup.getDate() + 2); // Minimum 2 days after pickup = 3 days inclusive
+    return pickup.toISOString().split("T")[0];
+  };
+
   console.log(locations[0]);
   const [pickupLocation, setPickupLocation] = useState("");
   const [returnLocation, setReturnLocation] = useState("");
@@ -67,10 +75,13 @@ export default function SearchForm({ vertical = false, onSearch }) {
 
   const calculateDays = () => {
     if (!pickupDate || !returnDate) return 0;
-    const start = new Date(`${pickupDate}T${pickupTime}`);
-    const end = new Date(`${returnDate}T${returnTime}`);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // Calculate inclusive calendar days
+    const start = new Date(pickupDate);
+    const end = new Date(returnDate);
+    const diffTime = end - start;
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
     return diffDays;
   };
 
@@ -84,12 +95,15 @@ export default function SearchForm({ vertical = false, onSearch }) {
 
     const start = new Date(`${pickupDate}T${pickupTime}`);
     const end = new Date(`${returnDate}T${returnTime}`);
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const pickupDay = new Date(`${pickupDate}T00:00`);
 
-    if (start <= new Date()) {
+    if (pickupDay < todayStart) {
       setValidationError(
         lang === "pl"
-          ? "Data odbioru musi być w przyszłości!"
-          : "Pickup date must be in the future!",
+          ? "Data odbioru nie może być w przeszłości!"
+          : "Pickup date cannot be in the past!",
       );
       return false;
     }
@@ -115,7 +129,13 @@ export default function SearchForm({ vertical = false, onSearch }) {
     const pickupMin = getMinDaysForLocationName(pickupLocation);
     const returnMin = getMinDaysForLocationName(returnLocation);
     const requiredMin = Math.max(pickupMin, returnMin);
-
+    console.log("Date Validation:", {
+      pickupDate,
+      returnDate,
+      calculatedDays: diffDays,
+      requiredMin,
+      isValid: diffDays >= requiredMin,
+    });
     if (diffDays < requiredMin) {
       const warningText = t("minDaysWarning").replace("{days}", requiredMin);
       setValidationError(warningText);
@@ -159,7 +179,6 @@ export default function SearchForm({ vertical = false, onSearch }) {
         onSearch(searchData);
       } else {
         setSearchParams(searchData);
-        // router.push("/checkout?step=1");
       }
     }
   };
@@ -208,7 +227,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           className={`relative grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12 sm:gap-x-16"}`}
         >
           <div className="relative">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className=" text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Compass className="w-4 h-4 text-brand-red" />
               <span>{t("pickupLocation")}</span>
             </label>
@@ -245,7 +264,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <MapPin className="w-4 h-4 text-slate-400" />
               <span>{t("returnLocation")}</span>
             </label>
@@ -273,7 +292,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           className={`grid ${vertical ? "grid-cols-1 gap-y-4" : "grid-cols-1 sm:grid-cols-2 gap-5"}`}
         >
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
               <span>{t("pickupDate")}</span>
             </label>
@@ -300,7 +319,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
               <span>{t("returnDate")}</span>
             </label>
@@ -308,7 +327,7 @@ export default function SearchForm({ vertical = false, onSearch }) {
               <input
                 type="date"
                 value={returnDate}
-                min={pickupDate || getTomorrowString(1)}
+                min={getMinReturnDate()}
                 onChange={(e) => setReturnDate(e.target.value)}
                 className="w-full bg-transparent text-slate-800 px-3 py-3 text-xs font-semibold focus:outline-none cursor-text"
               />
@@ -317,7 +336,6 @@ export default function SearchForm({ vertical = false, onSearch }) {
                 onChange={(e) => setReturnTime(e.target.value)}
                 className="bg-transparent border-l border-slate-200 text-slate-800 px-2 py-3 text-xs font-semibold focus:outline-none cursor-pointer"
               >
-                {/* UPDATED: Use filtered options for return time */}
                 {getValidReturnTimeOptions().map((time) => (
                   <option key={time} value={time}>
                     {time}

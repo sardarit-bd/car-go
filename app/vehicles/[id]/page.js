@@ -7,15 +7,13 @@ import VehicleDetailsHero from "@/app/components/vehicle-details/VehicleDetailsH
 import VehicleDetailsSpecs from "@/app/components/vehicle-details/VehicleDetailsSpecs";
 import VehicleDetailsActions from "@/app/components/vehicle-details/VehicleDetailsActions";
 import VehicleDetailsHeader from "@/app/components/vehicle-details/VehicleDetailsHeader";
-import SearchForm from "@/app/components/SearchForm"; // <-- ADDED
+import SearchForm from "@/app/components/SearchForm";
 
 export default function VehicleDetails() {
   const router = useRouter();
   const { id } = useParams();
-  const { lang, vehicles, t, setSearchParams } = useApp(); // <-- ADDED setSearchParams
-
+  const { lang, vehicles, t, setSearchParams } = useApp();
   const car = vehicles.find((v) => v.id === id);
-
   if (!car) {
     return (
       <div className="max-w-xl mx-auto text-center py-20 px-4">
@@ -32,27 +30,21 @@ export default function VehicleDetails() {
     );
   }
 
-  // <-- ADDED: Handles the SearchForm submission
   const handleSearch = (searchData) => {
     setSearchParams(searchData);
-    // Go to step 2 (Packages & Extras) since the car is already selected
+
     router.push(`/checkout?step=2&car=${car.id}`);
   };
 
   return (
     <div className="relative">
-      {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
-
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10 animate-fade-in">
-        {/* Header Section */}
         <div className="mb-10">
           <VehicleDetailsHeader car={{ ...car, lang }} t={t} />
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Image & Specs */}
           <div className="lg:col-span-7 space-y-6">
             <VehicleDetailsHero car={car} t={t} />
             <VehicleDetailsSpecs car={car} lang={lang} t={t} />
@@ -68,13 +60,9 @@ export default function VehicleDetails() {
             )}
           </div>
 
-          {/* Right Column: Search Form & Actions (Sticky on Desktop) */}
           <div className="lg:col-span-5 lg:sticky lg:top-36 space-y-6">
-            {/* ADDED: Search Form for Dates and Locations */}
             <SearchForm vertical={true} onSearch={handleSearch} />
-
             <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
-              {/* Price Summary */}
               <div className="pb-6 border-b border-slate-100">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">
                   {t("priceFrom")}
@@ -88,8 +76,6 @@ export default function VehicleDetails() {
                   </span>
                 </div>
               </div>
-
-              {/* Actions (Deposit & Guarantee Badges) */}
               <VehicleDetailsActions car={car} t={t} lang={lang} />
             </div>
           </div>

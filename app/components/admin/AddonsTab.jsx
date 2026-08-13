@@ -26,7 +26,7 @@ export default function AddonsTab() {
     price: "",
   });
   const [formErrors, setFormErrors] = useState({});
-  const [backendError, setBackendError] = useState(""); // Added: State for backend errors
+  const [backendError, setBackendError] = useState("");
 
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -60,7 +60,7 @@ export default function AddonsTab() {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
     if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: "" }));
-    if (backendError) setBackendError(""); // Clear backend error when user types
+    if (backendError) setBackendError("");
   };
 
   const handleImageChange = (e) => {
@@ -74,8 +74,8 @@ export default function AddonsTab() {
 
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
-    setBackendError(""); // Clear previous backend errors
-    setFormErrors({}); // Clear previous form errors
+    setBackendError("");
+    setFormErrors({});
 
     try {
       await addonSchema.validate(formValues, { abortEarly: false });
@@ -105,22 +105,19 @@ export default function AddonsTab() {
       await fetchAddons();
     } catch (err) {
       if (err.inner) {
-        // Frontend Yup validation error
         const errors = {};
         err.inner.forEach((e) => {
           errors[e.path] = e.message;
         });
         setFormErrors(errors);
       } else if (err.response && err.response.data) {
-        // Backend API error (validation, server error, etc.)
         const errorMsg =
           err.response.data.message ||
           err.response.data.error ||
           "Wystąpił błąd podczas zapisywania. Sprawdź dane i spróbuj ponownie.";
         setBackendError(errorMsg);
-        alert(errorMsg); // Fallback to ensure user sees it immediately
+        alert(errorMsg);
       } else {
-        // Network or unexpected error
         const errorMsg = "Błąd sieci. Sprawdź połączenie z serwerem.";
         setBackendError(errorMsg);
         alert(errorMsg);
@@ -182,7 +179,6 @@ export default function AddonsTab() {
             : "Dodaj Nowy Dodatek / Add Addon"}
         </h2>
 
-        {/* Added: Backend Error Banner */}
         {backendError && (
           <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-semibold">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import { createPortal } from "react-dom";
 import { X, MapPin, ShieldCheck, Sparkles, Download } from "lucide-react";
 import { useApp } from "@/app/context/AppContext";
 
@@ -64,24 +65,35 @@ export default function BookingDetailsModal({
     html2pdf().set(opt).from(element).save();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xl bg-white border border-slate-100 rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-scale-up">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-          <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
+  const modal = (
+    <div
+      className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center
+                 bg-slate-900/65 backdrop-blur-sm p-4 pt-20 sm:pt-4 overflow-y-auto"
+    >
+      <div
+        className="w-full max-w-xl bg-white border border-slate-100 rounded-2xl shadow-2xl
+                   flex flex-col max-h-[calc(100dvh-6rem)] sm:max-h-[90vh]
+                   my-auto animate-scale-up"
+      >
+        <div className="sticky top-0 z-10 flex justify-between items-center bg-white border-b border-slate-100 px-6 py-3 rounded-t-2xl">
+          <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider pr-2">
             {t("manage Booking: ")}
             {selectedBookingDetails.bookingReference ||
               selectedBookingDetails.id}
           </h3>
           <button
             onClick={() => setSelectedBookingDetails(null)}
-            className="p-2 hover:bg-slate-100 rounded transition"
+            className="p-2 hover:bg-slate-100 rounded transition shrink-0"
+            aria-label="Close"
           >
             <X className="w-4 h-4 text-slate-500" />
           </button>
         </div>
 
-        <div ref={contentRef} className="space-y-4 text-xs">
+        <div
+          ref={contentRef}
+          className="space-y-4 text-xs overflow-y-auto px-6 py-4"
+        >
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
               <p className="text-slate-400">{t("clientLabel")}</p>
@@ -213,7 +225,7 @@ export default function BookingDetailsModal({
           )}
         </div>
 
-        <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="border-t border-slate-100 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white rounded-b-2xl">
           <div className="flex items-center space-x-1">
             <span>{t("currentStatusLabel")}</span>
             <span className="font-extrabold text-slate-800 uppercase">
@@ -222,7 +234,6 @@ export default function BookingDetailsModal({
           </div>
 
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-            {/* NEW: Download PDF Button */}
             <button
               onClick={handleDownloadPDF}
               className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition flex items-center justify-center gap-2"
@@ -274,4 +285,8 @@ export default function BookingDetailsModal({
       </div>
     </div>
   );
+
+  return typeof document !== "undefined"
+    ? createPortal(modal, document.body)
+    : null;
 }

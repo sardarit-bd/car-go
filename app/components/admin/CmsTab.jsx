@@ -49,7 +49,6 @@ export default function CmsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Internal Sub-navigation */}
       <div className="glass-panel p-2 rounded-xl flex flex-wrap gap-2">
         {sections.map((sec) => {
           const Icon = sec.icon;
