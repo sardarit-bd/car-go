@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useApp } from "@/app/context/AppContext";
 import {
-  ShieldAlert,
   Trash2,
   Edit2,
   Plus,
@@ -15,14 +14,16 @@ import * as Yup from "yup";
 import api from "@/lib/axios";
 
 export default function AddonsTab() {
-  const { isOwner } = useApp();
+  const { isOwner, t, lang } = useApp();
   const [addons, setAddons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   const [formValues, setFormValues] = useState({
-    name: "",
-    description: "",
+    nameEn: "",
+    namePl: "",
+    descriptionEn: "",
+    descriptionPl: "",
     price: "",
   });
   const [formErrors, setFormErrors] = useState({});
@@ -31,14 +32,20 @@ export default function AddonsTab() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
-  const addonSchema = Yup.object().shape({
-    name: Yup.string().required("Nazwa jest wymagana"),
-    description: Yup.string().required("Opis jest wymagany"),
-    price: Yup.number()
-      .required("Cena jest wymagana")
-      .positive("Cena musi być dodatnia")
-      .typeError("Cena musi być liczbą"),
-  });
+  const addonSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        nameEn: Yup.string().required(t("addonNameRequired") + " (EN)"),
+        namePl: Yup.string().required(t("addonNameRequired") + " (PL)"),
+        descriptionEn: Yup.string().required(t("addonDescRequired") + " (EN)"),
+        descriptionPl: Yup.string().required(t("addonDescRequired") + " (PL)"),
+        price: Yup.number()
+          .required(t("addonPriceRequired"))
+          .positive(t("addonPricePositive"))
+          .typeError(t("addonPriceNumber")),
+      }),
+    [t, lang],
+  );
 
   const fetchAddons = async () => {
     setLoading(true);
@@ -81,8 +88,10 @@ export default function AddonsTab() {
       await addonSchema.validate(formValues, { abortEarly: false });
 
       const formData = new FormData();
-      formData.append("name", formValues.name);
-      formData.append("description", formValues.description);
+      formData.append("nameEn", formValues.nameEn);
+      formData.append("namePl", formValues.namePl);
+      formData.append("descriptionEn", formValues.descriptionEn);
+      formData.append("descriptionPl", formValues.descriptionPl);
       formData.append("price", parseFloat(formValues.price));
       if (imageFile) {
         formData.append("image", imageFile);
@@ -99,7 +108,13 @@ export default function AddonsTab() {
         });
       }
 
-      setFormValues({ name: "", description: "", price: "" });
+      setFormValues({
+        nameEn: "",
+        namePl: "",
+        descriptionEn: "",
+        descriptionPl: "",
+        price: "",
+      });
       setImageFile(null);
       setImagePreview(null);
       await fetchAddons();
@@ -114,11 +129,11 @@ export default function AddonsTab() {
         const errorMsg =
           err.response.data.message ||
           err.response.data.error ||
-          "Wystąpił błąd podczas zapisywania. Sprawdź dane i spróbuj ponownie.";
+          t("saveError");
         setBackendError(errorMsg);
         alert(errorMsg);
       } else {
-        const errorMsg = "Błąd sieci. Sprawdź połączenie z serwerem.";
+        const errorMsg = t("networkError");
         setBackendError(errorMsg);
         alert(errorMsg);
       }
@@ -128,8 +143,10 @@ export default function AddonsTab() {
   const handleEdit = (addon) => {
     setEditingId(addon.id);
     setFormValues({
-      name: addon.name,
-      description: addon.description,
+      nameEn: addon.nameEn || addon.name || "",
+      namePl: addon.namePl || addon.name || "",
+      descriptionEn: addon.descriptionEn || addon.description || "",
+      descriptionPl: addon.descriptionPl || addon.description || "",
       price: addon.price.toString(),
     });
     if (addon.image) {
@@ -146,7 +163,13 @@ export default function AddonsTab() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormValues({ name: "", description: "", price: "" });
+    setFormValues({
+      nameEn: "",
+      namePl: "",
+      descriptionEn: "",
+      descriptionPl: "",
+      price: "",
+    });
     setFormErrors({});
     setBackendError("");
     setImageFile(null);
@@ -154,12 +177,12 @@ export default function AddonsTab() {
   };
 
   const handleDelete = async (id) => {
-    if (confirm("Czy na pewno chcesz usunąć ten dodatek?")) {
+    if (confirm(t("addonDeleteConfirm"))) {
       try {
         await api.delete(`/api/addons/${id}`);
         await fetchAddons();
       } catch (err) {
-        const errorMsg = err.response?.data?.message || "Błąd usuwania.";
+        const errorMsg = err.response?.data?.message || t("addonDeleteError");
         setBackendError(errorMsg);
         alert(errorMsg);
       }
@@ -167,16 +190,16 @@ export default function AddonsTab() {
   };
 
   if (!isOwner)
-    return <div className="p-6 text-brand-red font-bold">Brak uprawnień.</div>;
+    return (
+      <div className="p-6 text-brand-red font-bold">{t("noPermission")}</div>
+    );
 
   return (
     <div className="space-y-6">
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider flex items-center gap-2">
           <Plus className="w-5 h-5" />
-          {editingId
-            ? "Edytuj Dodatek / Edit Addon"
-            : "Dodaj Nowy Dodatek / Add Addon"}
+          {editingId ? t("addonEditTitle") : t("addonAddTitle")}
         </h2>
 
         {backendError && (
@@ -188,37 +211,70 @@ export default function AddonsTab() {
 
         <form
           onSubmit={handleAddOrUpdate}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold text-slate-500"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-slate-500"
         >
           <div>
-            <label className="block mb-1.5">Nazwa / Name *</label>
+            <label className="block mb-1.5">{t("addonNameLabel")} (EN) *</label>
             <input
-              name="name"
-              value={formValues.name}
+              name="nameEn"
+              value={formValues.nameEn}
               onChange={handleChange}
               disabled={!!editingId}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.name ? "border-red-500" : "border-slate-200"} ${editingId ? "bg-slate-100" : ""}`}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.nameEn ? "border-red-500" : "border-slate-200"} ${editingId ? "bg-slate-100" : ""}`}
             />
-            {formErrors.name && (
-              <p className="text-red-500 text-[10px] mt-1">{formErrors.name}</p>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1.5">Opis / Description *</label>
-            <input
-              name="description"
-              value={formValues.description}
-              onChange={handleChange}
-              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.description ? "border-red-500" : "border-slate-200"}`}
-            />
-            {formErrors.description && (
+            {formErrors.nameEn && (
               <p className="text-red-500 text-[10px] mt-1">
-                {formErrors.description}
+                {formErrors.nameEn}
               </p>
             )}
           </div>
           <div>
-            <label className="block mb-1.5">Cena (PLN) / Price *</label>
+            <label className="block mb-1.5">{t("addonNameLabel")} (PL) *</label>
+            <input
+              name="namePl"
+              value={formValues.namePl}
+              onChange={handleChange}
+              disabled={!!editingId}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.namePl ? "border-red-500" : "border-slate-200"} ${editingId ? "bg-slate-100" : ""}`}
+            />
+            {formErrors.namePl && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.namePl}
+              </p>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block mb-1.5">{t("addonDescLabel")} (EN) *</label>
+            <input
+              name="descriptionEn"
+              value={formValues.descriptionEn}
+              onChange={handleChange}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.descriptionEn ? "border-red-500" : "border-slate-200"}`}
+            />
+            {formErrors.descriptionEn && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.descriptionEn}
+              </p>
+            )}
+          </div>
+          <div className="md:col-span-2">
+            <label className="block mb-1.5">{t("addonDescLabel")} (PL) *</label>
+            <input
+              name="descriptionPl"
+              value={formValues.descriptionPl}
+              onChange={handleChange}
+              className={`w-full px-3 py-2.5 bg-white border rounded text-slate-800 focus:outline-none focus:border-brand-red ${formErrors.descriptionPl ? "border-red-500" : "border-slate-200"}`}
+            />
+            {formErrors.descriptionPl && (
+              <p className="text-red-500 text-[10px] mt-1">
+                {formErrors.descriptionPl}
+              </p>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block mb-1.5">{t("addonPriceLabel")} *</label>
             <input
               name="price"
               type="number"
@@ -234,9 +290,9 @@ export default function AddonsTab() {
             )}
           </div>
 
-          <div className="md:col-span-3">
+          <div className="md:col-span-2">
             <label className="block mb-1.5">
-              Obrazek / Image (opcjonalnie)
+              {t("addonImageLabel")} ({t("optional")})
             </label>
             <div className="flex items-center gap-4">
               <input
@@ -257,12 +313,12 @@ export default function AddonsTab() {
             </div>
           </div>
 
-          <div className="md:col-span-3 flex gap-2 pt-2">
+          <div className="md:col-span-2 flex gap-2 pt-2">
             <button
               type="submit"
               className="flex-1 py-2.5 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded transition"
             >
-              {editingId ? "ZAKTUALIZUJ / UPDATE" : "DODAJ DODATEK / ADD ADDON"}
+              {editingId ? t("addonUpdateBtn") : t("addonAddBtn")}
             </button>
             {editingId && (
               <button
@@ -270,7 +326,7 @@ export default function AddonsTab() {
                 onClick={handleCancelEdit}
                 className="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded transition flex items-center gap-1"
               >
-                <X className="w-4 h-4" /> Anuluj
+                <X className="w-4 h-4" /> {t("addonCancelBtn")}
               </button>
             )}
           </div>
@@ -279,7 +335,7 @@ export default function AddonsTab() {
 
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <h2 className="text-base font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase tracking-wider">
-          Dostępne Dodatki ({addons.length})
+          {t("addonAvailableTitle")} ({addons.length})
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {addons.map((addon) => (
@@ -291,7 +347,7 @@ export default function AddonsTab() {
                 {addon.image ? (
                   <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${addon.image}`}
-                    alt={addon.name}
+                    alt={addon.nameEn}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -300,10 +356,14 @@ export default function AddonsTab() {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-black text-slate-800 truncate">
-                  {addon.name}
+                  {lang === "pl"
+                    ? addon.namePl || addon.name
+                    : addon.nameEn || addon.name}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                  {addon.description}
+                  {lang === "pl"
+                    ? addon.descriptionPl || addon.description
+                    : addon.descriptionEn || addon.description}
                 </p>
                 <p className="text-brand-red font-bold mt-2">
                   {parseFloat(addon.price).toFixed(2)} PLN

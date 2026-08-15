@@ -264,6 +264,50 @@ const initialTranslations = {
     confirmBtn: "ZATWIERDŹ",
     completeBtn: "ZAKOŃCZ",
     cancelBtn: "ANULUJ",
+    addonAddTitle: "Dodaj Nowy Dodatek",
+    addonEditTitle: "Edytuj Dodatek",
+    addonNameLabel: "Nazwa",
+    addonDescLabel: "Opis",
+    addonPriceLabel: "Cena (PLN)",
+    addonImageLabel: "Obrazek",
+    optional: "(opcjonalnie)",
+    addonAddBtn: "DODAJ DODATEK",
+    addonUpdateBtn: "ZAKTUALIZUJ",
+    addonCancelBtn: "Anuluj",
+    addonAvailableTitle: "Dostępne Dodatki",
+    addonNameRequired: "Nazwa jest wymagana",
+    addonDescRequired: "Opis jest wymagany",
+    addonPriceRequired: "Cena jest wymagana",
+    addonPricePositive: "Cena musi być dodatnia",
+    addonPriceNumber: "Cena musi być liczbą",
+    addonDeleteConfirm: "Czy na pewno chcesz usunąć ten dodatek?",
+    addonDeleteError: "Błąd usuwania.",
+    noPermission: "Brak uprawnień.",
+    saveError:
+      "Wystąpił błąd podczas zapisywania. Sprawdź dane i spróbuj ponownie.",
+    networkError: "Błąd sieci. Sprawdź połączenie z serwerem.",
+    packageAddTitle: "Dodaj Nowy Pakiet",
+    packageEditTitle: "Edytuj Pakiet",
+    packageNameLabel: "Nazwa Pakietu",
+    packageFeaturesLabel: "Cechy Pakietu",
+    packageFeaturesHint: "(każda w nowej linii)",
+    packagePriceLabel: "Cena za dzień (PLN)",
+    packageAddBtn: "DODAJ PAKIET",
+    packageUpdateBtn: "ZAKTUALIZUJ",
+    packageCancelBtn: "Anuluj",
+    packageListTitle: "Pakiety Ochrony",
+    pricePerDay: "/dzień",
+    packageNamePlaceholder: "np. Złoty Pakiet Ochrony",
+    packageFeaturesPlaceholder:
+      "Obniżony udział w szkodzie\nPomoc drogowa 24/7",
+    packageNameRequired: "Nazwa pakietu jest wymagana",
+    packageDescRequired: "Opis cech jest wymagany (każda cecha w nowej linii)",
+    packagePriceRequired: "Cena jest wymagana",
+    packagePriceMin: "Cena nie może być ujemna",
+    packagePriceNumber: "Cena musi być liczbą",
+    packageDeleteConfirm: "Czy na pewno chcesz usunąć ten pakiet?",
+    packageDeleteError:
+      "Błąd usuwania lub brak uprawnień do usuwania pakietów.",
   },
   en: {
     brandName: "CAR-GO",
@@ -420,6 +464,48 @@ const initialTranslations = {
     confirmBtn: "CONFIRM",
     completeBtn: "COMPLETE",
     cancelBtn: "CANCEL",
+    addonAddTitle: "Add New Addon",
+    addonEditTitle: "Edit Addon",
+    addonNameLabel: "Name",
+    addonDescLabel: "Description",
+    addonPriceLabel: "Price (PLN)",
+    addonImageLabel: "Image",
+    optional: "(optional)",
+    addonAddBtn: "ADD ADDON",
+    addonUpdateBtn: "UPDATE",
+    addonCancelBtn: "Cancel",
+    addonAvailableTitle: "Available Addons",
+    addonNameRequired: "Name is required",
+    addonDescRequired: "Description is required",
+    addonPriceRequired: "Price is required",
+    addonPricePositive: "Price must be positive",
+    addonPriceNumber: "Price must be a number",
+    addonDeleteConfirm: "Are you sure you want to delete this addon?",
+    addonDeleteError: "Delete error.",
+    noPermission: "No permission.",
+    saveError: "An error occurred while saving. Check the data and try again.",
+    networkError: "Network error. Check your connection to the server.",
+    packageAddTitle: "Add New Package",
+    packageEditTitle: "Edit Package",
+    packageNameLabel: "Package Name",
+    packageFeaturesLabel: "Features",
+    packageFeaturesHint: "(one per line)",
+    packagePriceLabel: "Price per day (PLN)",
+    packageAddBtn: "ADD PACKAGE",
+    packageUpdateBtn: "UPDATE",
+    packageCancelBtn: "Cancel",
+    packageListTitle: "Protection Packages",
+    pricePerDay: "/day",
+    packageNamePlaceholder: "e.g. Gold Protection Package",
+    packageFeaturesPlaceholder:
+      "Reduced damage excess\n24/7 Roadside Assistance",
+    packageNameRequired: "Package name is required",
+    packageDescRequired: "Features description is required (one per line)",
+    packagePriceRequired: "Price is required",
+    packagePriceMin: "Price cannot be negative",
+    packagePriceNumber: "Price must be a number",
+    packageDeleteConfirm: "Are you sure you want to delete this package?",
+    packageDeleteError: "Delete error or no permission to delete packages.",
   },
 };
 
@@ -753,17 +839,18 @@ export function AppProvider({ children }) {
       const backendPackages = response.data.data;
       const mapped = backendPackages.map((pkg) => {
         let frontendId = pkg.id;
-        const nameLower = pkg.name.toLowerCase();
+        const nameLower = (pkg.nameEn || pkg.name || "").toLowerCase();
         if (nameLower.includes("gold")) frontendId = "gold";
         else if (nameLower.includes("platinum")) frontendId = "platinum";
         else if (nameLower.includes("basic")) frontendId = "basic";
         return {
           id: frontendId,
           backendId: pkg.id,
-          name: pkg.name,
+          nameEn: pkg.nameEn || pkg.name,
+          namePl: pkg.namePl || pkg.name,
           pricePerDay: parseFloat(pkg.price),
-          featuresPl: pkg.description || [],
-          featuresEn: pkg.description || [],
+          featuresPl: pkg.descriptionPl || pkg.description || [],
+          featuresEn: pkg.descriptionEn || pkg.description || [],
         };
       });
       setPackages(mapped);
@@ -779,7 +866,7 @@ export function AppProvider({ children }) {
       const backendAddons = response.data.data;
       const mapped = backendAddons.map((addon) => {
         let frontendId = addon.id;
-        const nameLower = addon.name.toLowerCase();
+        const nameLower = (addon.nameEn || addon.name || "").toLowerCase();
         if (nameLower.includes("child")) frontendId = "child-seat";
         else if (nameLower.includes("booster")) frontendId = "booster";
         else if (nameLower.includes("gps")) frontendId = "gps";
@@ -787,11 +874,12 @@ export function AppProvider({ children }) {
         return {
           id: frontendId,
           backendId: addon.id,
-          name: addon.name,
+          nameEn: addon.nameEn || addon.name,
+          namePl: addon.namePl || addon.name,
           price: parseFloat(addon.price),
           isPerDay: true,
-          descriptionPl: addon.description,
-          descriptionEn: addon.description,
+          descriptionPl: addon.descriptionPl || addon.description,
+          descriptionEn: addon.descriptionEn || addon.description,
           image: addon.image,
         };
       });

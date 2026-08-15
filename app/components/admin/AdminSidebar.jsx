@@ -1,17 +1,11 @@
 "use client";
-
 import React from "react";
 import { useApp } from "@/app/context/AppContext";
 import {
   BookOpen,
   Car,
   MapPin,
-  Tag,
   MessageSquare,
-  Edit3,
-  Mail,
-  LogOut,
-  Shield,
   Layout,
   Blocks,
   Boxes,
@@ -19,13 +13,7 @@ import {
   Contact,
 } from "lucide-react";
 
-export default function AdminSidebar({
-  activeTab,
-  setActiveTab,
-  adminUser,
-  logoutAdmin,
-  router,
-}) {
+export default function AdminSidebar({ activeTab, setActiveTab }) {
   const { unreadContactCount } = useApp();
 
   return (
