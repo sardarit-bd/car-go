@@ -2,7 +2,7 @@
 
 import { Check, CheckCircle2, Package } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import { useApp } from "@/app/context/AppContext";
 export default function CheckoutStep2({
   packages,
   selectedPackage,
@@ -13,8 +13,8 @@ export default function CheckoutStep2({
   t,
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams(); // Added to preserve existing URL params
-
+  const searchParams = useSearchParams();
+  const { lang } = useApp();
   return (
     <div className="space-y-8">
       <div className="space-y-5">
@@ -41,23 +41,30 @@ export default function CheckoutStep2({
                 )}
                 <div className="space-y-4">
                   <h3 className="text-base font-black text-slate-900 uppercase">
-                    {pkg.name}
+                    <h3>{lang === "pl" ? pkg.namePl : pkg.nameEn}</h3>
                   </h3>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-black text-slate-900">
                       +PLN {pkg.pricePerDay}
                     </span>
                     <span className="text-xs text-slate-500 font-bold">
-                      /doba
+                      /{lang === "pl" ? "doba" : "day"}
                     </span>
                   </div>
                   <ul className="space-y-2 text-xs text-slate-600 leading-relaxed font-semibold pt-4 border-t border-slate-100">
-                    {(pkg.featuresPl || []).map((f, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-brand-red flex-shrink-0 mt-0.5" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
+                    {lang === "pl"
+                      ? (pkg.featuresPl || []).map((f, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <Check className="w-4 h-4 text-brand-red flex-shrink-0 mt-0.5" />
+                            <span>{f}</span>
+                          </li>
+                        ))
+                      : (pkg.featuresEn || []).map((f, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <Check className="w-4 h-4 text-brand-red flex-shrink-0 mt-0.5" />
+                            <span>{f}</span>
+                          </li>
+                        ))}
                   </ul>
                 </div>
               </div>
@@ -98,10 +105,12 @@ export default function CheckoutStep2({
 
                 <div className="space-y-1 text-left flex-1">
                   <p className="text-sm font-black text-slate-900">
-                    {add.name}
+                    <h3>{lang === "pl" ? add.namePl : add.nameEn}</h3>
                   </p>
                   <p className="text-xs text-slate-500 font-medium">
-                    {add.descriptionPl || add.description}
+                    <p>
+                      {lang === "pl" ? add.descriptionPl : add.descriptionEn}
+                    </p>
                   </p>
                   <p className="text-sm text-brand-red font-black pt-2">
                     PLN {add.price}
