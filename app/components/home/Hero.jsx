@@ -20,10 +20,6 @@ export default function Hero({ lang, getCmsText, t }) {
       "homeSubheader",
       "Zawsze na czas, zawsze pod Twój adres w rejonie Skarbimierza-Osiedle, Oławy, Brzegu i Grodkowa.",
     );
-  const displayFeatures = (cmsHeroFeatures || []).map((feature) => ({
-    title: lang === "pl" ? feature.titlePl : feature.titleEn,
-    description: lang === "pl" ? feature.descriptionPl : feature.descriptionEn,
-  }));
   const handleHeroSearch = (searchData) => {
     setSearchParams(searchData);
     router.push("/vehicles");
@@ -38,7 +34,7 @@ export default function Hero({ lang, getCmsText, t }) {
       <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           <div className="lg:col-span-5 space-y-8 text-center animate-slide-up flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
+            {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
@@ -46,7 +42,7 @@ export default function Hero({ lang, getCmsText, t }) {
               <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
                 {displayTagline}
               </span>
-            </div>
+            </div> */}
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-slate-900">
               {displayTitle}
