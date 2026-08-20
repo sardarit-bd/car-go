@@ -2,7 +2,6 @@
 
 import Hero from "@/app/components/home/Hero";
 import FleetPreview from "@/app/components/home/FleetPreview";
-import ServiceCallout from "@/app/components/home/ServiceCallout";
 import AboutCompany from "@/app/components/home/AboutCompany";
 import LongTermPromo from "@/app/components/home/LongTermPromo";
 import ReviewsSection from "@/app/components/home/ReviewsSection";
