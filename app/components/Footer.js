@@ -271,7 +271,7 @@ ${formMsg}
             {t("payments")}
           </h4>
           <div className="flex flex-wrap gap-2 items-center max-w-[240px]">
-            <div
+            {/* <div
               className="bg-white px-1 py-1 rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10"
               title="Google Pay"
             >
@@ -280,7 +280,7 @@ ${formMsg}
                 alt="Google Pay"
                 className="max-h-full max-w-full object-contain"
               />
-            </div>
+            </div> */}
             <div
               className="bg-white rounded px-1 py-0.5 flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10"
               title="Visa"
@@ -301,7 +301,7 @@ ${formMsg}
                 className="max-h-full max-w-full object-contain"
               />
             </div>
-            <div
+            {/* <div
               className="bg-white rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10"
               title="Autopay"
             >
@@ -310,7 +310,7 @@ ${formMsg}
                 alt="Autopay"
                 className="max-h-full max-w-full object-contain"
               />
-            </div>
+            </div> */}
             <div
               className="bg-white rounded flex items-center justify-center h-9 w-13 shadow-sm border border-slate-700/10"
               title="BLIK"
