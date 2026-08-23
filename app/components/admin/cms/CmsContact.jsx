@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import api from "@/lib/axios";
-import { Save } from "lucide-react";
-
-// Helper to get the correct HTML input type based on contact type
+import { Save, Building2, Receipt, MapPin } from "lucide-react";
 const getInputType = (type) => {
   if (type === "EMAIL") return "email";
   if (type === "PHONE") return "tel";
@@ -16,6 +14,9 @@ export default function CmsContact() {
     EMAIL: { id: null, value: "" },
     PHONE: { id: null, value: "" },
     ADDRESS: { id: null, value: "" },
+    COMPANY_NAME: { id: null, value: "" },
+    COMPANY_NIP: { id: null, value: "" },
+    COMPANY_ADDRESS: { id: null, value: "" },
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,6 +34,9 @@ export default function CmsContact() {
         EMAIL: { id: null, value: "" },
         PHONE: { id: null, value: "" },
         ADDRESS: { id: null, value: "" },
+        COMPANY_NAME: { id: null, value: "" },
+        COMPANY_NIP: { id: null, value: "" },
+        COMPANY_ADDRESS: { id: null, value: "" },
       };
       data.forEach((c) => {
         if (grouped[c.type]) {
@@ -53,12 +57,12 @@ export default function CmsContact() {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    // Validate all three fields before sending
     const emailVal = contacts.EMAIL.value;
     const phoneVal = contacts.PHONE.value;
     const addressVal = contacts.ADDRESS.value;
-
+    const companyNameVal = contacts.COMPANY_NAME.value;
+    const companyNipVal = contacts.COMPANY_NIP.value;
+    const companyAddressVal = contacts.COMPANY_ADDRESS.value;
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
       setError("Please enter a valid email address (e.g., info@example.com).");
       return;
@@ -68,20 +72,55 @@ export default function CmsContact() {
       return;
     }
     if (!addressVal) {
-      setError("Address is required.");
+      setError("Physical address is required.");
+      return;
+    }
+    if (companyNipVal && !/^[0-9]{10}$/.test(companyNipVal)) {
+      setError("NIP must be exactly 10 digits.");
       return;
     }
 
     try {
       setLoading(true);
-      await Promise.all([
+      const promises = [];
+      promises.push(
         api.post("/api/admin/cms/contact", { type: "EMAIL", value: emailVal }),
+      );
+      promises.push(
         api.post("/api/admin/cms/contact", { type: "PHONE", value: phoneVal }),
+      );
+      promises.push(
         api.post("/api/admin/cms/contact", {
           type: "ADDRESS",
           value: addressVal,
         }),
-      ]);
+      );
+      if (companyNameVal) {
+        promises.push(
+          api.post("/api/admin/cms/contact", {
+            type: "COMPANY_NAME",
+            value: companyNameVal,
+          }),
+        );
+      }
+      if (companyNipVal) {
+        promises.push(
+          api.post("/api/admin/cms/contact", {
+            type: "COMPANY_NIP",
+            value: companyNipVal,
+          }),
+        );
+      }
+      if (companyAddressVal) {
+        promises.push(
+          api.post("/api/admin/cms/contact", {
+            type: "COMPANY_ADDRESS",
+            value: companyAddressVal,
+          }),
+        );
+      }
+
+      await Promise.all(promises);
       setSuccess("Contact information updated!");
       fetchContacts();
     } catch (err) {
@@ -141,6 +180,58 @@ export default function CmsContact() {
               onChange={(e) => handleChange("ADDRESS", e.target.value)}
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red"
               placeholder="123 Main St, City"
+            />
+          </div>
+          <div className="border-t border-slate-200 pt-4 mt-2">
+            <h3 className="text-sm font-extrabold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-brand-red" />
+              Company Details
+            </h3>
+          </div>
+          <div>
+            <label className="mb-1 flex items-center gap-2">
+              <Building2 className="w-3.5 h-3.5 text-slate-400" />
+              Full Company Name
+            </label>
+            <input
+              type="text"
+              value={contacts.COMPANY_NAME.value}
+              onChange={(e) => handleChange("COMPANY_NAME", e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red"
+              placeholder="e.g., CAR-GO Sp. z o.o."
+            />
+          </div>
+          <div>
+            <label className="mb-1 flex items-center gap-2">
+              <Receipt className="w-3.5 h-3.5 text-slate-400" />
+              NIP Number (Tax ID)
+            </label>
+            <input
+              type="text"
+              maxLength={10}
+              value={contacts.COMPANY_NIP.value}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, "");
+                handleChange("COMPANY_NIP", val);
+              }}
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red"
+              placeholder="1234567890"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">
+              Enter exactly 10 digits
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+              Full Company Address
+            </label>
+            <textarea
+              rows={2}
+              value={contacts.COMPANY_ADDRESS.value}
+              onChange={(e) => handleChange("COMPANY_ADDRESS", e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-brand-red resize-none"
+              placeholder="e.g., ul. Przykładowa 1, 00-001 Warszawa"
             />
           </div>
           <div className="pt-2">

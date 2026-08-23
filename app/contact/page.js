@@ -1,7 +1,16 @@
 "use client";
 
 import { useApp } from "@/app/context/AppContext";
-import { Clock, Mail, MapPin, Phone, ShieldCheck, Loader2 } from "lucide-react";
+import {
+  Clock,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Loader2,
+  Building2,
+  Receipt,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -36,10 +45,17 @@ export default function Contact() {
   }, [currentUser]);
 
   const getContact = (type) => cmsContacts.find((c) => c.type === type);
+
+  // Existing contacts
   const emailContact = getContact("EMAIL");
   const phoneContact = getContact("PHONE");
   const addressContact = getContact("ADDRESS");
   const hoursContact = getContact("HOURS");
+
+  // NEW: Company details
+  const companyName = getContact("COMPANY_NAME")?.value;
+  const companyNip = getContact("COMPANY_NIP")?.value;
+  const companyAddress = getContact("COMPANY_ADDRESS")?.value;
 
   let parsedHours = null;
   if (hoursContact) {
@@ -61,14 +77,8 @@ export default function Contact() {
 
         const response = await fetch(`${API_URL}/api/contacts`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            message: msg,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message: msg }),
         });
 
         if (!response.ok) {
@@ -95,9 +105,7 @@ ${msg}
         setEmail(currentUser ? email : "");
         setMsg("");
 
-        setTimeout(() => {
-          setSent(false);
-        }, 5000);
+        setTimeout(() => setSent(false), 5000);
       } catch (error) {
         console.error("Error submitting contact form:", error);
         alert(
@@ -132,6 +140,51 @@ ${msg}
                 <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
                   Dane Wypożyczalni / Rental Info:
                 </h2>
+
+                {/* NEW: Company Details Display */}
+                {(companyName || companyNip || companyAddress) && (
+                  <div className="space-y-3 pb-3 border-b border-slate-100">
+                    {companyName && (
+                      <div className="flex items-start space-x-3.5">
+                        <Building2 className="w-5 h-5 text-brand-red flex-shrink-0" />
+                        <div>
+                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                            Nazwa firmy / Company Name
+                          </p>
+                          <p className="text-slate-800 font-extrabold mt-0.5">
+                            {companyName}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {companyNip && (
+                      <div className="flex items-start space-x-3.5">
+                        <Receipt className="w-5 h-5 text-brand-red flex-shrink-0" />
+                        <div>
+                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                            NIP / Tax ID
+                          </p>
+                          <p className="text-slate-800 font-extrabold mt-0.5">
+                            {companyNip}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {companyAddress && (
+                      <div className="flex items-start space-x-3.5">
+                        <MapPin className="w-5 h-5 text-brand-red flex-shrink-0" />
+                        <div>
+                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                            Adres siedziby / Registered Address
+                          </p>
+                          <p className="text-slate-800 font-extrabold mt-0.5 whitespace-pre-wrap">
+                            {companyAddress}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-4 text-xs font-semibold text-slate-600">
                   <div className="flex items-start space-x-3.5">
