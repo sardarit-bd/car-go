@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/app/context/AppContext";
-import { Mail, CheckCircle, Search } from "lucide-react";
+import {
+  Mail,
+  CheckCircle,
+  Search,
+  Building2,
+  Receipt,
+  Save,
+  MapPin,
+} from "lucide-react";
 import api from "@/lib/axios";
 
 export default function ContactTab() {
@@ -11,10 +19,14 @@ export default function ContactTab() {
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Pagination states
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [companyDetails, setCompanyDetails] = useState({
+    COMPANY_NAME: "",
+    COMPANY_NIP: "",
+    COMPANY_ADDRESS: "",
+  });
+  const [isSavingCompany, setIsSavingCompany] = useState(false);
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -36,7 +48,6 @@ export default function ContactTab() {
 
       setMessages(list);
 
-      // Handle pagination metadata
       const meta = res.data?.data || res.data;
       if (meta?.totalPages) setTotalPages(meta.totalPages);
     } catch (err) {
@@ -52,19 +63,69 @@ export default function ContactTab() {
     }
   };
 
+  const fetchCompanyDetails = async () => {
+    try {
+      const res = await api.get("/api/cms-contacts");
+      const contacts = res.data?.data || [];
+
+      const details = {
+        COMPANY_NAME: "",
+        COMPANY_NIP: "",
+        COMPANY_ADDRESS: "",
+      };
+      ``;
+      contacts.forEach((c) => {
+        if (details.hasOwnProperty(c.type)) {
+          details[c.type] = c.value;
+        }
+      });
+      setCompanyDetails(details);
+    } catch (err) {
+      console.error(
+        "Failed to fetch company details:",
+        err.response?.data || err.message,
+      );
+    }
+  };
+
   useEffect(() => {
     fetchMessages();
+    fetchCompanyDetails();
   }, [page, filterStatus, searchQuery]);
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
       await api.patch(`/api/contacts/${id}/status`, { status: newStatus });
-      await fetchMessages(); // Refresh list
-      await fetchUnreadContactCount(); // Refresh sidebar badge
+      await fetchMessages();
+      await fetchUnreadContactCount();
     } catch (err) {
       alert("Błąd aktualizacji statusu.");
     }
   };
+
+  const handleSaveCompanyDetails = async () => {
+    setIsSavingCompany(true);
+    try {
+      const promises = Object.entries(companyDetails).map(([type, value]) => {
+        if (value.trim() !== "") {
+          return api.post("/api/cms-contacts", { type, value });
+        }
+        return Promise.resolve();
+      });
+      await Promise.all(promises);
+      alert("Dane firmy zostały zapisane pomyślnie.");
+      await fetchCompanyDetails();
+    } catch (err) {
+      console.error(
+        "Failed to save company details:",
+        err.response?.data || err.message,
+      );
+      alert("Błąd zapisu danych firmy. Sprawdź poprawność NIP (10 cyfr).");
+    } finally {
+      setIsSavingCompany(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const styles = {
       PENDING: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -86,6 +147,90 @@ export default function ContactTab() {
 
   return (
     <div className="space-y-6">
+      {/* --- NEW: Company Details Section --- */}
+      <div className="glass-panel p-6 rounded-2xl space-y-4">
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
+          <Building2 className="w-5 h-5 text-brand-red" />
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider">
+            Dane Firmy / Company Details
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-500 mb-1">
+              Pełna nazwa firmy
+            </label>
+            <div className="relative">
+              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={companyDetails.COMPANY_NAME}
+                onChange={(e) =>
+                  setCompanyDetails({
+                    ...companyDetails,
+                    COMPANY_NAME: e.target.value,
+                  })
+                }
+                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-red"
+                placeholder="np. CAR-GO Sp. z o.o."
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 mb-1">
+              Numer NIP (10 cyfr)
+            </label>
+            <div className="relative">
+              <Receipt className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                maxLength={10}
+                value={companyDetails.COMPANY_NIP}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, "");
+                  setCompanyDetails({ ...companyDetails, COMPANY_NIP: val });
+                }}
+                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-red"
+                placeholder="np. 1234567890"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 mb-1">
+              Adres siedziby firmy
+            </label>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+              <textarea
+                rows={1}
+                value={companyDetails.COMPANY_ADDRESS}
+                onChange={(e) =>
+                  setCompanyDetails({
+                    ...companyDetails,
+                    COMPANY_ADDRESS: e.target.value,
+                  })
+                }
+                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-red resize-none"
+                placeholder="np. ul. Przykładowa 1, 00-001 Warszawa"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={handleSaveCompanyDetails}
+            disabled={isSavingCompany}
+            className="px-4 py-2 bg-brand-red hover:bg-brand-red-hover text-white text-xs font-bold rounded-lg transition flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            <Save className="w-4 h-4" />
+            {isSavingCompany ? "Zapisywanie..." : "Zapisz dane firmy"}
+          </button>
+        </div>
+      </div>
+
+      {/* --- Existing: Customer Messages Section --- */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -102,7 +247,7 @@ export default function ContactTab() {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  setPage(1); // Reset to page 1 when searching
+                  setPage(1);
                 }}
                 className="w-full sm:w-48 pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-red"
               />
@@ -111,7 +256,7 @@ export default function ContactTab() {
               value={filterStatus}
               onChange={(e) => {
                 setFilterStatus(e.target.value);
-                setPage(1); // Reset to page 1 when filtering
+                setPage(1);
               }}
               className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-red"
             >
@@ -193,7 +338,6 @@ export default function ContactTab() {
           )}
         </div>
 
-        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 pt-4 border-t border-slate-100">
             <button
