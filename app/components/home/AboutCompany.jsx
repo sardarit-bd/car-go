@@ -66,7 +66,7 @@ export default function AboutCompany({ lang, t }) {
       <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
         <div className="space-y-3">
           <div className="w-12 h-12 rounded-full border-2 border-brand-red/20"></div>
-          <div className="w-3 h-3 rounded-full bg-brand-red"></div>
+
           <div className="w-6 h-6 rounded-full border-2 border-slate-200"></div>
         </div>
       </div>
@@ -74,15 +74,15 @@ export default function AboutCompany({ lang, t }) {
       <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
         <div className="space-y-3 text-right">
           <div className="w-6 h-6 rounded-full border-2 border-slate-200 ml-auto"></div>
-          <div className="w-3 h-3 rounded-full bg-brand-red ml-auto"></div>
+          {/* <div className="w-3 h-3 rounded-full bg-brand-red ml-auto"></div> */}
           <div className="w-12 h-12 rounded-full border-2 border-brand-red/20 ml-auto"></div>
         </div>
       </div>
 
       <div className="px-4 sm:px-6 container mx-auto">
         <div className="text-center mb-12 sm:mb-16">
-          <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
-            <span className="text-brand-red">*</span> {displaySubtitle}
+          <span className="text-brand-red font-bold text-lg tracking-wide flex items-center justify-center gap-1 mb-3">
+            {displaySubtitle}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight max-w-3xl mx-auto">
             {displayTitle}
@@ -117,7 +117,7 @@ export default function AboutCompany({ lang, t }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute top-4 right-8 w-3 h-3 bg-brand-red rounded-full"></div>
+              {/* <div className="absolute top-4 right-8 w-3 h-3 bg-brand-red rounded-full"></div> */}
             </div>
           </div>
 

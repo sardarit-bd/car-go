@@ -33,8 +33,8 @@ export default function FAQSection({ t }) {
 
           <div className="p-8 sm:p-12 lg:p-16 order-1 lg:order-2">
             <div className="mb-10">
-              <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1 mb-3">
-                <span className="text-brand-red">*</span>
+              <span className="text-brand-red font-bold text-lg tracking-wide flex items-center gap-1 mb-3">
+                {/* <span className="text-brand-red">*</span> */}
                 {lang === "pl"
                   ? "Często zadawane pytania"
                   : "Frequently Asked Questions"}
@@ -45,7 +45,7 @@ export default function FAQSection({ t }) {
                   : "Everything you need to about our services"}
                 <br className="hidden sm:block" />
                 <span className="relative inline-block">
-                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-red rounded-full"></span>
+                  {/* <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-red rounded-full"></span> */}
                 </span>
               </h2>
             </div>
