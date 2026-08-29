@@ -58,9 +58,8 @@ export default function FleetPreview({ vehicles, t }) {
       <div className="absolute bottom-10 left-10 w-64 h-64 bg-slate-200/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 relative z-10">
-        <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
-          <span className="text-brand-red">*</span>{" "}
-          {t("fleetSubtitle") || "Our Fleet"}
+        <span className="text-brand-red font-bold text-lg tracking-wide flex items-center justify-center gap-1 mb-3">
+          {"Our Fleet"}
         </span>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
           {t("fleetTitle")}

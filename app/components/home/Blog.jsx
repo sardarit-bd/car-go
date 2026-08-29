@@ -91,15 +91,13 @@ export default function BlogSection({ lang, t }) {
 
       <div className="px-4 sm:px-6 container mx-auto relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <span className="text-brand-red font-bold text-sm tracking-wide flex items-center justify-center gap-1 mb-3">
-            <span className="text-brand-red">*</span> {atricalsTranslate}
-            <span className="text-brand-red">*</span>
+          <span className="text-brand-red font-bold text-lg tracking-wide flex items-center justify-center gap-1 mb-3">
+            {atricalsTranslate}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight">
             {sectionTitle[0]} <br className="hidden sm:block" />{" "}
             {sectionTitle[1]}
           </h2>
-          <div className="w-2 h-2 bg-brand-red rounded-full mx-auto mt-4"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">

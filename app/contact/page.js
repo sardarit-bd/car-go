@@ -137,18 +137,18 @@ ${msg}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-5 space-y-6">
               <div className="glass-panel p-6 rounded-2xl space-y-6">
-                <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
+                <h2 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
                   Dane Wypożyczalni / Rental Info:
                 </h2>
 
                 {/* NEW: Company Details Display */}
                 {(companyName || companyNip || companyAddress) && (
-                  <div className="space-y-3 pb-3 border-b border-slate-100">
+                  <div className="space-y-3 pb-3 border-b border-slate-100 text-xs">
                     {companyName && (
                       <div className="flex items-start space-x-3.5">
                         <Building2 className="w-5 h-5 text-brand-red flex-shrink-0" />
                         <div>
-                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                          <p className="text-slate-400 font-normal text-xs uppercase">
                             Nazwa firmy / Company Name
                           </p>
                           <p className="text-slate-800 font-extrabold mt-0.5">
@@ -161,7 +161,7 @@ ${msg}
                       <div className="flex items-start space-x-3.5">
                         <Receipt className="w-5 h-5 text-brand-red flex-shrink-0" />
                         <div>
-                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                          <p className="text-slate-400 font-normal text-xs uppercase">
                             NIP / Tax ID
                           </p>
                           <p className="text-slate-800 font-extrabold mt-0.5">
@@ -174,7 +174,7 @@ ${msg}
                       <div className="flex items-start space-x-3.5">
                         <MapPin className="w-5 h-5 text-brand-red flex-shrink-0" />
                         <div>
-                          <p className="text-slate-400 font-normal text-[10px] uppercase">
+                          <p className="text-slate-400 font-normal text-xs uppercase">
                             Adres siedziby / Registered Address
                           </p>
                           <p className="text-slate-800 font-extrabold mt-0.5 whitespace-pre-wrap">

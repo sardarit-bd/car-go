@@ -96,18 +96,12 @@ export default function LongTermPromo({ lang, getCmsText, t }) {
                 className="w-full h-full object-cover"
               />
             </div>
-
-            <div className="absolute top-[10%] right-[15%] text-brand-red text-4xl font-black z-30 select-none">
-              *
-            </div>
-            <div className="absolute top-[20%] right-[5%] w-2.5 h-2.5 bg-brand-red rounded-full z-30"></div>
           </div>
         </div>
 
         {/* Content Section */}
         <div className="space-y-6">
-          <span className="text-brand-red font-bold text-sm tracking-wide flex items-center gap-1">
-            <span className="text-brand-red">*</span>{" "}
+          <span className="text-brand-red font-bold text-lg tracking-wide flex items-center gap-1">
             {lang === "pl" ? "O nas" : "About us"}
           </span>
 
