@@ -1,12 +1,12 @@
 "use client";
 
-import { Car, MapPin, Headphones, ShieldCheck } from "lucide-react";
+import { Car, MapPin, Home, ShieldCheck, Headphones } from "lucide-react";
 import { useApp } from "@/app/context/AppContext";
 
 export default function AboutCompany({ lang, t }) {
   const { cmsWhyChooseUs, cmsWhyChooseUsFeatures } = useApp();
 
-  const icons = [Car, Headphones, MapPin, ShieldCheck];
+  const icons = [Car, Home, MapPin, ShieldCheck];
 
   const dynamicFeatures = (cmsWhyChooseUsFeatures || [])
     .filter((f) => f.isActive)

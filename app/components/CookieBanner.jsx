@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { X, Cookie, Settings, Check } from "lucide-react";
+import { useApp } from "@/app/context/AppContext";
 
 export default function CookieBanner() {
+  const { lang } = useApp();
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -13,7 +15,6 @@ export default function CookieBanner() {
   });
 
   useEffect(() => {
-    // Check if user has already made a choice
     const consent = localStorage.getItem("cookie_consent");
     if (!consent) {
       setShowBanner(true);
@@ -22,28 +23,17 @@ export default function CookieBanner() {
         const parsedConsent = JSON.parse(consent);
         setPreferences(parsedConsent);
       } catch (e) {
-        // If parsing fails (e.g., corrupted data), show banner again
         setShowBanner(true);
       }
     }
   }, []);
 
   const handleAcceptAll = () => {
-    const newPreferences = {
-      necessary: true,
-      analytics: true,
-      marketing: true,
-    };
-    saveConsent(newPreferences);
+    saveConsent({ necessary: true, analytics: true, marketing: true });
   };
 
   const handleRejectAll = () => {
-    const newPreferences = {
-      necessary: true,
-      analytics: false,
-      marketing: false,
-    };
-    saveConsent(newPreferences);
+    saveConsent({ necessary: true, analytics: false, marketing: false });
   };
 
   const handleSavePreferences = () => {
@@ -51,15 +41,13 @@ export default function CookieBanner() {
   };
 
   const saveConsent = (prefs) => {
-    // Save to localStorage for client-side checks
     localStorage.setItem("cookie_consent", JSON.stringify(prefs));
-    // Save to document.cookie for potential server-side middleware checks (1 year expiry)
     document.cookie = `cookie_consent=${JSON.stringify(prefs)}; path=/; max-age=31536000; SameSite=Lax`;
     setShowBanner(false);
   };
 
   const togglePreference = (key) => {
-    if (key === "necessary") return; // Necessary cookies cannot be disabled
+    if (key === "necessary") return;
     setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -69,26 +57,59 @@ export default function CookieBanner() {
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-slate-200 shadow-2xl md:p-6">
       <div className="max-w-6xl mx-auto">
         {!showPreferences ? (
-          // --- Default Banner View ---
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Cookie className="w-5 h-5 text-brand-red" />
                 <h3 className="text-lg font-semibold text-slate-900">
-                  We value your privacy
+                  {lang === "pl"
+                    ? "Cenimy Twoją prywatność"
+                    : "We value your privacy"}
                 </h3>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
-                We use cookies to enhance your browsing experience, serve
-                personalized content, and analyze our traffic. By clicking
-                "Accept All", you consent to our use of cookies. Read our{" "}
-                <a
-                  href="/privacy"
-                  className="text-brand-red hover:underline font-medium"
-                >
-                  Privacy & Cookie Policy
-                </a>{" "}
-                for more information.
+                {lang === "pl" ? (
+                  <>
+                    Używamy plików cookie, aby poprawić komfort przeglądania,
+                    dostosować treści i analizować ruch na stronie. Klikając
+                    "Zaakceptuj wszystkie", wyrażasz zgodę na ich użycie.
+                    Przeczytaj naszą{" "}
+                    <a
+                      href="/privacy"
+                      className="text-brand-red hover:underline font-medium"
+                    >
+                      Politykę Prywatności
+                    </a>{" "}
+                    oraz{" "}
+                    <a
+                      href="/cookie-policy"
+                      className="text-brand-red hover:underline font-medium"
+                    >
+                      Politykę Cookies
+                    </a>{" "}
+                    aby dowiedzieć się więcej.
+                  </>
+                ) : (
+                  <>
+                    We use cookies to enhance your browsing experience, serve
+                    personalized content, and analyze our traffic. By clicking
+                    "Accept All", you consent to our use of cookies. Read our{" "}
+                    <a
+                      href="/privacy"
+                      className="text-brand-red hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </a>{" "}
+                    and{" "}
+                    <a
+                      href="/cookie-policy"
+                      className="text-brand-red hover:underline font-medium"
+                    >
+                      Cookie Policy
+                    </a>{" "}
+                    for more information.
+                  </>
+                )}
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
@@ -97,31 +118,32 @@ export default function CookieBanner() {
                 className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-lg hover:bg-slate-200 transition-colors"
               >
                 <Settings className="w-4 h-4" />
-                Manage Preferences
+                {lang === "pl"
+                  ? "Zarządzaj preferencjami"
+                  : "Manage Preferences"}
               </button>
               <button
                 onClick={handleRejectAll}
                 className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
               >
-                Reject All
+                {lang === "pl" ? "Odrzuć wszystkie" : "Reject All"}
               </button>
               <button
                 onClick={handleAcceptAll}
                 className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-red rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Check className="w-4 h-4" />
-                Accept All
+                {lang === "pl" ? "Zaakceptuj wszystkie" : "Accept All"}
               </button>
             </div>
           </div>
         ) : (
-          // --- Expanded Preferences View ---
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Settings className="w-5 h-5 text-brand-red" />
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Cookie Preferences
+                  {lang === "pl" ? "Preferencje Cookies" : "Cookie Preferences"}
                 </h3>
               </div>
               <button
@@ -134,32 +156,36 @@ export default function CookieBanner() {
             </div>
 
             <div className="space-y-4">
-              {/* Necessary */}
               <div className="flex items-start justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-slate-900">
-                    Necessary Cookies
+                    {lang === "pl"
+                      ? "Niezbędne pliki cookie"
+                      : "Necessary Cookies"}
                   </h4>
                   <p className="text-sm text-slate-600 mt-1">
-                    Required for the website to function properly (e.g.,
-                    security, network management). These cannot be disabled.
+                    {lang === "pl"
+                      ? "Wymagane do prawidłowego działania strony (np. bezpieczeństwo, zarządzanie siecią). Nie można ich wyłączyć."
+                      : "Required for the website to function properly (e.g., security, network management). These cannot be disabled."}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                   <Check className="w-3 h-3" />
-                  Always Active
+                  {lang === "pl" ? "Zawsze aktywne" : "Always Active"}
                 </div>
               </div>
 
-              {/* Analytics */}
               <div className="flex items-start justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-slate-900">
-                    Analytics Cookies
+                    {lang === "pl"
+                      ? "Pliki cookie analityczne"
+                      : "Analytics Cookies"}
                   </h4>
                   <p className="text-sm text-slate-600 mt-1">
-                    Help us understand how visitors interact with our website by
-                    collecting and reporting information anonymously.
+                    {lang === "pl"
+                      ? "Pomagają nam zrozumieć, jak odwiedzający korzystają ze strony, poprzez anonimowe zbieranie i raportowanie informacji."
+                      : "Help us understand how visitors interact with our website by collecting and reporting information anonymously."}
                   </p>
                 </div>
                 <button
@@ -177,15 +203,17 @@ export default function CookieBanner() {
                 </button>
               </div>
 
-              {/* Marketing */}
               <div className="flex items-start justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-slate-900">
-                    Marketing Cookies
+                    {lang === "pl"
+                      ? "Pliki cookie marketingowe"
+                      : "Marketing Cookies"}
                   </h4>
                   <p className="text-sm text-slate-600 mt-1">
-                    Used to track visitors across websites to display relevant
-                    and engaging advertisements.
+                    {lang === "pl"
+                      ? "Używane do śledzenia odwiedzających na stronach internetowych w celu wyświetlania trafnych reklam."
+                      : "Used to track visitors across websites to display relevant and engaging advertisements."}
                   </p>
                 </div>
                 <button
@@ -209,13 +237,13 @@ export default function CookieBanner() {
                 onClick={() => setShowPreferences(false)}
                 className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
               >
-                Cancel
+                {lang === "pl" ? "Anuluj" : "Cancel"}
               </button>
               <button
                 onClick={handleSavePreferences}
                 className="px-4 py-2 text-sm font-medium text-white bg-brand-red rounded-lg hover:bg-red-700 transition-colors"
               >
-                Save Preferences
+                {lang === "pl" ? "Zapisz preferencje" : "Save Preferences"}
               </button>
             </div>
           </div>

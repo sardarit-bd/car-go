@@ -26,29 +26,15 @@ export default function Hero({ lang, getCmsText, t }) {
   };
 
   return (
-    <section className="relative min-h-[85vh] flex items-center px-4 sm:px-6 py-10 md:py-0 overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center px-4 sm:px-6 pt-28 pb-10 md:pt-32 md:pb-0 overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-red/5 rounded-full filter blur-[120px] -z-0 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-slate-200/40 rounded-full filter blur-[120px] -z-0 pointer-events-none" />
-
       <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           <div className="lg:col-span-5 space-y-8 text-center animate-slide-up flex flex-col items-center">
-            {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
-              </span>
-              <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
-                {displayTagline}
-              </span>
-            </div> */}
-
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-slate-900">
               {displayTitle}
-              {/* {lang !== "pl" && (
-                <span className="block text-brand-red mt-2">CAR GO</span>
-              )} */}
             </h1>
 
             <p className="text-base sm:text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
