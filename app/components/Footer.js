@@ -244,6 +244,14 @@ ${formMsg}
             </li>
             <li>
               <Link
+                href="/cookie-policy"
+                className="hover:text-brand-red transition"
+              >
+                {lang === "pl" ? "Polityka Cookies" : "Cookie Policy"}
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/my-reservations"
                 className="hover:text-brand-red transition"
               >
