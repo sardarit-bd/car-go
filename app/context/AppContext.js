@@ -283,6 +283,7 @@ const initialTranslations = {
     addonDeleteConfirm: "Czy na pewno chcesz usunąć ten dodatek?",
     addonDeleteError: "Błąd usuwania.",
     noPermission: "Brak uprawnień.",
+    Ourfleet: "Nasza flota",
     saveError:
       "Wystąpił błąd podczas zapisywania. Sprawdź dane i spróbuj ponownie.",
     networkError: "Błąd sieci. Sprawdź połączenie z serwerem.",
@@ -330,6 +331,7 @@ const initialTranslations = {
     pickupTime: "Pickup time",
     returnTime: "Return time",
     searchBtn: "BOOK VEHICLE",
+    Ourfleet: "Our Fleet",
     minDaysWarning:
       "For this location, the minimum rental period is {days} days!",
     requiredFields: "Please fill in all search fields.",

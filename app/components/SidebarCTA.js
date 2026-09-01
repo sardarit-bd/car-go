@@ -4,11 +4,25 @@ import React from "react";
 import Link from "next/link";
 import { useApp } from "@/app/context/AppContext";
 import { CheckCircle, Sparkles, Phone } from "lucide-react";
+import {
+  parseHoursFromContacts,
+  formatPrimaryHours,
+} from "@/app/lib/workingHours";
 
 export default function SidebarCTA() {
-  const { lang, t } = useApp();
+  const { lang, t, cmsContacts } = useApp();
 
   const marketingSlogans = [t("motto1"), t("motto2"), t("motto3"), t("motto4")];
+
+  const phoneContact = cmsContacts?.find((c) => c.type === "PHONE");
+  const phoneNumber = phoneContact ? phoneContact.value : "+48 789 200 100";
+
+  const workingHours = parseHoursFromContacts(cmsContacts);
+  const hoursLabel = workingHours
+    ? formatPrimaryHours(workingHours, lang)
+    : lang === "pl"
+      ? "Pon-Pt: 8:00-22:00"
+      : "Mon-Fri: 8:00-22:00";
 
   return (
     <div className="glass-panel border-slate-100 p-6 rounded-2xl glow-red shadow-xl bg-white/95 w-full space-y-6 relative overflow-hidden">
@@ -48,10 +62,10 @@ export default function SidebarCTA() {
         <div className="flex flex-col items-center space-y-1 text-[10px] text-slate-400 font-bold border-t border-slate-100 pt-4">
           <div className="flex items-center space-x-1.5">
             <Phone className="w-3.5 h-3.5 text-brand-red" />
-            <span className="text-slate-700 font-black">+48 789 200 100</span>
+            <span className="text-slate-700 font-black">{phoneNumber}</span>
           </div>
           <span className="text-[9px] font-semibold text-slate-450">
-            {t("phoneHours")}
+            {hoursLabel}
           </span>
         </div>
       </div>

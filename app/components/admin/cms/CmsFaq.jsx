@@ -37,7 +37,7 @@ export default function CmsFaq() {
   const fetchFaqs = async () => {
     try {
       const res = await api.get("/api/admin/cms/faq", {
-        params: { limit: 50 },
+        params: { limit: 15 },
       });
       setFaqs(res.data.data || res.data);
     } catch (err) {

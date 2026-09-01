@@ -33,13 +33,13 @@ export default function useVehicles(initialParams = {}) {
         brand: car.brand || "",
         model: car.model || "",
         class: car.class || "",
-        fuel: car.fuel || "Petrol",
+        fuel: car.fuelType || car.fuel || "Petrol",
         price: car.pricePerDay || car.price || 0,
         description: car.description || "",
         descriptionEn: car.descriptionEn || car.description || "",
         seats: car.seats || 0,
-        luggage: car.luggage || 0,
-        transmission: car.transmission || "Automatic",
+        luggage: car.trunkCapacity ?? car.luggage ?? 0,
+        transmission: car.transmissionType || car.transmission || "Automatic",
         highlights: car.highlights || [],
       }));
 

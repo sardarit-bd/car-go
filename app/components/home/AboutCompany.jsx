@@ -82,7 +82,7 @@ export default function AboutCompany({ lang, t }) {
       <div className="px-4 sm:px-6 container mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-brand-red font-bold text-lg tracking-wide flex items-center justify-center gap-1 mb-3">
-            {displaySubtitle}
+            {}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight max-w-3xl mx-auto">
             {displayTitle}

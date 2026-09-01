@@ -3,7 +3,7 @@
 import { ShieldCheck } from "lucide-react";
 
 export default function VehicleDetailsActions({ car, t, lang }) {
-  console.log("VehicleDetailsActions car:", car); // Debugging line
+  console.log("VehicleDetailsActions car:", car);
   return (
     <div className="space-y-4">
       {car?.highlights?.map((highlight, index) => (
@@ -15,7 +15,7 @@ export default function VehicleDetailsActions({ car, t, lang }) {
           <p className="text-sm text-emerald-900 font-bold leading-tight">
             {lang === "pl"
               ? "Nielimitowany przebieg oraz ubezpieczenie OC w cenie!"
-              : "Unlimited mileage and liability insurance included!"}
+              : { highlight }}
           </p>
         </div>
       ))}

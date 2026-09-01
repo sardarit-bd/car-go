@@ -2,7 +2,7 @@
 
 import { Briefcase, Settings, Users, Fuel, Cog } from "lucide-react";
 import Link from "next/link";
-
+import { useapp } from "../../../app/hooks/useVehicles";
 function renderCarSvg() {
   return (
     <svg
@@ -59,7 +59,7 @@ export default function FleetPreview({ vehicles, t }) {
 
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 relative z-10">
         <span className="text-brand-red font-bold text-lg tracking-wide flex items-center justify-center gap-1 mb-3">
-          {"Our Fleet"}
+          {t("Ourfleet")}
         </span>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
           {t("fleetTitle")}
