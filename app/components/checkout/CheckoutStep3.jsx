@@ -3,9 +3,10 @@
 import { CreditCard, User, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react"; // Added: useState for local validation
+import { useState } from "react";
 
 export default function CheckoutStep3({
+  lang,
   firstName,
   setFirstName,
   lastName,
@@ -39,11 +40,7 @@ export default function CheckoutStep3({
   t,
 }) {
   const router = useRouter();
-
-  // Added: State for frontend consent validation errors
   const [consentError, setConsentError] = useState("");
-
-  // Added: Handle "Select All" checkbox logic
   const handleSelectAll = (e) => {
     const isChecked = e.target.checked;
     setConsentPrivacy(isChecked);
@@ -52,25 +49,23 @@ export default function CheckoutStep3({
     setConsentMarketing(isChecked);
     if (isChecked) setConsentError("");
   };
-
-  // Added: Helper to clear error when individual mandatory checkboxes are clicked
   const clearErrorOnCheck = (setter, value) => {
     setter(value);
     if (consentError) setConsentError("");
   };
-
-  // Added: Wrapped submit handler for frontend validation
   const onFormSubmit = (e) => {
     console.log(e.target.value);
     if (!consentPrivacy || !consentTerms || !consentData) {
       setConsentError(
-        "Proszę zaakceptować wszystkie wymagane zgody / Please accept all required consents *",
+        lang === "pl"
+          ? "Proszę zaakceptować wszystkie wymagane zgody *"
+          : "Please accept all required consents *",
       );
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
       return;
     }
     setConsentError("");
-    handleSubmit(e); // Proceed to parent's submission logic
+    handleSubmit(e);
   };
 
   return (
@@ -78,8 +73,6 @@ export default function CheckoutStep3({
       <h2 className="text-2xl font-black text-slate-900 pb-3 border-b border-slate-200">
         {t("checkoutStep3")}
       </h2>
-
-      {/* Customer Details */}
       <div className="p-6 bg-white rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-sm">
         <div>
           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
@@ -143,8 +136,6 @@ export default function CheckoutStep3({
           />
         </div>
       </div>
-
-      {/* Invoice Section */}
       <div className="p-6 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
@@ -190,7 +181,7 @@ export default function CheckoutStep3({
               <input
                 type="text"
                 required={isInvoice}
-                placeholder="10-cyfrowy NIP"
+                placeholder={lang === "pl" ? "10-cyfrowy NIP" : "10-digit NIP"}
                 value={nip}
                 onChange={(e) => setNip(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-semibold focus:outline-none focus:border-brand-red focus:bg-white transition"
@@ -199,8 +190,6 @@ export default function CheckoutStep3({
           </div>
         )}
       </div>
-
-      {/* Payment Method */}
       <div className="p-6 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm">
         <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
           {t("paymentTitle")}
@@ -220,11 +209,9 @@ export default function CheckoutStep3({
               />
               <div>
                 <p className="text-sm font-bold text-slate-900">
-                  Płatność Online
+                  {lang === "pl" ? "Płatność Online" : "Online Payment"}
                 </p>
-                <p className="text-xs text-slate-500 font-medium">
-                  BLIK, Przelewy24, Autopay
-                </p>
+                <p className="text-xs text-slate-500 font-medium">Przelewy24</p>
               </div>
             </div>
           </div>
@@ -242,10 +229,12 @@ export default function CheckoutStep3({
               />
               <div>
                 <p className="text-sm font-bold text-slate-900">
-                  Płatność przy odbiorze
+                  {lang === "pl" ? "Płatność przy odbiorze" : "Pay at Pickup"}
                 </p>
                 <p className="text-xs text-slate-500 font-medium">
-                  Gotówka w punkcie wydań
+                  {lang === "pl"
+                    ? "Gotówka w punkcie wydań"
+                    : "Cash at pickup location"}
                 </p>
               </div>
             </div>
@@ -253,13 +242,11 @@ export default function CheckoutStep3({
         </div>
       </div>
 
-      {/* Consents */}
       <div className="p-6 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm">
         <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4">
           {t("consentsTitle")}
         </h3>
 
-        {/* Added: Frontend Validation Error Message Banner */}
         {consentError && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-bold flex items-center gap-2 animate-fade-in">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -268,7 +255,6 @@ export default function CheckoutStep3({
         )}
 
         <div className="space-y-3">
-          {/* Added: Select All Checkbox */}
           <label className="flex items-start gap-3 cursor-pointer py-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
             <input
               type="checkbox"
@@ -282,12 +268,11 @@ export default function CheckoutStep3({
               className="w-5 h-5 accent-brand-red mt-0.5 cursor-pointer rounded"
             />
             <span className="text-sm text-slate-900 font-black">
-              Zaznacz wszystko / Select All
+              {lang === "pl" ? "Zaznacz wszystko" : "Select All"}
             </span>
           </label>
 
           <div className="pl-2 space-y-3 border-l-2 border-slate-200 ml-2.5">
-            {/* Mandatory Consents */}
             <label className="flex items-start gap-3 cursor-pointer py-1">
               <input
                 type="checkbox"
@@ -299,13 +284,13 @@ export default function CheckoutStep3({
                 className="w-5 h-5 accent-brand-red mt-0.5 cursor-pointer rounded"
               />
               <span className="text-sm text-slate-700 font-semibold">
-                Akceptuję{" "}
+                {lang === "pl" ? "Akceptuję" : "I accept the"}{" "}
                 <Link
                   href="/privacy"
                   className="text-brand-red hover:underline font-bold"
                   target="_blank"
                 >
-                  Politykę Prywatności
+                  {lang === "pl" ? "Politykę Prywatności" : "Privacy Policy"}
                 </Link>{" "}
                 *
               </span>
@@ -321,13 +306,15 @@ export default function CheckoutStep3({
                 className="w-5 h-5 accent-brand-red mt-0.5 cursor-pointer rounded"
               />
               <span className="text-sm text-slate-700 font-semibold">
-                Akceptuję{" "}
+                {lang === "pl" ? "Akceptuję" : "I accept the"}{" "}
                 <Link
                   href="/terms"
                   className="text-brand-red hover:underline font-bold"
                   target="_blank"
                 >
-                  Regulamin Wypożyczalni
+                  {lang === "pl"
+                    ? "Regulamin Wypożyczalni"
+                    : "Rental Terms & Conditions"}
                 </Link>{" "}
                 *
               </span>
@@ -347,7 +334,6 @@ export default function CheckoutStep3({
               </span>
             </label>
 
-            {/* Optional Consent */}
             <label className="flex items-start gap-3 cursor-pointer py-2 border-t border-slate-100 pt-4 mt-2">
               <input
                 type="checkbox"
@@ -365,7 +351,6 @@ export default function CheckoutStep3({
         </div>
       </div>
 
-      {/* Submit Button */}
       <button
         type="submit"
         disabled={isSubmitting}
@@ -374,10 +359,12 @@ export default function CheckoutStep3({
         {isSubmitting ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Przetwarzanie...
+            {lang === "pl" ? "Przetwarzanie..." : "Processing..."}
           </>
+        ) : lang === "pl" ? (
+          `${t("reserveBtn")} (POTWIERDŹ REZERWACJĘ)`
         ) : (
-          `${t("reserveBtn")} (POTWIERDŹ REZERWACJĘ / SUBMIT BOOKING)`
+          `${t("reserveBtn")} (SUBMIT BOOKING)`
         )}
       </button>
     </form>

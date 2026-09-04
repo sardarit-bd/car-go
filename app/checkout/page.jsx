@@ -59,23 +59,17 @@ function CheckoutFlowContent() {
 
   useEffect(() => {
     if (preSelectedCarId) {
-      // Try to find in available vehicles first
       let match = availableVehicles.find(
         (v) => String(v.id) === String(preSelectedCarId),
       );
-
-      // If not found in available, try all vehicles
       if (!match) {
         match = vehicles.find((v) => String(v.id) === String(preSelectedCarId));
       }
-
-      // If still not found, try to fetch it
       if (!match) {
         console.warn(
           "Selected car not found in available or all vehicles:",
           preSelectedCarId,
         );
-        // You could fetch the car here if needed
       } else {
         setSelectedCar(match);
       }
@@ -213,23 +207,17 @@ function CheckoutFlowContent() {
 
     const findLocationBackendId = (searchValue) => {
       if (!searchValue) return null;
-
-      // 1. Direct match (id, backendId, or exact name)
       let loc = locations.find(
         (l) =>
           String(l.id) === String(searchValue) ||
           String(l.backendId) === String(searchValue) ||
           l.name === searchValue,
       );
-
-      // 2. Case-insensitive name match
       if (!loc) {
         loc = locations.find(
           (l) => l.name.toLowerCase() === String(searchValue).toLowerCase(),
         );
       }
-
-      // 3. Custom address fallback: if the search value indicates custom delivery, find the delivery location
       if (
         !loc &&
         (String(searchValue).toLowerCase().includes("dostawa") ||
@@ -361,6 +349,25 @@ function CheckoutFlowContent() {
       );
     }
   };
+  const handleP24Payment = async () => {
+    if (!createdBooking) return;
+    try {
+      const response = await api.post(
+        `/api/p24/checkout-session/${createdBooking.id}`,
+      );
+      const { url } = response.data.data;
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error("Failed to create P24 transaction:", error);
+      alert(
+        lang === "pl"
+          ? "Nie udało się zainicjować płatności Przelewy24."
+          : "Failed to initiate Przelewy24 payment. Please try again.",
+      );
+    }
+  };
   useEffect(() => {
     let pickupLoc = locations.find(
       (l) =>
@@ -401,6 +408,7 @@ function CheckoutFlowContent() {
             )}
             {step === 3 && selectedCar && (
               <CheckoutStep3
+                lang={lang}
                 firstName={firstName}
                 setFirstName={setFirstName}
                 lastName={lastName}
@@ -439,6 +447,7 @@ function CheckoutFlowContent() {
                 createdBooking={createdBooking}
                 paymentCompleted={paymentCompleted}
                 handleSimulatePayment={handleSimulatePayment}
+                handleP24Payment={handleP24Payment}
                 t={t}
               />
             )}

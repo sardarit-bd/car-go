@@ -2,13 +2,12 @@
 
 import { CheckCircle2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
-// REMOVED: import { t } from "@/app/context/AppContext";
-// (This was crashing the component because 't' is not exported from the context file)
 
 export default function CheckoutStep4({
   createdBooking,
   paymentCompleted,
   handleSimulatePayment,
+  handleP24Payment,
   t,
 }) {
   const router = useRouter();
@@ -49,12 +48,20 @@ export default function CheckoutStep4({
                   ✅ Płatność zakończona pomyślnie!
                 </div>
               ) : (
-                <button
-                  onClick={handleSimulatePayment}
-                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-300"
-                >
-                  {t("confirmPayBtn")}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleSimulatePayment}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-300"
+                  >
+                    {t("confirmPayBtn")}
+                  </button>
+                  <button
+                    onClick={handleP24Payment}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-300"
+                  >
+                    Przelewy24
+                  </button>
+                </div>
               )}
             </div>
           ) : (
