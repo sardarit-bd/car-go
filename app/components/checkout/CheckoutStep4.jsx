@@ -49,12 +49,12 @@ export default function CheckoutStep4({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <button
+                  {/* <button
                     onClick={handleSimulatePayment}
                     className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-300"
                   >
                     {t("confirmPayBtn")}
-                  </button>
+                  </button> */}
                   <button
                     onClick={handleP24Payment}
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-300"

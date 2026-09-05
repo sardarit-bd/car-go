@@ -135,7 +135,7 @@ function OnlinePaymentSimulatorContent() {
   ];
   console.log("activeBooking : ", activeBooking);
   return (
-    <div className="max-w-lg mx-auto px-4 sm:px-6 py-12 pt-40! animate-fade-in">
+    <div className="max-w-lg mx-auto px-4 sm:px-6 py-12 pt-60! animate-fade-in">
       <div className="bg-white p-8 rounded-3xl space-y-6 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
         {/* Top Header */}
         <div className="text-center space-y-3 pb-6 border-b border-slate-100">
