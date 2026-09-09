@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
-
+import { useApp } from "@/app/context/AppContext";
 export default function ReviewCard({ rev }) {
+  const { t } = useApp();
   return (
     <div className="p-5 glass-panel rounded-xl flex flex-col justify-between space-y-4 shadow-sm border border-slate-100">
       <div className="space-y-2.5">
@@ -9,7 +10,9 @@ export default function ReviewCard({ rev }) {
             <Star
               key={i}
               className={`w-4 h-4 ${
-                i < rev.rating ? "text-yellow-500 fill-yellow-500" : "text-slate-200"
+                i < rev.rating
+                  ? "text-yellow-500 fill-yellow-500"
+                  : "text-slate-200"
               }`}
             />
           ))}
@@ -21,7 +24,11 @@ export default function ReviewCard({ rev }) {
 
       <div className="flex justify-between items-center text-[10px] text-slate-450 pt-3 border-t border-slate-100 font-bold">
         <span className="text-slate-500 font-extrabold">{rev.name}</span>
-        <span>Wynajęty pojazd: <strong className="text-slate-500">{rev.car}</strong></span>
+        <span>
+          {t("rentedVehicleLabel") || "Wynajęty pojazd:"}
+          <strong className="text-slate-500">{rev.car}</strong>
+        </span>
+
         <span>{rev.date}</span>
       </div>
     </div>
