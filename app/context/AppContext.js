@@ -309,6 +309,7 @@ const initialTranslations = {
     packageDeleteConfirm: "Czy na pewno chcesz usunąć ten pakiet?",
     packageDeleteError:
       "Błąd usuwania lub brak uprawnień do usuwania pakietów.",
+      rentedVehicleLabel: "Wynajęty pojazd:",
   },
   en: {
     brandName: "CAR-GO",
@@ -508,6 +509,7 @@ const initialTranslations = {
     packagePriceNumber: "Price must be a number",
     packageDeleteConfirm: "Are you sure you want to delete this package?",
     packageDeleteError: "Delete error or no permission to delete packages.",
+    rentedVehicleLabel: "Rented vehicle:",
   },
 };
 
