@@ -295,7 +295,7 @@ console.log("My confirmed bookings:", myBookings);
                         <span className="text-slate-800 text-sm font-extrabold">
                           {b.pricing.total === "Individual Price"
                             ? t("individualPriceText")
-                            : `PLN ${Number(b.pricing.total).toFixed(2)}`}
+                            : `PLN ${Number(b.pricing.total)?.toFixed(2)}`}
                         </span>
 
                         <button
@@ -365,7 +365,7 @@ console.log("My confirmed bookings:", myBookings);
                   <select
                     value={reviewRating}
                     onChange={(e) => setReviewRating(parseInt(e.target.value))}
-                    className="w-full bg-white border border-slate-200 text-slate-800 px-3 py-2 rounded focus:outline-none text-yellow-500"
+                    className="w-full bg-white border border-slate-200 text-slate-800 px-3 py-2 rounded focus:outline-none "
                     required
                   >
                     <option value={5}>★★★★★ (5/5)</option>
@@ -540,19 +540,19 @@ console.log("My confirmed bookings:", myBookings);
                       {t("daysUnit")}):
                     </span>
                     <span className="text-slate-800 print:text-black">
-                      PLN {selectedBooking.pricing.carCost.toFixed(2)}
+                      PLN {selectedBooking.pricing.carCost?.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t("protectionPackageCostLabel")}:</span>
                     <span className="text-slate-800 print:text-black">
-                      PLN {selectedBooking.pricing.packageCost.toFixed(2)}
+                      PLN {selectedBooking.pricing.packageCost?.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t("addonsCostLabel")}:</span>
                     <span className="text-slate-800 print:text-black">
-                      PLN {selectedBooking.pricing.addonsCost.toFixed(2)}
+                      PLN {selectedBooking.pricing.addonsCost?.toFixed(2)}
                     </span>
                   </div>
 
@@ -561,7 +561,7 @@ console.log("My confirmed bookings:", myBookings);
                     <span className="text-brand-red print:text-black">
                       {selectedBooking.pricing.total === "Individual Price"
                         ? t("individualPriceText")
-                        : `PLN ${selectedBooking.pricing.total.toFixed(2)}`}
+                        : `PLN ${selectedBooking.pricing.total?.toFixed(2)}`}
                     </span>
                   </div>
                   <div className="text-right text-[10px] text-slate-400">
