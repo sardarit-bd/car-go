@@ -829,11 +829,13 @@ export function AppProvider({ children }) {
   const fetchMyReservations = async () => {
     try {
       const response = await api.get("/api/reservations/");
-
-      const data = response.data.data || response.data;
-      setMyReservations(data);
+      console.log("Fetched my reservations response:", response.data);
+      const result = response.data.data || response.data;
+      console.log("Fetched my reservations:", result);
+      setMyReservations(result?.data || []);
     } catch (error) {
       console.error("Failed to fetch my reservations:", error);
+      setMyReservations([]);
     }
   };
 
