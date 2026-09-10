@@ -28,7 +28,7 @@ export default function CustomerPanel() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
-  const myBookings = myReservations.filter((b) => {
+  const myBookings = myReservations?.filter((b) => {
     const isSameUser =
       b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase();
     const isConfirmed = b?.status?.toLowerCase() === "COMPLETED";
