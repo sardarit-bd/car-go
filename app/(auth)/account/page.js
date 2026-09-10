@@ -31,7 +31,7 @@ export default function CustomerPanel() {
   const myBookings = myReservations?.filter((b) => {
     const isSameUser =
       b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase();
-    const isConfirmed = b?.status?.toLowerCase() === "COMPLETED";
+    const isConfirmed = b?.status?.toLowerCase() === "completed";
 
     return isSameUser && isConfirmed;
   });
