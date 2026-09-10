@@ -22,26 +22,20 @@ export default function CustomerPanel() {
   const [phone, setPhone] = useState(currentUser?.phone || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  // Reviews state
   const [reviewCar, setReviewCar] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
-
-  // Modals state
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
-
-  const myBookings = bookings.filter((b) => {
+  const myBookings = myReservations.filter((b) => {
     const isSameUser =
       b?.customer?.email?.toLowerCase() === currentUser?.email?.toLowerCase();
-    const isConfirmed = b?.status?.toLowerCase() === "confirmed";
+    const isConfirmed = b?.status?.toLowerCase() === "COMPLETED";
 
     return isSameUser && isConfirmed;
   });
-console.log("My confirmed bookings:", myReservations);
-  // Extract unique cars from confirmed bookings for the review dropdown
+console.log("My confirmed bookings:", myBookings);
   const bookedCars = myBookings.map((b) => `${b.car.brand} ${b.car.model}`);
   const uniqueBookedCars = [...new Set(bookedCars)];
 
@@ -103,12 +97,11 @@ console.log("My confirmed bookings:", myReservations);
   };
 
   if (!currentUser) {
-    return null; // Or redirect to login
+    return null; 
   }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 animate-fade-in print:bg-white print:text-black">
-      {/* Header Info */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-6 gap-4 print:hidden">
         <div>
           <h1 className="text-3xl font-black text-slate-800 uppercase">
@@ -132,7 +125,6 @@ console.log("My confirmed bookings:", myReservations);
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
-        {/* Left Side: Profile Information Form */}
         <div className="lg:col-span-5 space-y-6 print:hidden">
           <div className="glass-panel p-6 rounded-2xl space-y-5">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5">
@@ -182,7 +174,7 @@ console.log("My confirmed bookings:", myReservations);
               </div>
 
               <div>
-                <label className="block mb-1.5 flex items-center space-x-1">
+                <label className="block mb-1.5 items-center space-x-1">
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
                   <span>{t("phone")}</span>
                 </label>
@@ -228,9 +220,8 @@ console.log("My confirmed bookings:", myReservations);
           </div>
         </div>
 
-        {/* Right Side: Reservation History */}
         <div className="lg:col-span-7 space-y-6 print:w-full">
-          {/* Reservation List */}
+
           <div className="glass-panel p-6 rounded-2xl space-y-5 print:border-none print:bg-white print:text-black">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2.5 print:text-black print:border-black">
               {t("bookingsHistoryTitle")}
