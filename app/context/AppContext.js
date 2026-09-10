@@ -828,7 +828,7 @@ export function AppProvider({ children }) {
 
   const fetchMyReservations = async () => {
     try {
-      const response = await api.get("/api/reservations/myrevertion");
+      const response = await api.get("/api/reservations/");
 
       const data = response.data.data || response.data;
       setMyReservations(data);
@@ -901,6 +901,7 @@ export function AppProvider({ children }) {
       const backendBookings = result?.data || [];
       const mapped = backendBookings.map(mapBooking);
       setBookings(mapped);
+      console.log("Fetched bookings:", result);
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
     }

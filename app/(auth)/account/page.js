@@ -40,7 +40,7 @@ export default function CustomerPanel() {
 
     return isSameUser && isConfirmed;
   });
-
+console.log("My confirmed bookings:", myReservations);
   // Extract unique cars from confirmed bookings for the review dropdown
   const bookedCars = myBookings.map((b) => `${b.car.brand} ${b.car.model}`);
   const uniqueBookedCars = [...new Set(bookedCars)];
