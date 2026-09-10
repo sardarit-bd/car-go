@@ -1480,7 +1480,52 @@ export function AppProvider({ children }) {
       };
     }
   };
+const forgotPassword = async (email) => {
+  try {
+    const response = await api.post("/api/auth/forgot-password", { email });
+    const result = response.data.data || response.data;
+    return { success: true, message: result.message };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to send OTP",
+    };
+  }
+};
 
+const verifyResetOtp = async (email, otp) => {
+  try {
+    await api.post("/api/auth/verify-otp", { email, otp });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Invalid or expired OTP",
+    };
+  }
+};
+
+const resetPasswordWithOtp = async (
+  email,
+  otp,
+  newPassword,
+  confirmPassword,
+) => {
+  try {
+    await api.post("/api/auth/reset-password", {
+      email,
+      otp,
+      newPassword,
+      confirmPassword,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to reset password",
+    };
+  }
+};
   const t = (key) =>
     cmsTranslations[lang]?.[key] || cmsTranslations["en"]?.[key] || key;
 
@@ -1565,6 +1610,9 @@ export function AppProvider({ children }) {
         logoutUser,
         bookings,
         myReservations,
+        forgotPassword,
+        verifyResetOtp,
+        resetPasswordWithOtp,
       }}
     >
       {children}

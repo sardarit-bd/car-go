@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Lock, AlertTriangle, Loader2, Mail, Phone } from "lucide-react";
+import { User, Lock, AlertTriangle, Loader2, Mail, Phone, Eye, EyeOff } from "lucide-react";
 import * as yup from "yup";
 import { useApp } from "@/app/context/AppContext";
 
@@ -102,6 +102,8 @@ export default function CustomerSignup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -268,29 +270,43 @@ export default function CustomerSignup() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
+            <label className="text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
               <Lock className="w-3.5 h-3.5 text-slate-400" />
-              <span>{lang === "en" ? "Password" : "Hasło"}</span>
+              <span>
+                {lang === "en" ? "Confirm password" : "Potwierdź hasło"}
+              </span>
             </label>
-            <input
-              type="password"
-              name="password"
-              placeholder={
-                lang === "en" ? "Minimum 8 characters" : "Minimum 8 znaków"
-              }
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-2.5 bg-white border ${fieldErrors.password ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none placeholder-slate-400`}
-            />
-            {fieldErrors.password && (
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder={lang === "en" ? "Repeat password" : "Powtórz hasło"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className={`w-full px-4 py-2.5 pr-10 bg-white border ${fieldErrors.confirmPassword ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+            {fieldErrors.confirmPassword && (
               <p className="text-[10px] text-brand-red mt-1 font-semibold">
-                {fieldErrors.password}
+                {fieldErrors.confirmPassword}
               </p>
             )}
           </div>
-          {/* dfasdfsd */}
+
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
+            <label className=" text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
               <Lock className="w-3.5 h-3.5 text-slate-400" />
               <span>
                 {lang === "en" ? "Confirm password" : "Potwierdź hasło"}
@@ -302,7 +318,7 @@ export default function CustomerSignup() {
               placeholder={lang === "en" ? "Repeat password" : "Powtórz hasło"}
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={`w-full px-4 py-2.5 bg-white border ${fieldErrors.confirmPassword ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none placeholder-slate-400`}
+              className={`w-full px-4 py-2.5 bg-white border ${fieldErrors.confirmPassword ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none`}
             />
             {fieldErrors.confirmPassword && (
               <p className="text-[10px] text-brand-red mt-1 font-semibold">

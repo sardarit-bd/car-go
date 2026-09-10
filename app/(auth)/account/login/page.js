@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import Link from "next/link";
-import { User, Lock, AlertTriangle, Loader2 } from "lucide-react";
+import { User, Lock, AlertTriangle, Loader2, Eye, EyeOff } from "lucide-react";
 import * as yup from "yup";
 
 const getLoginSchema = (lang) =>
@@ -35,14 +35,13 @@ const getLoginSchema = (lang) =>
 
 export default function CustomerLogin() {
   const router = useRouter();
-  // We only need loginUser and t now. Removed loginAdmin and setCurrentUser.
   const { loginUser, t, lang } = useApp();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
+    const [fieldErrors, setFieldErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -129,17 +128,39 @@ export default function CustomerLogin() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center space-x-1">
-              <Lock className="w-3.5 h-3.5 text-slate-400" />
-              <span>{lang === "en" ? "Password" : "Hasło / Password"}</span>
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-4 py-2.5 bg-white border ${fieldErrors.password ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none`}
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-500 flex items-center space-x-1">
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
+                <span>{lang === "en" ? "Password" : "Hasło / Password"}</span>
+              </label>
+              <Link
+                href="/account/forgot-password"
+                className="text-[11px] text-brand-red font-bold hover:underline"
+              >
+                {lang === "en" ? "Forgot password?" : "Zapomniałeś hasła?"}
+              </Link>
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full px-4 py-2.5 pr-10 bg-white border ${fieldErrors.password ? "border-brand-red" : "border-slate-200"} focus:border-brand-red rounded-lg text-slate-800 text-sm focus:outline-none`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
             {fieldErrors.password && (
               <p className="text-[10px] text-brand-red mt-1 font-semibold">
                 {fieldErrors.password}
