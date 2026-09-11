@@ -354,7 +354,7 @@ const initialTranslations = {
     lookupNotFound: "Reservation with this number was not found.",
     lookupMaskedAlert:
       "Personal details have been partially hidden for security reasons.",
-    statusAwaiting: "statusAwaiting",
+    statusAwaiting: "Completed",
     statusConfirmed: "Confirmed",
     statusCancelled: "Cancelled",
     payStatusPaid: "Paid online",

@@ -327,7 +327,6 @@ export default function FleetTab() {
     }
   };
 
-  // --- NEW FUNCTIONS FOR VEHICLE DATE BLOCKING ---
   const handleToggleBlockPanel = async (vehicleId) => {
     if (blockingVehicleId === vehicleId) {
       setBlockingVehicleId(null);
@@ -337,7 +336,7 @@ export default function FleetTab() {
     } else {
       setBlockingVehicleId(vehicleId);
       try {
-        const res = await api.get(`/api/vehicles/${vehicleId}/blocked-dates`);
+        const res = await api.get(`/api/vehicle/${vehicleId}/blocked-dates`);
         setBlockedDates(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch blocked dates:", err);
@@ -353,13 +352,13 @@ export default function FleetTab() {
     }
     setIsBlockingLoading(true);
     try {
-      await api.post(`/api/vehicles/${vehicleId}/block-dates`, {
+      await api.post(`/api/vehicle/${vehicleId}/blocked-dates`, {
         availableFrom: blockStartDate,
         availableTo: blockEndDate,
       });
       setBlockStartDate("");
       setBlockEndDate("");
-      const res = await api.get(`/api/vehicles/${vehicleId}/blocked-dates`);
+      const res = await api.get(`/api/vehicle/${vehicleId}/blocked-dates`);
       setBlockedDates(res.data.data || []);
       alert("Daty zostały zablokowane.");
     } catch (err) {
@@ -372,8 +371,8 @@ export default function FleetTab() {
   const handleUnblockDates = async (availabilityId, vehicleId) => {
     if (!confirm("Czy na pewno chcesz odblokować te daty?")) return;
     try {
-      await api.delete(`/api/vehicles/blocked-dates/${availabilityId}`);
-      const res = await api.get(`/api/vehicles/${vehicleId}/blocked-dates`);
+      await api.delete(`/api/vehicle/blocked-dates/${availabilityId}`);
+      const res = await api.get(`/api/vehicle/${vehicleId}/blocked-dates`);
       setBlockedDates(res.data.data || []);
       alert("Daty zostały odblokowane.");
     } catch (err) {
