@@ -726,7 +726,7 @@ export function AppProvider({ children }) {
   const fetchAdminVehicles = async () => {
     try {
       const response = await api.get("/api/vehicle", {
-        params: { includeInactive: true, limit: 10 },
+        params: { includeInactive: true, isAdmin: true, limit: 10 },
       });
       const backendVehicles = response.data.data.vehicles;
       const mappedVehicles = backendVehicles.map((v) => ({
