@@ -14,15 +14,19 @@ export default function AuthLayout({ children }) {
 
     const isLogin = pathname === "/account/login";
     const isSignup = pathname === "/account/signup";
+    const isForgotPassword = pathname === "/account/forgot-password";
     const isAdminRoute = pathname.startsWith("/admin");
     const isAccountRoute =
-      pathname.startsWith("/account") && !isLogin && !isSignup;
+      pathname.startsWith("/account") &&
+      !isLogin &&
+      !isSignup &&
+      !isForgotPassword;
 
     const hasUser = !!currentUser;
     const hasAdmin =
       currentUser?.role === "ADMIN" || currentUser?.role === "EMPLOYEE";
 
-    if (hasUser && (isLogin || isSignup)) {
+    if (hasUser && (isLogin || isSignup || isForgotPassword)) {
       if (hasAdmin) {
         router.replace("/admin");
       } else {
