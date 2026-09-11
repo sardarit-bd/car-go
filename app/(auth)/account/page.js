@@ -237,9 +237,10 @@ console.log("My confirmed bookings:", myBookings);
                   };
 
                   const payColors = {
-                    paid_online: "text-green-600",
-                    payment_upon_pickup: "text-blue-600",
-                    awaiting_payment: "text-yellow-600",
+                    pending: "text-yellow-600",
+                    confirmed: "text-green-600",
+                    completed: "text-blue-600",
+                    cancelled: "text-red-600",
                   };
                   console.log("Booking map:", b);
                   return (
@@ -260,7 +261,7 @@ console.log("My confirmed bookings:", myBookings);
                             }`}
                           >
                             {b.status === "confirmed"
-                              ? t("statusConfirmed")
+                              ? t("statusConfirmed"):b.status === "pending"?t("statusPending")
                               : b.status === "cancelled"
                                 ? t("statusCancelled")
                                 : t("statusAwaiting")}
@@ -279,7 +280,7 @@ console.log("My confirmed bookings:", myBookings);
 
                           <strong
                             className={
-                              payColors[b.paymentStatus] || "text-slate-600"
+                              payColors[b.status] || "text-slate-600"
                             }
                           >
                             {b.paymentStatus === "paid_online"

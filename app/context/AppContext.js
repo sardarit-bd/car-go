@@ -104,9 +104,10 @@ const initialTranslations = {
     lookupNotFound: "Nie znaleziono rezerwacji o podanym numerze.",
     lookupMaskedAlert:
       "Dane osobowe zostały częściowo ukryte w celu zachowania bezpieczeństwa.",
-    statusAwaiting: "Oczekuje na potwierdzenie",
+    statusAwaiting: "zakończony",
     statusConfirmed: "Potwierdzona",
     statusCancelled: "Anulowana",
+    statusPending:"aż do",
     payStatusPaid: "Opłacona online",
     payStatusPickup: "Płatność przy odbiorze",
     payStatusAwaiting: "Oczekuje na płatność",
@@ -353,7 +354,7 @@ const initialTranslations = {
     lookupNotFound: "Reservation with this number was not found.",
     lookupMaskedAlert:
       "Personal details have been partially hidden for security reasons.",
-    statusAwaiting: "Awaiting confirmation",
+    statusAwaiting: "statusAwaiting",
     statusConfirmed: "Confirmed",
     statusCancelled: "Cancelled",
     payStatusPaid: "Paid online",
@@ -487,6 +488,7 @@ const initialTranslations = {
     packageAddBtn: "ADD PACKAGE",
     packageUpdateBtn: "UPDATE",
     packageCancelBtn: "Cancel",
+    statusPending: "Pending",
     packageListTitle: "Protection Packages",
     pricePerDay: "/day",
     packageNamePlaceholder: "e.g. Gold Protection Package",
