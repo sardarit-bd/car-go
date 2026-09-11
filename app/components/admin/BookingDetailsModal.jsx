@@ -35,7 +35,7 @@ export default function BookingDetailsModal({
   };
 
   const resolveLocationName = (locationId) => {
-    if (!locationId) return "N/A";
+    if (!locationId || !locations) return "N/A";
     const match = locations.find(
       (l) => l.backendId === locationId || l.id === locationId,
     );
@@ -47,8 +47,13 @@ export default function BookingDetailsModal({
     selectedBookingDetails.returnDate,
   );
 
-  const packageData = selectedBookingDetails.packageData;
-  const addonsData = selectedBookingDetails.addonsData;
+  const packageData = typeof selectedBookingDetails.packageData === 'string' 
+    ? JSON.parse(selectedBookingDetails.packageData) 
+    : selectedBookingDetails.packageData;
+    
+  const addonsData = typeof selectedBookingDetails.addonsData === 'string' 
+    ? JSON.parse(selectedBookingDetails.addonsData) 
+    : selectedBookingDetails.addonsData;
 
   const handleDownloadPDF = async () => {
     const element = contentRef.current;
@@ -77,9 +82,8 @@ export default function BookingDetailsModal({
       >
         <div className="sticky top-0 z-10 flex justify-between items-center bg-white border-b border-slate-100 px-6 py-3 rounded-t-2xl">
           <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wider pr-2">
-            {t("manage Booking: ")}
-            {selectedBookingDetails.bookingReference ||
-              selectedBookingDetails.id}
+            {t("manageBooking") || "manage Booking: "}
+            {selectedBookingDetails.bookingReference || selectedBookingDetails.id}
           </h3>
           <button
             onClick={() => setSelectedBookingDetails(null)}
@@ -90,10 +94,7 @@ export default function BookingDetailsModal({
           </button>
         </div>
 
-        <div
-          ref={contentRef}
-          className="space-y-4 text-xs overflow-y-auto px-6 py-4"
-        >
+        <div ref={contentRef} className="space-y-4 text-xs overflow-y-auto px-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
               <p className="text-slate-400">{t("clientLabel")}</p>
@@ -101,17 +102,13 @@ export default function BookingDetailsModal({
                 {selectedBookingDetails.customerFirstName}{" "}
                 {selectedBookingDetails.customerLastName}
               </p>
-              <p className="text-slate-500">
-                {selectedBookingDetails.customerEmail}
-              </p>
-              <p className="text-slate-500">
-                {selectedBookingDetails.phoneNumber}
-              </p>
+              <p className="text-slate-500">{selectedBookingDetails.customerEmail}</p>
+              <p className="text-slate-500">{selectedBookingDetails.phoneNumber}</p>
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-100">
               <p className="text-slate-400">{t("vehicleLabel")}</p>
               <p className="font-bold text-slate-800 mt-0.5">
-                {selectedBookingDetails.vehicle?.brand || "N/A"}
+                {selectedBookingDetails.vehicle?.brand || "N/A"}{" "}
                 {selectedBookingDetails.vehicle?.model || ""}
               </p>
             </div>
@@ -149,25 +146,22 @@ export default function BookingDetailsModal({
               </p>
               <p>
                 {t("pickupPointLabel")}:{" "}
-                <strong>
-                  {resolveLocationName(selectedBookingDetails.pickupLocationId)}
-                </strong>
+                <strong>{resolveLocationName(selectedBookingDetails.pickupLocationId)}</strong>
               </p>
               <p>
                 {t("returnPointLabel")}:{" "}
-                <strong>
-                  {resolveLocationName(selectedBookingDetails.returnLocationId)}
-                </strong>
+                <strong>{resolveLocationName(selectedBookingDetails.returnLocationId)}</strong>
               </p>
+
               {selectedBookingDetails.customPickupAddress && (
                 <p className="text-slate-600">
-                  {lang === "pl" ? "Adres dostawy:" : "Delivery address:"}{" "}
+                  {t("deliveryAddress") || (lang === "pl" ? "Adres dostawy:" : "Delivery address:")}{" "}
                   <strong>{selectedBookingDetails.customPickupAddress}</strong>
                 </p>
               )}
               {selectedBookingDetails.customReturnAddress && (
                 <p className="text-slate-600">
-                  {lang === "pl" ? "Adres zwrotu:" : "Return address:"}{" "}
+                  {t("returnAddress") || (lang === "pl" ? "Adres zwrotu:" : "Return address:")}{" "}
                   <strong>{selectedBookingDetails.customReturnAddress}</strong>
                 </p>
               )}
@@ -207,9 +201,7 @@ export default function BookingDetailsModal({
           )}
 
           <div className="p-3 bg-slate-50 rounded border border-slate-100 flex justify-between items-center text-sm">
-            <span className="text-slate-500 font-bold">
-              {t("totalCostLabel")}
-            </span>
+            <span className="text-slate-500 font-bold">{t("totalCostLabel")}</span>
             <strong className="text-brand-red text-base font-black">
               PLN {selectedBookingDetails.totalPrice}
             </strong>
@@ -217,7 +209,7 @@ export default function BookingDetailsModal({
 
           {selectedBookingDetails.customerNotes && (
             <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-1">
-              <p className="text-slate-400">{t("Customer Note")}</p>
+              <p className="text-slate-400">{t("customerNote") || "Customer Note"}</p>
               <p className="text-slate-700 whitespace-pre-wrap">
                 {selectedBookingDetails.customerNotes}
               </p>
@@ -239,7 +231,7 @@ export default function BookingDetailsModal({
               className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition flex items-center justify-center gap-2"
             >
               <Download className="w-3.5 h-3.5" />
-              {t("Download") || "Pobierz PDF"}
+              {t("download") || "Pobierz PDF"}
             </button>
 
             {selectedBookingDetails.status !== "CONFIRMED" &&
@@ -286,7 +278,5 @@ export default function BookingDetailsModal({
     </div>
   );
 
-  return typeof document !== "undefined"
-    ? createPortal(modal, document.body)
-    : null;
+  return typeof document !== "undefined" ? createPortal(modal, document.body) : null;
 }
