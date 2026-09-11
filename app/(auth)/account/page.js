@@ -174,7 +174,7 @@ console.log("My confirmed bookings:", myBookings);
               </div>
 
               <div>
-                <label className="block mb-1.5 items-center space-x-1">
+                <label className="w-full mb-1.5 items-center space-x-1  flex ">
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
                   <span>{t("phone")}</span>
                 </label>
@@ -241,7 +241,7 @@ console.log("My confirmed bookings:", myBookings);
                     payment_upon_pickup: "text-blue-600",
                     awaiting_payment: "text-yellow-600",
                   };
-
+                  console.log("Booking map:", b);
                   return (
                     <div
                       key={b.id}
