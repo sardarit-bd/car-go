@@ -260,9 +260,9 @@ console.log("My confirmed bookings:", myBookings);
                               "bg-slate-400 text-white"
                             }`}
                           >
-                            {b.status === "confirmed"
-                              ? t("statusConfirmed"):b.status === "pending"?t("statusPending")
-                              : b.status === "cancelled"
+                            {b.status.toLowerCase() === "confirmed"
+                              ? t("statusConfirmed"):b.status.toLowerCase() === "pending"?t("statusPending")
+                              : b.status.toLowerCase() === "cancelled"
                                 ? t("statusCancelled")
                                 : t("statusAwaiting")}
                           </span>
